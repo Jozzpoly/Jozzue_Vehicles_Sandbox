@@ -37,6 +37,12 @@ export class E1EditSession {
     return this.#preview !== null;
   }
 
+  reset(document: E1Document): void {
+    this.#preview = null;
+    this.#history = [];
+    this.#document = cloneE1Document(document);
+  }
+
   beginPreview(reason: E1EditReason): void {
     if (this.#preview) {
       throw new Error("An E1 edit preview is already active.");
@@ -71,6 +77,24 @@ export class E1EditSession {
       before: cloneE1Document(preview.before),
       after: cloneE1Document(after),
     });
+    this.#document = after;
+    return true;
+  }
+
+  commitOperation(reason: E1EditReason, mutator: (draft: E1Document) => E1Document): boolean {
+    if (this.#preview) {
+      throw new Error("Commit or cancel the active E1 preview before another authored operation.");
+    }
+    const before = cloneE1Document(this.#document);
+    const candidate = mutator(cloneE1Document(before));
+    if (e1DocumentEquals(before, candidate)) {
+      return false;
+    }
+    const after = {
+      ...cloneE1Document(candidate),
+      revision: before.revision + 1,
+    } satisfies E1Document;
+    this.#history.push({ reason, before, after: cloneE1Document(after) });
     this.#document = after;
     return true;
   }

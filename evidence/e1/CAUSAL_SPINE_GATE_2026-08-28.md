@@ -1,6 +1,6 @@
 # E1 Causal Product-Path Spine — gate evidence
 
-> **Gate result: MACHINE PRECONDITIONS PASS / OWNER JUDGMENT NOT RUN / FULL E1 NOT RUN**
+> **Gate result: MACHINE PRECONDITIONS PASS / OWNER PASS AT CAUSAL-SPINE SCOPE / FULL E1 NOT RUN**
 
 Date: 2026-08-28
 Scope: bounded precondition slice below the E1 Product-Path Experiment Contract v2.1.
@@ -76,15 +76,22 @@ The preferred in-app Browser plugin was listed, but its required JavaScript cont
 5. A zero-length authored pivot axis could throw while constructing its diagnostic frame. The static failure path now stays finite/renderable and is covered by a regression test.
 6. The initially pinned Playwright version carried a high-severity advisory. It was updated to 1.62.1; final dependency audit reported zero vulnerabilities.
 
-## Owner authority still required
+## Owner checkpoint
 
-Not run and not implied by machine PASS:
+Owner ran the local implementation at commit `4855c9f2d8652cf56805e2f33468675e1334c675` and deliberately exercised large, absurd, and spatially strange geometry changes.
 
-- whether gizmo manipulation feels direct and trustworthy;
-- whether the 3D spatial presentation is readable enough;
-- whether BUILD ↔ PLAY continuity feels natural;
-- whether the primitive mechanism tells one causally honest visual story;
-- whether this deserves any product-path graduation.
+Owner reported:
+
+- no blocking interaction problem that justifies causal-spine polish before the structural test;
+- camera, gizmo, BUILD ↔ PLAY, and authored-state recovery were sufficient to proceed;
+- absurd geometry remained usable and permissive.
+
+Local observation recordings supplied by Owner:
+
+- `C:\Users\Pioter\Videos\Nagrania ekranu\Nagrywanie ekranu 2026-08-28 220045.mp4`
+- `C:\Users\Pioter\Videos\Nagrania ekranu\Nagrywanie ekranu 2026-08-28 220213.mp4`
+
+This is **Causal Spine technical + Owner PASS only in its bounded scope**. It is not E1 PASS and does not prove H0 structural-authoring sufficiency.
 
 ## Explicitly not built / not tested
 

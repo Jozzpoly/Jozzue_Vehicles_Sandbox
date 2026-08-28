@@ -2,21 +2,23 @@
 
 > **E1-LOCAL / PROVISIONAL / NOT JV ARCHITECTURE**
 
-This repository is the clean canonical recipient for next-generation JV work. Its first implementation is deliberately narrower than the future product: an **E1 Causal Product-Path Spine** used to test whether a small authored construction can survive direct 3D editing, causal evaluation, and exact BUILD → PLAY → BUILD recovery.
+This repository is the clean canonical recipient for next-generation JV work. Its current implementation is deliberately narrower than the future product: an **E1 Structural Rewire candidate** used to test whether a strong-simple explicit construction model can support real 3D disconnect/add/connect/reconnect work and causal BUILD → PLAY → BUILD recovery.
 
 Nothing in the first slice is promoted to permanent JV architecture by existing here. A later, explicit evidence gate must either graduate, replace, or retire each E1-local decision.
 
 ## Current bounded claim
 
-The slice may establish only that:
+The implementation is ready to ask — but cannot answer without Owner use — whether:
 
 - authored state is distinct from evaluated/rendered state;
-- one mechanically meaningful hardpoint can be edited directly in real 3D;
-- a deterministic evaluator makes that authored change causally visible in PLAY;
+- simple participants with neutral point/axis references and explicit relations are sufficient at E1 scale;
+- direct pose manipulation plus explicit add/connect/disconnect operations feels like structural construction rather than relation bookkeeping;
+- relation existence can remain permissive while geometric satisfaction is diagnosed as derived state;
+- a deterministic evaluator makes direct and rocker motion paths causally visible in PLAY;
 - PLAY remains permissive and diagnostic rather than partially solving a broken construction;
 - returning to BUILD recovers the exact authored construction and Undo history.
 
-It does **not** yet test Owner-authored topology changes, add/connect/reconnect interaction, continuous component adaptation, a vehicle runtime, a final component schema, a final renderer, or the complete E1 structural-rewire task.
+Machine and browser preflight do **not** constitute E1 PASS. Owner has not yet performed the complete structural-rewire task on this implementation. The slice also does not test continuous component adaptation, a vehicle runtime, a final component/reference schema, a final renderer, Blockbench integration, rich ports, inference, or generalized unresolved-state machinery.
 
 ## Commands
 

@@ -2,6 +2,10 @@
 
 > **Status: E1-LOCAL / PROVISIONAL / NOT JV ARCHITECTURE**
 
+> Historical bounded spine design. Its technical and Owner checkpoint passed at
+> that scope. The current structural extension is documented in
+> [`STRUCTURAL_REWIRE_IMPLEMENTATION.md`](STRUCTURAL_REWIRE_IMPLEMENTATION.md).
+
 ## Upstream experiment authority
 
 Owner/Browser contract: `JV_NEXTGEN_E1_PRODUCT_PATH_EXPERIMENT_CONTRACT_V2_1.md`
