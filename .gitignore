@@ -1,0 +1,6 @@
+node_modules/
+dist/
+.e1-test-build/
+*.log
+test-results/
+playwright-report/

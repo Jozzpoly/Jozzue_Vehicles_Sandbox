@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "outDir": ".e1-test-build",
+    "rootDir": ".",
+    "strict": true,
+    "types": ["node"],
+    "noUncheckedIndexedAccess": true,
+    "skipLibCheck": true,
+    "declaration": false,
+    "sourceMap": false
+  },
+  "include": [
+    "src/e1/model.ts",
+    "src/e1/spatial.ts",
+    "src/e1/edit-session.ts",
+    "src/e1/scenario.ts",
+    "src/e1/evaluator.ts",
+    "tests/e1/**/*.ts"
+  ]
+}
