@@ -4,7 +4,8 @@
 
 Date: 2026-08-28  
 Scope: bounded Structural Rewire implementation under E1 Product-Path Experiment Contract v2.1.  
-Implementation commit: **record after the bounded code commit**.
+Implementation commit: `0e5cba102512bd66da8ac514b0c5d88bf2583d90`  
+Implementation tree: `afce3780a0dc21358b37c2429a26f1640d691c0f`
 
 ## Claim actually tested
 
