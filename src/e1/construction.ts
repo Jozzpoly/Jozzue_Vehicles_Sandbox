@@ -147,6 +147,29 @@ export function relationsForReference(
   );
 }
 
+// E1-local interaction validity only. This applies the rules already enforced
+// by connectReferences so the viewport does not advertise targets that the
+// authored operation must reject. It deliberately carries no capability,
+// socket, inference, ranking, or cardinality meaning.
+export function connectionTargetReferenceIds(
+  document: E1Document,
+  kind: E1Relation["kind"],
+  sourceReferenceId: E1ReferenceId,
+): readonly E1ReferenceId[] {
+  const source = resolveReference(document, sourceReferenceId);
+  const expectedReferenceKind = kind === "point-coincidence" ? "point" : "axis";
+  if (source.participant.fixed || source.reference.kind !== expectedReferenceKind) {
+    return [];
+  }
+  return document.participants.flatMap((participant) =>
+    participant.id === source.participant.id
+      ? []
+      : participant.references
+          .filter((reference) => reference.kind === expectedReferenceKind)
+          .map((reference) => reference.id),
+  );
+}
+
 export function withParticipantPose(
   document: E1Document,
   participantId: E1ParticipantId,

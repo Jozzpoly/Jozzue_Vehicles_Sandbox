@@ -24,6 +24,7 @@ export interface E1ProjectionVisualState {
   readonly hoveredReferenceId: E1ReferenceId | null;
   readonly connectionSourceReferenceId: E1ReferenceId | null;
   readonly connectionTargetReferenceId: E1ReferenceId | null;
+  readonly connectionCandidateReferenceIds: readonly E1ReferenceId[] | null;
 }
 
 function toThree(value: E1Vec3): THREE.Vector3 {
@@ -110,6 +111,54 @@ export function projectionPick(object: THREE.Object3D | null): E1ProjectionPick 
   return null;
 }
 
+function disposeObjectResources(root: THREE.Object3D): void {
+  const geometries = new Set<THREE.BufferGeometry>();
+  const materials = new Set<THREE.Material>();
+  root.traverse((object) => {
+    const renderable = object as THREE.Object3D & {
+      geometry?: THREE.BufferGeometry;
+      material?: THREE.Material | readonly THREE.Material[];
+    };
+    if (renderable.geometry) geometries.add(renderable.geometry);
+    if (Array.isArray(renderable.material)) {
+      for (const material of renderable.material) materials.add(material);
+    } else if (renderable.material) {
+      materials.add(renderable.material as THREE.Material);
+    }
+  });
+  for (const geometry of geometries) geometry.dispose();
+  for (const material of materials) material.dispose();
+}
+
+function disposeChildren(root: THREE.Object3D): void {
+  for (const child of [...root.children]) disposeObjectResources(child);
+  root.clear();
+}
+
+function authoredWorldPosition(participant: E1Participant, localPosition: E1Vec3): E1Vec3 {
+  const world = toThree(localPosition)
+    .applyQuaternion(new THREE.Quaternion(
+      participant.pose.rotation.x,
+      participant.pose.rotation.y,
+      participant.pose.rotation.z,
+      participant.pose.rotation.w,
+    ))
+    .add(toThree(participant.pose.position));
+  return { x: world.x, y: world.y, z: world.z };
+}
+
+function authoredWorldDirection(participant: E1Participant, localDirection: E1Vec3): E1Vec3 {
+  const world = toThree(localDirection)
+    .applyQuaternion(new THREE.Quaternion(
+      participant.pose.rotation.x,
+      participant.pose.rotation.y,
+      participant.pose.rotation.z,
+      participant.pose.rotation.w,
+    ))
+    .normalize();
+  return { x: world.x, y: world.y, z: world.z };
+}
+
 export class E1ThreeProjection {
   readonly root = new THREE.Group();
   readonly buildRoot = new THREE.Group();
@@ -146,6 +195,13 @@ export class E1ThreeProjection {
       new THREE.CylinderGeometry(0.035, 0.035, 1.4, 14),
       basicMaterial(0x63dcff, 0.82),
     );
+    this.#playArm.name = "e1-play-arm";
+    this.#playDamper.name = "e1-play-damper";
+    this.#playPushrod.name = "e1-play-pushrod";
+    this.#playRockerA.name = "e1-play-rocker-a";
+    this.#playRockerB.name = "e1-play-rocker-b";
+    this.#playRockerHub.name = "e1-play-rocker-hub";
+    this.#playAxis.name = "e1-play-rocker-axis";
     for (const mesh of [
       this.#playArm,
       this.#playDamper,
@@ -180,6 +236,7 @@ export class E1ThreeProjection {
     const liveIds = new Set(document.participants.map((participant) => participant.id));
     for (const [participantId, group] of this.#participantGroups) {
       if (!liveIds.has(participantId)) {
+        disposeObjectResources(group);
         this.#participantsRoot.remove(group);
         this.#participantGroups.delete(participantId);
       }
@@ -204,7 +261,7 @@ export class E1ThreeProjection {
         this.#participantGroups.set(participant.id, group);
         this.#participantsRoot.add(group);
       }
-      group.clear();
+      disposeChildren(group);
       setPose(group, participant);
       this.#buildParticipant(
         group,
@@ -230,24 +287,45 @@ export class E1ThreeProjection {
     alignAlong(this.#playArm, X_AXIS, "x", frame.pivot, frame.armEnd);
     alignAlong(this.#playDamper, Y_AXIS, "y", frame.damperUpper, frame.damperLower);
 
-    const hasRocker = Boolean(
+    const hasEvaluatedRocker = Boolean(
       frame.rockerPivot && frame.rockerAxis && frame.rockerInput && frame.rockerOutput &&
       frame.pushrodStart && frame.pushrodEnd,
     );
-    this.#playPushrod.visible = hasRocker;
-    this.#playRockerA.visible = hasRocker;
-    this.#playRockerB.visible = hasRocker;
-    this.#playRockerHub.visible = hasRocker;
-    this.#playAxis.visible = hasRocker;
-    if (hasRocker) {
-      alignAlong(this.#playPushrod, Y_AXIS, "y", frame.pushrodStart!, frame.pushrodEnd!);
-      alignAlong(this.#playRockerA, X_AXIS, "x", frame.rockerPivot!, frame.rockerInput!);
-      alignAlong(this.#playRockerB, X_AXIS, "x", frame.rockerPivot!, frame.rockerOutput!);
-      this.#playRockerHub.position.copy(toThree(frame.rockerPivot!));
-      this.#playRockerHub.quaternion.setFromUnitVectors(Y_AXIS, toThree(frame.rockerAxis!).normalize());
-      const axisDirection = toThree(frame.rockerAxis!).normalize();
-      const axisStart = toThree(frame.rockerPivot!).addScaledVector(axisDirection, -0.7);
-      const axisEnd = toThree(frame.rockerPivot!).addScaledVector(axisDirection, 0.7);
+    const authoredRocker = frame.status === "diagnosed-static"
+      ? document.participants.find((participant) => participant.kind === "rocker")
+      : undefined;
+    const authoredPushrod = frame.status === "diagnosed-static"
+      ? document.participants.find((participant) => participant.kind === "rigid-link")
+      : undefined;
+    const rockerAxis = authoredRocker?.references.find((reference) => reference.kind === "axis");
+    const rockerPoints = authoredRocker?.references.filter((reference) => reference.kind === "point") ?? [];
+    const pushrodPoints = authoredPushrod?.references.filter((reference) => reference.kind === "point") ?? [];
+    const authoredRockerComplete = Boolean(authoredRocker && rockerAxis?.kind === "axis" && rockerPoints.length === 2);
+    const authoredPushrodComplete = Boolean(authoredPushrod && pushrodPoints.length === 2);
+    const showRocker = hasEvaluatedRocker || authoredRockerComplete;
+    const showPushrod = hasEvaluatedRocker || authoredPushrodComplete;
+    this.#playPushrod.visible = showPushrod;
+    this.#playRockerA.visible = showRocker;
+    this.#playRockerB.visible = showRocker;
+    this.#playRockerHub.visible = showRocker;
+    this.#playAxis.visible = showRocker;
+    if (showPushrod) {
+      const start = frame.pushrodStart ?? authoredWorldPosition(authoredPushrod!, pushrodPoints[0]!.localPosition);
+      const end = frame.pushrodEnd ?? authoredWorldPosition(authoredPushrod!, pushrodPoints[1]!.localPosition);
+      alignAlong(this.#playPushrod, Y_AXIS, "y", start, end);
+    }
+    if (showRocker) {
+      const pivot = frame.rockerPivot ?? authoredWorldPosition(authoredRocker!, rockerAxis!.localOrigin);
+      const axis = frame.rockerAxis ?? authoredWorldDirection(authoredRocker!, rockerAxis!.localDirection);
+      const input = frame.rockerInput ?? authoredWorldPosition(authoredRocker!, rockerPoints[0]!.localPosition);
+      const output = frame.rockerOutput ?? authoredWorldPosition(authoredRocker!, rockerPoints[1]!.localPosition);
+      alignAlong(this.#playRockerA, X_AXIS, "x", pivot, input);
+      alignAlong(this.#playRockerB, X_AXIS, "x", pivot, output);
+      this.#playRockerHub.position.copy(toThree(pivot));
+      this.#playRockerHub.quaternion.setFromUnitVectors(Y_AXIS, toThree(axis).normalize());
+      const axisDirection = toThree(axis).normalize();
+      const axisStart = toThree(pivot).addScaledVector(axisDirection, -0.7);
+      const axisEnd = toThree(pivot).addScaledVector(axisDirection, 0.7);
       alignAlong(
         this.#playAxis,
         Y_AXIS,
@@ -280,6 +358,10 @@ export class E1ThreeProjection {
     group.add(body);
     this.pickTargets.push(body);
     for (const reference of participant.references) {
+      const connectionActive = visualState.connectionCandidateReferenceIds !== null;
+      const isSource = visualState.connectionSourceReferenceId === reference.id;
+      const isCandidate = visualState.connectionCandidateReferenceIds?.includes(reference.id) ?? false;
+      if (connectionActive && !isSource && !isCandidate) continue;
       const handle = this.#referenceHandle(
         participant,
         reference,
@@ -288,7 +370,7 @@ export class E1ThreeProjection {
       );
       pickTag(handle, { kind: "reference", id: reference.id });
       group.add(handle);
-      this.pickTargets.push(handle);
+      if (!connectionActive || isCandidate) this.pickTargets.push(handle);
     }
   }
 
@@ -394,7 +476,7 @@ export class E1ThreeProjection {
   }
 
   #renderRelations(statuses: readonly E1RelationGeometryStatus[]): void {
-    this.#relationsRoot.clear();
+    disposeChildren(this.#relationsRoot);
     for (const status of statuses) {
       const color = status.satisfied ? 0x65e18a : 0xffb24d;
       const marker = new THREE.Mesh(new THREE.SphereGeometry(0.075, 12, 8), basicMaterial(color, 0.92));
@@ -407,7 +489,7 @@ export class E1ThreeProjection {
   }
 
   #renderConnectionPreview(document: E1Document, visualState: E1ProjectionVisualState): void {
-    this.#previewRoot.clear();
+    disposeChildren(this.#previewRoot);
     if (!visualState.connectionSourceReferenceId || !visualState.connectionTargetReferenceId) {
       return;
     }

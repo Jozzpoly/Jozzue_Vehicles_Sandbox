@@ -21,9 +21,9 @@ The current repository does **not** define the final builder, vehicle model, ren
 | Slice | Technical evidence | Owner evidence | Honest conclusion |
 | --- | --- | --- | --- |
 | Causal Product-Path Spine | PASS | PASS at its bounded scope | Authored edit → causal PLAY → exact BUILD recovery was usable enough to proceed. This is not E1 PASS. |
-| Structural Rewire implementation | Machine and rendered-interaction preflight PASS | First Owner checkpoint attempted; full task not completed | **INCONCLUSIVE for H0**, with a strong operation/product-friction signal and perceived regression in naturalness versus the Causal Spine. |
+| Structural Rewire implementation | Machine and rendered-interaction preflight PASS for the original implementation | First Owner checkpoint attempted; full task and Connect flow were not fairly tested | **INCONCLUSIVE for H0**. The broad perceived regression versus Causal Spine remains Owner evidence; operation-specific conclusions are confounded. |
 
-Structural Rewire implemented explicit add/disconnect/connect/reconnect operations, neutral E1 point/axis references, derived relation satisfaction, permissive diagnosed/static PLAY, and a deterministic direct/rocker evaluator. It has **not** shown that this interaction grammar feels like natural structural building rather than relation bookkeeping.
+Structural Rewire implemented explicit add/disconnect/connect/reconnect operations, neutral E1 point/axis references, derived relation satisfaction, permissive diagnosed/static PLAY, and a deterministic direct/rocker evaluator. It has **not** established whether this interaction grammar feels like natural structural building. The later Owner debrief clarifies that damper movement was a stress test, rocker/link movement was exploratory, Connect did not receive a fair Owner test, the mechanical task was only partly clear, and placeholder readability was a confound.
 
 Do not interpret the current friction as proof that explicit relations are wrong, or as authorization for inference, rich sockets, generalized unresolved-state machinery, a solver, adaptation, or a UX fix pass. The interaction layer itself is a confound. Development is intentionally stopped at this checkpoint.
 
@@ -32,7 +32,7 @@ Do not interpret the current friction as proof that explicit relations are wrong
 1. This README.
 2. [E1 Contract v2.1](docs/e1/E1_PRODUCT_PATH_EXPERIMENT_CONTRACT_V2_1.md) — frozen experiment authority, SHA-256 `F8FF7060AD8D05E9BF50F601D161F76BDB9845C7D0789C27DF6525511A891CBB`.
 3. [Causal Spine design](docs/e1/IMPLEMENTATION_DESIGN.md) and [gate evidence](evidence/e1/CAUSAL_SPINE_GATE_2026-08-28.md).
-4. [Structural Rewire design](docs/e1/STRUCTURAL_REWIRE_IMPLEMENTATION.md), [technical preflight](evidence/e1/STRUCTURAL_REWIRE_PREFLIGHT_2026-08-28.md), and [Owner checkpoint](evidence/e1/STRUCTURAL_REWIRE_OWNER_CHECKPOINT_2026-08-29.md).
+4. [Structural Rewire design](docs/e1/STRUCTURAL_REWIRE_IMPLEMENTATION.md), [technical preflight](evidence/e1/STRUCTURAL_REWIRE_PREFLIGHT_2026-08-28.md), historical [Owner checkpoint](evidence/e1/STRUCTURAL_REWIRE_OWNER_CHECKPOINT_2026-08-29.md), and append-only [Owner debrief correction](evidence/e1/STRUCTURAL_REWIRE_OWNER_DEBRIEF_CORRECTION_2026-08-29.md).
 
 ## Prototype-gravity boundaries
 
@@ -50,4 +50,4 @@ npm ci
 npm run check
 ```
 
-For the rendered browser preflight, keep `npm run dev -- --host 127.0.0.1 --port 4173` running in one terminal, then run `npm run test:browser` in another. Open `http://127.0.0.1:4173` for manual use.
+`npm run test:browser` owns its isolated local server lifecycle. For manual use, run `npm run dev -- --host 127.0.0.1 --port 4173` and open `http://127.0.0.1:4173`.

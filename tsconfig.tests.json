@@ -18,6 +18,7 @@
     "src/e1/edit-session.ts",
     "src/e1/scenario.ts",
     "src/e1/evaluator.ts",
+    "src/e1/three-projection.ts",
     "tests/e1/**/*.ts"
   ]
 }

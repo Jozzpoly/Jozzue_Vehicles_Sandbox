@@ -5,6 +5,7 @@ import "./style.css";
 import {
   addParticipant,
   allRelationStatuses,
+  connectionTargetReferenceIds,
   connectReferences,
   connectedTargetSpan,
   disconnectRelation,
@@ -83,6 +84,8 @@ root.innerHTML = `
       <div class="e1-reference-controls" data-testid="reference-controls" hidden>
         <button class="e1-button e1-small" data-testid="connect-point">CONNECT POINTS</button>
         <button class="e1-button e1-small" data-testid="connect-axis">CONNECT AXES</button>
+        <button class="e1-button e1-small" data-testid="confirm-connect" hidden>CONNECT HIGHLIGHTED</button>
+        <select class="e1-relation-select" data-testid="disconnect-relation-select" aria-label="Relation to disconnect" hidden></select>
         <button class="e1-button e1-small e1-danger" data-testid="disconnect">DISCONNECT</button>
         <button class="e1-button e1-small" data-testid="cancel-connect">CANCEL CONNECT</button>
       </div>
@@ -138,6 +141,8 @@ const targetSpan = requiredElement<HTMLElement>("[data-testid='target-span']");
 const referenceControls = requiredElement<HTMLElement>("[data-testid='reference-controls']");
 const connectPointButton = requiredElement<HTMLButtonElement>("[data-testid='connect-point']");
 const connectAxisButton = requiredElement<HTMLButtonElement>("[data-testid='connect-axis']");
+const confirmConnectButton = requiredElement<HTMLButtonElement>("[data-testid='confirm-connect']");
+const disconnectRelationSelect = requiredElement<HTMLSelectElement>("[data-testid='disconnect-relation-select']");
 const disconnectButton = requiredElement<HTMLButtonElement>("[data-testid='disconnect']");
 const cancelConnectButton = requiredElement<HTMLButtonElement>("[data-testid='cancel-connect']");
 const status = requiredElement<HTMLElement>("[data-testid='status']");
@@ -206,6 +211,8 @@ let selectedParticipantId: E1ParticipantId | null = E1_IDS.damper;
 let selectedReferenceId: E1ReferenceId | null = null;
 let hoveredReferenceId: E1ReferenceId | null = null;
 let connectionIntent: E1ConnectionIntent | null = null;
+let connectionTargetReferenceId: E1ReferenceId | null = null;
+let disconnectRelationChoice: string | null = null;
 let playResult: E1PlayResult | null = null;
 let playStartedAt = 0;
 let transformDragging = false;
@@ -259,7 +266,32 @@ function renderInspector(document: E1Document): void {
     connectAxisButton.hidden = resolved.reference.kind !== "axis";
     connectPointButton.disabled = resolved.participant.fixed || connectionIntent !== null;
     connectAxisButton.disabled = resolved.participant.fixed || connectionIntent !== null;
-    disconnectButton.hidden = relations.length === 0;
+    confirmConnectButton.hidden = connectionIntent === null || connectionTargetReferenceId === null;
+    disconnectRelationSelect.replaceChildren();
+    if (relations.length > 1) {
+      const placeholder = new Option("CHOOSE RELATION…", "");
+      disconnectRelationSelect.add(placeholder);
+    }
+    for (const relation of relations) {
+      const otherReferenceId = relation.sourceReferenceId === selectedReferenceId
+        ? relation.targetReferenceId
+        : relation.sourceReferenceId;
+      const other = resolveReference(document, otherReferenceId);
+      disconnectRelationSelect.add(new Option(
+        `${relation.kind} → ${other.participant.label} · ${other.reference.label}`,
+        relation.id,
+      ));
+    }
+    if (relations.length === 1) {
+      disconnectRelationSelect.value = relations[0]!.id;
+    } else if (relations.some((relation) => relation.id === disconnectRelationChoice)) {
+      disconnectRelationSelect.value = disconnectRelationChoice ?? "";
+    } else {
+      disconnectRelationSelect.value = "";
+    }
+    disconnectRelationSelect.hidden = relations.length <= 1 || connectionIntent !== null;
+    disconnectButton.hidden = relations.length === 0 || connectionIntent !== null;
+    disconnectButton.disabled = relations.length > 1 && disconnectRelationSelect.value === "";
     cancelConnectButton.hidden = connectionIntent === null;
     return;
   }
@@ -306,6 +338,17 @@ function renderBuildState(detail = lastDetail): void {
     participant.references.some((reference) => reference.id === connectionIntent?.sourceReferenceId),
   )) {
     connectionIntent = null;
+    connectionTargetReferenceId = null;
+  }
+  const connectionCandidates = connectionIntent
+    ? connectionTargetReferenceIds(
+        document,
+        connectionIntent.kind,
+        connectionIntent.sourceReferenceId,
+      )
+    : null;
+  if (connectionTargetReferenceId && !connectionCandidates?.includes(connectionTargetReferenceId)) {
+    connectionTargetReferenceId = null;
   }
   const statuses = allRelationStatuses(document);
   const violated = statuses.filter((entry) => !entry.satisfied);
@@ -315,7 +358,8 @@ function renderBuildState(detail = lastDetail): void {
     selectedReferenceId,
     hoveredReferenceId,
     connectionSourceReferenceId: connectionIntent?.sourceReferenceId ?? null,
-    connectionTargetReferenceId: connectionIntent ? hoveredReferenceId : null,
+    connectionTargetReferenceId: connectionTargetReferenceId ?? (connectionIntent ? hoveredReferenceId : null),
+    connectionCandidateReferenceIds: connectionCandidates,
   });
   attachTransformToSelection();
   renderInspector(document);
@@ -336,6 +380,8 @@ function renderBuildState(detail = lastDetail): void {
 }
 
 function selectPick(pick: E1ProjectionPick | null): void {
+  const nextReferenceId = pick?.kind === "reference" ? pick.id : null;
+  if (nextReferenceId !== selectedReferenceId) disconnectRelationChoice = null;
   if (!pick) {
     selectedParticipantId = null;
     selectedReferenceId = null;
@@ -386,6 +432,8 @@ function commitPosePreview(): void {
 function cancelWorkingState(): void {
   if (connectionIntent) {
     connectionIntent = null;
+    connectionTargetReferenceId = null;
+    disconnectRelationChoice = null;
     hoveredReferenceId = null;
     renderBuildState("Connection preview cancelled. Authored topology is unchanged.");
     return;
@@ -449,6 +497,7 @@ function commitConnection(targetReferenceId: E1ReferenceId): void {
       connectReferences(draft, kind, sourceReferenceId, targetReferenceId),
     );
     connectionIntent = null;
+    connectionTargetReferenceId = null;
     hoveredReferenceId = null;
     selectedReferenceId = sourceReferenceId;
     renderBuildState(committed
@@ -487,9 +536,30 @@ renderer.domElement.addEventListener("click", (event) => {
   if (mode !== "build" || transformDragging) return;
   const picks = canvasPicks(event);
   if (connectionIntent) {
-    const target = picks.find((pick) => pick.kind === "reference" && pick.id === hoveredReferenceId)
-      ?? picks.find((pick) => pick.kind === "reference");
-    if (target?.kind === "reference") commitConnection(target.id);
+    const candidates = new Set(connectionTargetReferenceIds(
+      session.document,
+      connectionIntent.kind,
+      connectionIntent.sourceReferenceId,
+    ));
+    const targets = picks.filter(
+      (pick): pick is E1ProjectionPick & { readonly kind: "reference" } =>
+        pick.kind === "reference" && candidates.has(pick.id),
+    );
+    if (targets.length === 1) {
+      commitConnection(targets[0]!.id);
+      return;
+    }
+    if (targets.length > 1) {
+      const currentIndex = targets.findIndex((pick) => pick.id === connectionTargetReferenceId);
+      connectionTargetReferenceId = targets[(currentIndex + 1 + targets.length) % targets.length]!.id;
+      hoveredReferenceId = connectionTargetReferenceId;
+      renderBuildState(
+        `${targets.length} legal targets overlap here · click again to cycle, then CONNECT HIGHLIGHTED.`,
+      );
+      return;
+    }
+    connectionTargetReferenceId = null;
+    renderBuildState("No legal target at this location. Source, same-participant, and wrong-kind references are not targets.");
     return;
   }
   const referencePicks = picks.filter((pick) => pick.kind === "reference");
@@ -507,17 +577,29 @@ renderer.domElement.addEventListener("click", (event) => {
 function startConnection(kind: E1Relation["kind"]): void {
   if (!selectedReferenceId) return;
   connectionIntent = { kind, sourceReferenceId: selectedReferenceId };
+  connectionTargetReferenceId = null;
   renderBuildState("Choose one explicit target in the viewport. No target is inferred or ranked.");
 }
 
 connectPointButton.addEventListener("click", () => startConnection("point-coincidence"));
 connectAxisButton.addEventListener("click", () => startConnection("revolute-axis"));
+confirmConnectButton.addEventListener("click", () => {
+  if (connectionTargetReferenceId) commitConnection(connectionTargetReferenceId);
+});
 cancelConnectButton.addEventListener("click", cancelWorkingState);
+disconnectRelationSelect.addEventListener("change", () => {
+  disconnectRelationChoice = disconnectRelationSelect.value || null;
+  renderBuildState();
+});
 disconnectButton.addEventListener("click", () => {
   if (!selectedReferenceId) return;
-  const relation = relationsForReference(session.document, selectedReferenceId)[0];
+  const relations = relationsForReference(session.document, selectedReferenceId);
+  const relation = relations.length === 1
+    ? relations[0]
+    : relations.find((candidate) => candidate.id === disconnectRelationSelect.value);
   if (!relation) return;
   session.commitOperation("disconnect-relation", (draft) => disconnectRelation(draft, relation.id));
+  disconnectRelationChoice = null;
   renderBuildState("Relation removed. Both participants stayed exactly where they were.");
 });
 
@@ -563,6 +645,8 @@ rotateButton.addEventListener("click", () => setTransformMode("rotate"));
 undoButton.addEventListener("click", () => {
   if (mode !== "build") return;
   connectionIntent = null;
+  connectionTargetReferenceId = null;
+  disconnectRelationChoice = null;
   const undone = session.undo();
   renderBuildState(undone ? "Last authored operation undone exactly." : "Nothing to undo.");
 });
@@ -570,6 +654,8 @@ resetTaskButton.addEventListener("click", () => {
   if (mode !== "build") return;
   session.reset(baseline);
   connectionIntent = null;
+  connectionTargetReferenceId = null;
+  disconnectRelationChoice = null;
   hoveredReferenceId = null;
   selectedParticipantId = E1_IDS.damper;
   selectedReferenceId = null;
@@ -584,6 +670,8 @@ window.addEventListener("keydown", (event) => {
   if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "z" && mode === "build") {
     event.preventDefault();
     connectionIntent = null;
+    connectionTargetReferenceId = null;
+    disconnectRelationChoice = null;
     if (session.undo()) renderBuildState("Last authored operation undone exactly.");
   }
   if (event.key.toLowerCase() === "g" && mode === "build") setTransformMode("translate");
