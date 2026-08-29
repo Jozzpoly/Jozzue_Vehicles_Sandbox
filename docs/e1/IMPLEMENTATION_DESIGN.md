@@ -8,7 +8,7 @@
 
 ## Upstream experiment authority
 
-Owner/Browser contract: `JV_NEXTGEN_E1_PRODUCT_PATH_EXPERIMENT_CONTRACT_V2_1.md`
+Owner/Browser contract: [E1 Product-Path Experiment Contract v2.1](E1_PRODUCT_PATH_EXPERIMENT_CONTRACT_V2_1.md)
 Verified SHA-256: `F8FF7060AD8D05E9BF50F601D161F76BDB9845C7D0789C27DF6525511A891CBB`
 
 This implementation is a precondition slice beneath the full contract. It cannot produce a full E1 PASS because it intentionally omits Owner-authored add/connect/reconnect work.

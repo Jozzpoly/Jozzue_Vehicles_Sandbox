@@ -2,6 +2,12 @@
 
 > **Gate result: MACHINE + RENDERED INTERACTION PREFLIGHT PASS / OWNER STRUCTURAL TASK NOT RUN / E1 VERDICT NOT RUN**
 
+> Historical preflight status at the time of this receipt. A subsequent first
+> Owner run is recorded separately in
+> [`STRUCTURAL_REWIRE_OWNER_CHECKPOINT_2026-08-29.md`](STRUCTURAL_REWIRE_OWNER_CHECKPOINT_2026-08-29.md).
+> It was inconclusive for H0 and produced a strong operation/product-friction
+> signal; it did not convert this technical preflight into E1 PASS or FAIL.
+
 Date: 2026-08-28  
 Scope: bounded Structural Rewire implementation under E1 Product-Path Experiment Contract v2.1.  
 Implementation commit: `0e5cba102512bd66da8ac514b0c5d88bf2583d90`  
@@ -107,6 +113,6 @@ The Browser plugin was available as a skill, but its required JavaScript control
 
 No glTF/Blockbench/socket integration, reusable component library, asset browser, adaptive-part framework, rich ports, target inference, generalized unresolved-state machinery, persistence, final physics, final renderer, final graphics language, suspension forces, tires/contact, drivetrain, world, mobile authoring, or deployment.
 
-## Natural stop
+## Natural stop at preflight time
 
 Run the Owner structural task on the exact recorded implementation. Do not begin polish, E2/E3, asset/reference investigation, adaptation, or a next experiment before the Owner verdict is classified under Contract v2.1.

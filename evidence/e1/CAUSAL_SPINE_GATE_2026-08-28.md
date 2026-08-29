@@ -86,10 +86,10 @@ Owner reported:
 - camera, gizmo, BUILD ↔ PLAY, and authored-state recovery were sufficient to proceed;
 - absurd geometry remained usable and permissive.
 
-Local observation recordings supplied by Owner:
+Local observation recordings supplied by Owner (not committed to this public repository):
 
-- `C:\Users\Pioter\Videos\Nagrania ekranu\Nagrywanie ekranu 2026-08-28 220045.mp4`
-- `C:\Users\Pioter\Videos\Nagrania ekranu\Nagrywanie ekranu 2026-08-28 220213.mp4`
+- `Nagrywanie ekranu 2026-08-28 220045.mp4`
+- `Nagrywanie ekranu 2026-08-28 220213.mp4`
 
 This is **Causal Spine technical + Owner PASS only in its bounded scope**. It is not E1 PASS and does not prove H0 structural-authoring sufficiency.
 

@@ -2,7 +2,13 @@
 
 > **Status: E1-LOCAL / PROVISIONAL / NOT JV ARCHITECTURE**
 
-Upstream Owner/Browser authority remains `JV_NEXTGEN_E1_PRODUCT_PATH_EXPERIMENT_CONTRACT_V2_1.md`, SHA-256 `F8FF7060AD8D05E9BF50F601D161F76BDB9845C7D0789C27DF6525511A891CBB`.
+Upstream Owner/Browser authority remains [E1 Product-Path Experiment Contract v2.1](E1_PRODUCT_PATH_EXPERIMENT_CONTRACT_V2_1.md), SHA-256 `F8FF7060AD8D05E9BF50F601D161F76BDB9845C7D0789C27DF6525511A891CBB`.
+
+This design was implemented and passed its technical preflight. The subsequent
+[first Owner checkpoint](../../evidence/e1/STRUCTURAL_REWIRE_OWNER_CHECKPOINT_2026-08-29.md)
+was inconclusive for H0 and exposed strong operation/product friction. That
+later evidence does not rewrite this design into a product specification or
+authorize a repair pass.
 
 The preceding Causal Product-Path Spine passed its bounded machine and Owner checkpoint. This extension asks the still-open E1 question; it does not promote the spine or this implementation to a foundation.
 

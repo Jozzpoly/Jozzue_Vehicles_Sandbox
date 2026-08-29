@@ -1,37 +1,53 @@
 # Jozzue Vehicles Sandbox
 
-> **E1-LOCAL / PROVISIONAL / NOT JV ARCHITECTURE**
+> **Canonical recipient for next-generation JV work. Current contents are E1-local experiments, not JV architecture.**
 
-This repository is the clean canonical recipient for next-generation JV work. Its current implementation is deliberately narrower than the future product: an **E1 Structural Rewire candidate** used to test whether a strong-simple explicit construction model can support real 3D disconnect/add/connect/reconnect work and causal BUILD → PLAY → BUILD recovery.
+The long-term product direction is a mechanically credible vehicle sandbox with a short, natural loop:
 
-Nothing in the first slice is promoted to permanent JV architecture by existing here. A later, explicit evidence gate must either graduate, replace, or retire each E1-local decision.
+`build → run → observe → improve → get in and drive`
 
-## Current bounded claim
+The current repository does **not** define the final builder, vehicle model, renderer, asset pipeline, physics runtime, or desktop/Web split. It preserves a falsifiable product-path experiment and the evidence gathered from it so later work can learn from the implementation without inheriting it by accident.
 
-The implementation is ready to ask — but cannot answer without Owner use — whether:
+## Hierarchy of truth
 
-- authored state is distinct from evaluated/rendered state;
-- simple participants with neutral point/axis references and explicit relations are sufficient at E1 scale;
-- direct pose manipulation plus explicit add/connect/disconnect operations feels like structural construction rather than relation bookkeeping;
-- relation existence can remain permissive while geometric satisfaction is diagnosed as derived state;
-- a deterministic evaluator makes direct and rocker motion paths causally visible in PLAY;
-- PLAY remains permissive and diagnostic rather than partially solving a broken construction;
-- returning to BUILD recovers the exact authored construction and Undo history.
+1. Current Owner conversation and judgement govern desired experience, feel, product value, and permissiveness.
+2. Live Git source and reproducible checks govern current technical state.
+3. The frozen [E1 Contract v2.1](docs/e1/E1_PRODUCT_PATH_EXPERIMENT_CONTRACT_V2_1.md) governs only the scope and interpretation of E1. Its original `implementation remains HOLD` header is historical gate context; later commits and receipts record the subsequently authorized work.
+4. Evidence receipts support only their stated claims.
+5. Donor documentation and old project labels are historical evidence, not future architecture authority.
 
-Machine and browser preflight do **not** constitute E1 PASS. Owner has not yet performed the complete structural-rewire task on this implementation. The slice also does not test continuous component adaptation, a vehicle runtime, a final component/reference schema, a final renderer, Blockbench integration, rich ports, inference, or generalized unresolved-state machinery.
+## Current checkpoint
 
-## Commands
+| Slice | Technical evidence | Owner evidence | Honest conclusion |
+| --- | --- | --- | --- |
+| Causal Product-Path Spine | PASS | PASS at its bounded scope | Authored edit → causal PLAY → exact BUILD recovery was usable enough to proceed. This is not E1 PASS. |
+| Structural Rewire implementation | Machine and rendered-interaction preflight PASS | First Owner checkpoint attempted; full task not completed | **INCONCLUSIVE for H0**, with a strong operation/product-friction signal and perceived regression in naturalness versus the Causal Spine. |
+
+Structural Rewire implemented explicit add/disconnect/connect/reconnect operations, neutral E1 point/axis references, derived relation satisfaction, permissive diagnosed/static PLAY, and a deterministic direct/rocker evaluator. It has **not** shown that this interaction grammar feels like natural structural building rather than relation bookkeeping.
+
+Do not interpret the current friction as proof that explicit relations are wrong, or as authorization for inference, rich sockets, generalized unresolved-state machinery, a solver, adaptation, or a UX fix pass. The interaction layer itself is a confound. Development is intentionally stopped at this checkpoint.
+
+## Cold takeover reading order
+
+1. This README.
+2. [E1 Contract v2.1](docs/e1/E1_PRODUCT_PATH_EXPERIMENT_CONTRACT_V2_1.md) — frozen experiment authority, SHA-256 `F8FF7060AD8D05E9BF50F601D161F76BDB9845C7D0789C27DF6525511A891CBB`.
+3. [Causal Spine design](docs/e1/IMPLEMENTATION_DESIGN.md) and [gate evidence](evidence/e1/CAUSAL_SPINE_GATE_2026-08-28.md).
+4. [Structural Rewire design](docs/e1/STRUCTURAL_REWIRE_IMPLEMENTATION.md), [technical preflight](evidence/e1/STRUCTURAL_REWIRE_PREFLIGHT_2026-08-28.md), and [Owner checkpoint](evidence/e1/STRUCTURAL_REWIRE_OWNER_CHECKPOINT_2026-08-29.md).
+
+## Prototype-gravity boundaries
+
+- `PointRef`, `AxisRef`, relations, `E1Document`, the evaluator, and the current UI vocabulary are E1-local and provisional.
+- Primitive mechanical visuals and overlays are disposable; do not grow them into a reusable suspension component or placeholder asset system.
+- Existing donor glTF files and their `Socket_*` / `Axis_*` vocabulary are donor history, not the current JV reference ontology.
+- Blockbench/component/asset/reference authoring and continuous adaptation are deliberately deferred investigations.
+- `Three.js + WebGLRenderer` is the provisional E1 substrate, not a final engine or rendering decision.
+- No E1 commit gains architecture authority merely by being the first public code in this repository.
+
+## Local checks
 
 ```text
-npm run dev
-npm run test
-npm run build
+npm ci
 npm run check
 ```
 
-## Authority boundary
-
-- Owner judgment remains authoritative for whether the interaction feels direct, permissive, causal, and like building rather than operating a debug rig.
-- Machine checks cover deterministic behavior, state separation, reversible editing, and failure semantics only.
-- `Three.js + WebGLRenderer` is an E1 substrate, not a final engine or rendering decision.
-- The browser research contract is recorded by SHA-256 in [`docs/e1/IMPLEMENTATION_DESIGN.md`](docs/e1/IMPLEMENTATION_DESIGN.md).
+For the rendered browser preflight, keep `npm run dev -- --host 127.0.0.1 --port 4173` running in one terminal, then run `npm run test:browser` in another. Open `http://127.0.0.1:4173` for manual use.
