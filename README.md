@@ -27,12 +27,15 @@ Structural Rewire implemented explicit add/disconnect/connect/reconnect operatio
 
 Do not interpret the current friction as proof that explicit relations are wrong, or as authorization for inference, rich sockets, generalized unresolved-state machinery, a solver, adaptation, or a UX fix pass. The interaction layer itself is a confound. Development is intentionally stopped at this checkpoint.
 
+The bounded [Foundation Stabilization receipt](evidence/e1/FOUNDATION_STABILIZATION_RECEIPT_2026-08-29.md) records later correctness and evidence-validity repairs. Those repairs do not add H0 evidence or promote any E1 type, interaction, or renderer choice to JV architecture.
+
 ## Cold takeover reading order
 
 1. This README.
 2. [E1 Contract v2.1](docs/e1/E1_PRODUCT_PATH_EXPERIMENT_CONTRACT_V2_1.md) — frozen experiment authority, SHA-256 `F8FF7060AD8D05E9BF50F601D161F76BDB9845C7D0789C27DF6525511A891CBB`.
 3. [Causal Spine design](docs/e1/IMPLEMENTATION_DESIGN.md) and [gate evidence](evidence/e1/CAUSAL_SPINE_GATE_2026-08-28.md).
 4. [Structural Rewire design](docs/e1/STRUCTURAL_REWIRE_IMPLEMENTATION.md), [technical preflight](evidence/e1/STRUCTURAL_REWIRE_PREFLIGHT_2026-08-28.md), historical [Owner checkpoint](evidence/e1/STRUCTURAL_REWIRE_OWNER_CHECKPOINT_2026-08-29.md), and append-only [Owner debrief correction](evidence/e1/STRUCTURAL_REWIRE_OWNER_DEBRIEF_CORRECTION_2026-08-29.md).
+5. [Foundation Stabilization receipt](evidence/e1/FOUNDATION_STABILIZATION_RECEIPT_2026-08-29.md) — bounded validity fixes only, not Structural Rewire product improvement.
 
 ## Prototype-gravity boundaries
 
