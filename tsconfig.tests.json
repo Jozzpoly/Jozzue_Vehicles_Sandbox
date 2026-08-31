@@ -19,6 +19,8 @@
     "src/e1/scenario.ts",
     "src/e1/evaluator.ts",
     "src/e1/three-projection.ts",
-    "tests/e1/**/*.ts"
+    "src/v0/**/*.ts",
+    "tests/e1/**/*.ts",
+    "tests/v0/**/*.ts"
   ]
 }
