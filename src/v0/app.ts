@@ -44,7 +44,7 @@ root.innerHTML = `
         <button data-hold="right" aria-label="Steer right">▶</button>
         <button data-hold="reverse" class="reverse" aria-label="Drive reverse">▼</button>
       </div>
-      <p class="key-help">W/S or ↑/↓ drive · A/D or ←/→ steer · R reset</p>
+      <p class="key-help">W/S or ↑/↓ drive · hold A/D or ←/→ to change steer · C center · R reset</p>
     </section>
     <footer>
       <span data-testid="runtime-status">Starting physical runtime…</span>
@@ -62,6 +62,8 @@ const required = <T extends Element>(selector: string): T => {
 const canvas = required<HTMLCanvasElement>("canvas");
 const projection = new V0Projection(canvas);
 const held = new Set<string>();
+const fixedStepSeconds = 1 / 60;
+const steeringTargetRate = 1;
 let steeringCommand = 0;
 let variant: SteeringVariantId = "A";
 let world = await PhysicalSteeringWorld.create(variant);
@@ -75,11 +77,14 @@ const status = required<HTMLElement>("[data-testid='runtime-status']");
 status.textContent = "READY · physical linkage owns steering";
 status.dataset.state = "ready";
 
-function inputState(): Readonly<{ steering: number; drive: number }> {
+function inputState(): Readonly<{ steeringRate: number; drive: number }> {
   const drive =
     (held.has("forward") || held.has("KeyW") || held.has("ArrowUp") ? 0.42 : 0) -
     (held.has("reverse") || held.has("KeyS") || held.has("ArrowDown") ? 0.3 : 0);
-  return { steering: steeringCommand, drive };
+  const steeringRate =
+    (held.has("right") || held.has("KeyD") || held.has("ArrowRight") ? 1 : 0) -
+    (held.has("left") || held.has("KeyA") || held.has("ArrowLeft") ? 1 : 0);
+  return { steeringRate, drive };
 }
 
 function updateTelemetry(): void {
@@ -109,6 +114,7 @@ function updateTelemetry(): void {
   required<HTMLElement>("[data-testid='contacts']").textContent =
     `${trace.left.contactCount} / ${trace.right.contactCount} / world ${trace.worldContacts}`;
   root!.dataset.variant = variant;
+  root!.dataset.steeringTarget = String(steeringCommand);
   root!.dataset.rack = String(trace.rackTranslation);
   root!.dataset.distance = String(trace.travelledDistance);
   root!.dataset.curvature = String(trace.curvature);
@@ -124,16 +130,20 @@ function updateTelemetry(): void {
   );
 }
 
-function releaseInputs(): void {
+function stopActiveInputs(): void {
   held.clear();
-  steeringCommand = 0;
   world.setDrive(0);
+}
+
+function resetInputs(): void {
+  stopActiveInputs();
+  steeringCommand = 0;
   world.setSteering(0);
 }
 
 async function reset(nextVariant = variant): Promise<void> {
   const generation = ++resetGeneration;
-  releaseInputs();
+  resetInputs();
   const next = await PhysicalSteeringWorld.create(nextVariant);
   if (generation !== resetGeneration || disposed) {
     next.dispose();
@@ -171,8 +181,6 @@ for (const button of root.querySelectorAll<HTMLButtonElement>("[data-hold]")) {
   button.addEventListener("pointerdown", (event) => {
     button.setPointerCapture(event.pointerId);
     held.add(id);
-    if (id === "left") steeringCommand = -1;
-    if (id === "right") steeringCommand = 1;
     button.classList.add("pressed");
   });
   button.addEventListener("pointerup", release);
@@ -185,19 +193,18 @@ window.addEventListener("keydown", (event) => {
     void reset();
     return;
   }
-  if (event.code === "KeyA" || event.code === "ArrowLeft") {
-    steeringCommand = -1;
-  }
-  if (event.code === "KeyD" || event.code === "ArrowRight") {
-    steeringCommand = 1;
+  if (event.code === "KeyC") {
+    steeringCommand = 0;
+    world.setSteering(0);
+    return;
   }
   held.add(event.code);
   if (event.code.startsWith("Arrow")) event.preventDefault();
 });
 window.addEventListener("keyup", (event) => held.delete(event.code));
-window.addEventListener("blur", releaseInputs);
+window.addEventListener("blur", stopActiveInputs);
 document.addEventListener("visibilitychange", () => {
-  if (document.hidden) releaseInputs();
+  if (document.hidden) stopActiveInputs();
 });
 
 function animate(time: number): void {
@@ -205,12 +212,20 @@ function animate(time: number): void {
   accumulator += Math.min(0.1, Math.max(0, (time - lastTime) / 1000));
   lastTime = time;
   const input = inputState();
-  world.setSteering(input.steering);
   world.setDrive(input.drive);
   let steps = 0;
-  while (accumulator >= 1 / 60 && steps < 6) {
+  while (accumulator >= fixedStepSeconds && steps < 6) {
+    steeringCommand = Math.max(
+      -1,
+      Math.min(
+        1,
+        steeringCommand +
+          input.steeringRate * steeringTargetRate * fixedStepSeconds,
+      ),
+    );
+    world.setSteering(steeringCommand);
     trace = world.step();
-    accumulator -= 1 / 60;
+    accumulator -= fixedStepSeconds;
     steps += 1;
   }
   projection.render(trace);

@@ -36,29 +36,54 @@ test("V0 loads physical steering and switches geometry variants", async ({ page 
   await page.screenshot({ path: join(tmpdir(), "jv-front-steering-v0.png") });
 });
 
-test("V0 Owner-visible controls move rack and vehicle", async ({ page }) => {
+test("V0 Owner steering holds partial target, reverses, and centers explicitly", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByTestId("runtime-status")).toHaveAttribute(
     "data-state",
     "ready",
   );
   await page.keyboard.down("ArrowRight");
-  await page.keyboard.down("ArrowUp");
-  await page.waitForTimeout(1800);
-  await page.keyboard.up("ArrowUp");
-  const heldRack = Number(
-    await page.locator("#app").getAttribute("data-rack"),
-  );
+  await page.waitForTimeout(360);
   await page.keyboard.up("ArrowRight");
-  await page.waitForTimeout(350);
+  const partialTarget = Number(
+    await page.locator("#app").getAttribute("data-steering-target"),
+  );
+  expect(partialTarget).toBeGreaterThan(0.15);
+  expect(partialTarget).toBeLessThan(0.7);
+
+  await page.waitForTimeout(600);
+  const settledRack = Number(await page.locator("#app").getAttribute("data-rack"));
+  await page.waitForTimeout(300);
+  const heldState = await page.locator("#app").evaluate((element) => ({
+    target: Number((element as HTMLElement).dataset.steeringTarget),
+    rack: Number((element as HTMLElement).dataset.rack),
+  }));
+  expect(heldState.target).toBeCloseTo(partialTarget, 8);
+  expect(Math.abs(heldState.rack - settledRack)).toBeLessThan(0.005);
+
+  await page.keyboard.down("ArrowLeft");
+  await page.waitForTimeout(220);
+  await page.keyboard.up("ArrowLeft");
+  const reversedTarget = Number(
+    await page.locator("#app").getAttribute("data-steering-target"),
+  );
+  expect(reversedTarget).toBeLessThan(partialTarget - 0.08);
+
+  await page.keyboard.press("KeyC");
+  await page.waitForTimeout(650);
+  const centered = await page.locator("#app").evaluate((element) => ({
+    target: Number((element as HTMLElement).dataset.steeringTarget),
+    rack: Number((element as HTMLElement).dataset.rack),
+  }));
+  expect(centered.target).toBe(0);
+  expect(Math.abs(centered.rack)).toBeLessThan(0.005);
+
+  await page.keyboard.down("ArrowUp");
+  await page.waitForTimeout(900);
+  await page.keyboard.up("ArrowUp");
 
   const state = await page.locator("#app").evaluate((element) => ({
-    rack: Number((element as HTMLElement).dataset.rack),
     distance: Number((element as HTMLElement).dataset.distance),
-    leftAngle: Number((element as HTMLElement).dataset.leftAngle),
   }));
-  expect(state.rack).toBeGreaterThan(0.04);
-  expect(Math.abs(state.rack - heldRack)).toBeLessThan(0.01);
   expect(state.distance).toBeGreaterThan(0.15);
-  expect(state.leftAngle).toBeGreaterThan(0.1);
 });
