@@ -19,7 +19,11 @@
     "src/e1/scenario.ts",
     "src/e1/evaluator.ts",
     "src/e1/three-projection.ts",
-    "src/v0/**/*.ts",
+    "src/v0/math.ts",
+    "src/v0/straight-carrier.ts",
+    "src/v0/steering-geometry.ts",
+    "src/v0/physical-steering-world.ts",
+    "src/v0/driving-evidence.ts",
     "tests/e1/**/*.ts",
     "tests/v0/**/*.ts"
   ]

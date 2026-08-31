@@ -1,12 +1,12 @@
 # Jozzue Vehicles Sandbox
 
-> **Canonical recipient for next-generation JV work. Current contents are E1-local experiments, not JV architecture.**
+> **Canonical recipient for next-generation JV work. Current contents are bounded research slices, not JV architecture.**
 
 The long-term product direction is a mechanically credible vehicle sandbox with a short, natural loop:
 
 `build → run → observe → improve → get in and drive`
 
-The current repository does **not** define the final builder, vehicle model, renderer, asset pipeline, physics runtime, or desktop/Web split. It preserves a falsifiable product-path experiment and the evidence gathered from it so later work can learn from the implementation without inheriting it by accident.
+The current repository does **not** define the final builder, vehicle model, renderer, asset pipeline, physics runtime, or desktop/Web split. It preserves falsifiable product-path experiments and their evidence so later work can learn from them without inheriting their implementations by accident.
 
 ## Hierarchy of truth
 
@@ -17,6 +17,10 @@ The current repository does **not** define the final builder, vehicle model, ren
 5. Donor documentation and old project labels are historical evidence, not future architecture authority.
 
 ## Current checkpoint
+
+**Active experimental branch: `work/front-steering-v0`.** V0 asks only whether a real steering-geometry change can propagate through one physical linkage into visible wheel motion, contact and a changed driving trajectory. The [V0 technical receipt](evidence/v0/V0_DRIVABLE_STEERING_RECEIPT_2026-09-01.md) records C0–C3, quantitative evidence and the disposable boundary. V0 contains no direct builder and has no Owner verdict yet.
+
+The default branch page on this working branch runs V0. Add `?e1=1` only to inspect the closed E1 apparatus.
 
 **E1 is CLOSED as a research program; H0 remains unresolved.** The [closure record](evidence/e1/E1_CLOSURE_2026-08-31.md) separates the local benefit of F1 from the still-negative/mixed Owner product signal. No further E1 treatment or polish is authorized.
 
@@ -37,11 +41,12 @@ The bounded [Foundation Stabilization receipt](evidence/e1/FOUNDATION_STABILIZAT
 ## Cold takeover reading order
 
 1. This README.
-2. [E1 closure](evidence/e1/E1_CLOSURE_2026-08-31.md) — current disposition, exact control/specimen refs, final Owner feedback and evidence limits; links to immutable F1 contract/preflight.
-3. [E1 Contract v2.1](docs/e1/E1_PRODUCT_PATH_EXPERIMENT_CONTRACT_V2_1.md) — frozen experiment authority, SHA-256 `F8FF7060AD8D05E9BF50F601D161F76BDB9845C7D0789C27DF6525511A891CBB`.
-4. [Causal Spine design](docs/e1/IMPLEMENTATION_DESIGN.md) and [gate evidence](evidence/e1/CAUSAL_SPINE_GATE_2026-08-28.md).
-5. [Structural Rewire design](docs/e1/STRUCTURAL_REWIRE_IMPLEMENTATION.md), [technical preflight](evidence/e1/STRUCTURAL_REWIRE_PREFLIGHT_2026-08-28.md), historical [Owner checkpoint](evidence/e1/STRUCTURAL_REWIRE_OWNER_CHECKPOINT_2026-08-29.md), and append-only [Owner debrief correction](evidence/e1/STRUCTURAL_REWIRE_OWNER_DEBRIEF_CORRECTION_2026-08-29.md).
-6. [Foundation Stabilization receipt](evidence/e1/FOUNDATION_STABILIZATION_RECEIPT_2026-08-29.md) — bounded validity fixes only, not Structural Rewire product improvement.
+2. [V0 steering receipt](evidence/v0/V0_DRIVABLE_STEERING_RECEIPT_2026-09-01.md) — active branch scope, exact prior checkpoints, evidence and stop boundary.
+3. [E1 closure](evidence/e1/E1_CLOSURE_2026-08-31.md) — current disposition, exact control/specimen refs, final Owner feedback and evidence limits; links to immutable F1 contract/preflight.
+4. [E1 Contract v2.1](docs/e1/E1_PRODUCT_PATH_EXPERIMENT_CONTRACT_V2_1.md) — frozen experiment authority, SHA-256 `F8FF7060AD8D05E9BF50F601D161F76BDB9845C7D0789C27DF6525511A891CBB`.
+5. [Causal Spine design](docs/e1/IMPLEMENTATION_DESIGN.md) and [gate evidence](evidence/e1/CAUSAL_SPINE_GATE_2026-08-28.md).
+6. [Structural Rewire design](docs/e1/STRUCTURAL_REWIRE_IMPLEMENTATION.md), [technical preflight](evidence/e1/STRUCTURAL_REWIRE_PREFLIGHT_2026-08-28.md), historical [Owner checkpoint](evidence/e1/STRUCTURAL_REWIRE_OWNER_CHECKPOINT_2026-08-29.md), and append-only [Owner debrief correction](evidence/e1/STRUCTURAL_REWIRE_OWNER_DEBRIEF_CORRECTION_2026-08-29.md).
+7. [Foundation Stabilization receipt](evidence/e1/FOUNDATION_STABILIZATION_RECEIPT_2026-08-29.md) — bounded validity fixes only, not Structural Rewire product improvement.
 
 ## Working checkpoints
 
@@ -59,6 +64,7 @@ The bounded [Foundation Stabilization receipt](evidence/e1/FOUNDATION_STABILIZAT
 - Existing donor glTF files and their `Socket_*` / `Axis_*` vocabulary are donor history, not the current JV reference ontology.
 - Blockbench/component/asset/reference authoring and continuous adaptation are deliberately deferred investigations.
 - `Three.js + WebGLRenderer` is the provisional E1 substrate, not a final engine or rendering decision.
+- The V0 Box3D carrier, spherical contact, oracle, geometry variants, HUD and translucent inspection projection are disposable experimental capital, not a generic vehicle foundation.
 - No E1 commit gains architecture authority merely by being the first public code in this repository.
 
 ## Local checks
@@ -68,6 +74,6 @@ npm ci
 npm run check
 ```
 
-`npm run test:browser` owns its isolated local server lifecycle. For manual use, run `npm run dev -- --host 127.0.0.1 --port 4173` and open `http://127.0.0.1:4173`.
+`npm run test:browser` owns its isolated local server lifecycle. For manual V0 use on this branch, run `npm run dev -- --host 127.0.0.1 --port 4173` and open `http://127.0.0.1:4173`.
 
-Running this `main` checkout runs the archived control apparatus, **not** matched F1 C1/T1. The final specimen and its entry points are pinned in the closure record; check the ref before comparing behavior.
+On canonical `main`, the root still runs the archived E1 control apparatus. The immutable final F1 specimen and its entry points are pinned in the E1 closure record; check the ref before comparing behavior.
