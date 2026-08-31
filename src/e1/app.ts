@@ -17,6 +17,10 @@ import {
   withParticipantPose,
 } from "./construction.js";
 import { E1EditSession } from "./edit-session.js";
+import {
+  canFitLinearParticipantF1, connectReferencesF1, f1SecondConnectAnchor,
+  f1SoleSatisfiedAnchor, fitLinearParticipantF1,
+} from "./f1-construction.js";
 import { evaluateE1Play, type E1EvaluationFrame, type E1PlayResult } from "./evaluator.js";
 import type {
   E1Document,
@@ -48,6 +52,8 @@ interface E1ConnectionIntent {
 const rootCandidate = document.querySelector<HTMLDivElement>("#app");
 if (!rootCandidate) throw new Error("Missing #app root.");
 const root = rootCandidate;
+// Final E1 comparison only. Never serialized into authored state.
+const f1Condition = new URLSearchParams(window.location.search).get("f1") === "T1" ? "T1" : "C1";
 
 root.innerHTML = `
   <main class="e1-shell">
@@ -73,6 +79,7 @@ root.innerHTML = `
       <h2 data-testid="selection-title">Damper</h2>
       <p data-testid="selection-description">Select a body to change its pose, or a point/axis to author a relation.</p>
       <div class="e1-selection-meta" data-testid="selection-meta"></div>
+      <p data-testid="target-identity" hidden></p>
       <div class="e1-geometry-controls" data-testid="geometry-controls" hidden>
         <label for="e1-length">AUTHORED OWN LENGTH</label>
         <div class="e1-length-row">
@@ -104,8 +111,8 @@ root.innerHTML = `
       <div class="e1-task-note">Detached and geometrically strange states are legal. Warnings do not block PLAY.</div>
     </aside>
 
-    <div class="e1-hint"><strong>Body</strong> = pose. <strong>Point/axis</strong> = relation. Connect snaps only the source pose; it never edits part geometry.</div>
-    <div class="e1-badge">E1-LOCAL · PROVISIONAL · NOT JV ARCHITECTURE</div>
+    <div class="e1-hint"><strong>Body</strong> = pose. <strong>Point/axis</strong> = relation. Connect changes only source pose; it never edits part geometry.</div>
+    <div class="e1-badge"><span data-testid="f1-condition">${f1Condition}</span> · E1-LOCAL · PROVISIONAL · NOT JV ARCHITECTURE</div>
     <footer class="e1-status" data-testid="status" data-kind="build">
       <div class="e1-state"><span class="e1-dot"></span><span data-testid="state-label">BUILD · Ready</span></div>
       <div class="e1-message" data-testid="message">Run the direct baseline, then rebuild its explicit motion path.</div>
@@ -134,6 +141,7 @@ const selectionKind = requiredElement<HTMLElement>("[data-testid='selection-kind
 const selectionTitle = requiredElement<HTMLElement>("[data-testid='selection-title']");
 const selectionDescription = requiredElement<HTMLElement>("[data-testid='selection-description']");
 const selectionMeta = requiredElement<HTMLElement>("[data-testid='selection-meta']");
+const targetIdentity = requiredElement<HTMLElement>("[data-testid='target-identity']");
 const geometryControls = requiredElement<HTMLElement>("[data-testid='geometry-controls']");
 const lengthInput = requiredElement<HTMLInputElement>("[data-testid='length-input']");
 const fitLengthButton = requiredElement<HTMLButtonElement>("[data-testid='fit-length']");
@@ -247,9 +255,37 @@ function attachTransformToSelection(): void {
   transform.setSpace(transformMode === "rotate" ? "local" : "world");
 }
 
+function renderLinearControls(document: E1Document, participantId: E1ParticipantId, pointId: E1ReferenceId | null): void {
+  const length = linearParticipantLength(getParticipant(document, participantId));
+  if (length === null || connectionIntent) return;
+  geometryControls.hidden = false;
+  lengthInput.value = length.toFixed(3);
+  lengthInput.readOnly = f1Condition === "T1" || pointId !== null;
+  const span = connectedTargetSpan(document, participantId);
+  targetSpan.textContent = span === null
+    ? "Connect both endpoints to expose their target span."
+    : `Connected target span: ${span.toFixed(3)} m`;
+  fitLengthButton.disabled = span === null;
+  if (f1Condition === "T1") {
+    const anchorId = pointId ?? f1SoleSatisfiedAnchor(document, participantId);
+    fitLengthButton.disabled = !anchorId || !canFitLinearParticipantF1(document, anchorId);
+    targetSpan.textContent += anchorId
+      ? ` · FIT preserves ${resolveReference(document, anchorId).reference.label}; aligned targets only.`
+      : " · Select the satisfied endpoint to preserve for FIT.";
+  }
+}
+
 function renderInspector(document: E1Document): void {
   geometryControls.hidden = true;
   referenceControls.hidden = true;
+  const targetId = connectionTargetReferenceId ?? hoveredReferenceId;
+  const validTarget = connectionIntent && targetId && connectionTargetReferenceIds(
+    document, connectionIntent.kind, connectionIntent.sourceReferenceId,
+  ).includes(targetId);
+  targetIdentity.hidden = !connectionIntent;
+  targetIdentity.textContent = validTarget
+    ? `TARGET: ${resolveReference(document, targetId!).participant.label} · ${resolveReference(document, targetId!).reference.label}`
+    : "TARGET: point at a legal reference. Overlap: click to cycle, then confirm the named target.";
   if (selectedReferenceId) {
     const resolved = resolveReference(document, selectedReferenceId);
     const relations = relationsForReference(document, selectedReferenceId);
@@ -293,6 +329,7 @@ function renderInspector(document: E1Document): void {
     disconnectButton.hidden = relations.length === 0 || connectionIntent !== null;
     disconnectButton.disabled = relations.length > 1 && disconnectRelationSelect.value === "";
     cancelConnectButton.hidden = connectionIntent === null;
+    if (resolved.reference.kind === "point") renderLinearControls(document, resolved.participant.id, selectedReferenceId);
     return;
   }
   const participant = selectedParticipant(document);
@@ -311,16 +348,7 @@ function renderInspector(document: E1Document): void {
   selectionMeta.textContent = participant.fixed
     ? "Fixed fixture"
     : `Pose edit · ${transformMode === "translate" ? "world translation" : "local rotation"}`;
-  const length = linearParticipantLength(participant);
-  if (length !== null) {
-    geometryControls.hidden = false;
-    lengthInput.value = length.toFixed(3);
-    const span = connectedTargetSpan(document, participant.id);
-    targetSpan.textContent = span === null
-      ? "Connect both endpoints to expose their target span."
-      : `Connected target span: ${span.toFixed(3)} m`;
-    fitLengthButton.disabled = span === null;
-  }
+  renderLinearControls(document, participant.id, null);
 }
 
 function renderBuildState(detail = lastDetail): void {
@@ -493,15 +521,19 @@ function commitConnection(targetReferenceId: E1ReferenceId): void {
   const sourceReferenceId = connectionIntent.sourceReferenceId;
   const kind = connectionIntent.kind;
   try {
+    const anchorId = f1SecondConnectAnchor(session.document, kind, sourceReferenceId, targetReferenceId);
     const committed = session.commitOperation("connect-references", (draft) =>
-      connectReferences(draft, kind, sourceReferenceId, targetReferenceId),
+      (f1Condition === "T1" ? connectReferencesF1 : connectReferences)(draft, kind, sourceReferenceId, targetReferenceId),
     );
     connectionIntent = null;
     connectionTargetReferenceId = null;
     hoveredReferenceId = null;
-    selectedReferenceId = sourceReferenceId;
+    selectedReferenceId = anchorId ?? sourceReferenceId;
+    disconnectRelationChoice = null;
     renderBuildState(committed
-      ? "Relation committed. Snap changed only source pose; own geometry and length were preserved."
+      ? f1Condition === "T1" && anchorId
+        ? "Relation committed. Existing anchor preserved; source pose aligned, own length unchanged. FIT is a separate geometry operation."
+        : `Relation committed. Source-pose snap; own geometry and length preserved.${f1Condition === "T1" ? " No unambiguous second-anchor completion applied." : ""}`
       : "That relation already exists; authored state is unchanged.");
   } catch (error) {
     renderBuildState(error instanceof Error ? error.message : "Connection could not be committed.");
@@ -519,9 +551,15 @@ transform.addEventListener("mouseUp", commitPosePreview);
 
 renderer.domElement.addEventListener("pointermove", (event) => {
   if (mode !== "build" || transformDragging) return;
-  const pick = canvasPicks(event)[0] ?? null;
+  const legalIds = connectionIntent ? connectionTargetReferenceIds(session.document, connectionIntent.kind, connectionIntent.sourceReferenceId) : null;
+  const picks = canvasPicks(event).filter((candidate) => !legalIds || (candidate.kind === "reference" && legalIds.includes(candidate.id)));
+  const pick = picks[0] ?? null;
   const nextHovered = pick?.kind === "reference" ? pick.id : null;
-  if (nextHovered !== hoveredReferenceId) {
+  // A cycled overlap choice survives moving to its confirmation button, but
+  // cannot mislabel a different canvas target that the next click would commit.
+  const leftChosenTarget = connectionTargetReferenceId !== null && !picks.some((candidate) => candidate.id === connectionTargetReferenceId);
+  if (nextHovered !== hoveredReferenceId || leftChosenTarget) {
+    if (leftChosenTarget) connectionTargetReferenceId = null;
     hoveredReferenceId = nextHovered;
     renderBuildState();
   }
@@ -615,7 +653,7 @@ addRockerButton.addEventListener("click", () => addPart("rocker"));
 addPushrodButton.addEventListener("click", () => addPart("pushrod"));
 
 lengthInput.addEventListener("change", () => {
-  if (mode !== "build" || !selectedParticipantId) return;
+  if (mode !== "build" || !selectedParticipantId || f1Condition === "T1") return;
   const nextLength = Number(lengthInput.value);
   const participantId = selectedParticipantId;
   const committed = session.commitOperation("participant-geometry", (draft) =>
@@ -626,8 +664,18 @@ lengthInput.addEventListener("change", () => {
     : "Length was not changed.");
 });
 fitLengthButton.addEventListener("click", () => {
-  if (mode !== "build" || !selectedParticipantId) return;
-  const participantId = selectedParticipantId;
+  if (mode !== "build") return;
+  const participantId = selectedReferenceId ? resolveReference(session.document, selectedReferenceId).participant.id : selectedParticipantId;
+  if (!participantId) return;
+  if (f1Condition === "T1") {
+    const anchorId = selectedReferenceId ?? f1SoleSatisfiedAnchor(session.document, participantId);
+    if (!anchorId) return;
+    const committed = session.commitOperation("participant-geometry", (draft) => fitLinearParticipantF1(draft, anchorId));
+    renderBuildState(committed
+      ? "FIT changed only the opposite local endpoint. Selected anchor and participant pose preserved."
+      : "No FIT change: already exact, ambiguous anchors, or targets not aligned with the part.");
+    return;
+  }
   const span = connectedTargetSpan(session.document, participantId);
   if (span === null) return;
   session.commitOperation("participant-geometry", (draft) =>
