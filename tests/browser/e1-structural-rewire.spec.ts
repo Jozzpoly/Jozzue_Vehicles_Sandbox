@@ -20,7 +20,7 @@ test.afterEach(async ({ page }) => {
 });
 
 test("baseline remains causal across BUILD → PLAY → BUILD", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/?e1=1");
   await expect(page).toHaveTitle("JV E1 Structural Rewire");
   await expect(page.getByTestId("viewport").locator("canvas")).toBeVisible();
   await expect(page.getByTestId("state-label")).toHaveText("BUILD · Ready");
@@ -41,7 +41,7 @@ test("baseline remains causal across BUILD → PLAY → BUILD", async ({ page })
 });
 
 test("detached parts and explicit own-length editing remain reversible", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/?e1=1");
   await page.getByTestId("add-pushrod").click();
   await expect(page.getByTestId("selection-title")).toHaveText("Rigid link");
   await expect(page.getByTestId("length-input")).toHaveValue("1.050");
@@ -60,7 +60,7 @@ test("detached parts and explicit own-length editing remain reversible", async (
 });
 
 test("Connect exposes only legal targets and requires explicit choice for overlaps", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/?e1=1");
   await page.waitForTimeout(300);
 
   // The direct lower joint contains two coincident references. Repeated click
@@ -95,7 +95,7 @@ test("Connect exposes only legal targets and requires explicit choice for overla
 });
 
 test("multi-relation disconnect requires an explicit Owner-visible relation choice", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/?e1=1");
   await page.waitForTimeout(300);
 
   await page.mouse.click(810, 536);
@@ -116,7 +116,7 @@ test("multi-relation disconnect requires an explicit Owner-visible relation choi
 });
 
 test("visible gizmos commit pose-only translation and local rotation", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/?e1=1");
   await page.waitForTimeout(250);
   await page.getByTestId("add-pushrod").click();
   await page.mouse.move(1048, 675);
