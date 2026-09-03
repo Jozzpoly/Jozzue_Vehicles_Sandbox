@@ -5,6 +5,9 @@ import type {
 } from "./physical-steering-world.js";
 
 const UP = new THREE.Vector3(0, 1, 0);
+const TRAIL_Y = 0.018;
+const TRAIL_SAMPLE_DISTANCE = 0.04;
+const MAX_TRAIL_POINTS = 1_200;
 
 function material(color: number, roughness = 0.7): THREE.MeshStandardMaterial {
   return new THREE.MeshStandardMaterial({ color, roughness, metalness: 0.15 });
@@ -35,6 +38,29 @@ function segment(
   mesh.scale.set(radius, length, radius);
 }
 
+function trailGeometry(): THREE.BufferGeometry {
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute(
+    "position",
+    new THREE.BufferAttribute(new Float32Array(MAX_TRAIL_POINTS * 3), 3),
+  );
+  geometry.setDrawRange(0, 0);
+  return geometry;
+}
+
+function updateTrailGeometry(
+  line: THREE.Line<THREE.BufferGeometry, THREE.LineBasicMaterial>,
+  points: readonly THREE.Vector3[],
+): void {
+  const position = line.geometry.getAttribute("position");
+  for (let index = 0; index < points.length; index += 1) {
+    const point = points[index]!;
+    position.setXYZ(index, point.x, point.y, point.z);
+  }
+  position.needsUpdate = true;
+  line.geometry.setDrawRange(0, points.length);
+}
+
 export class V0Projection {
   readonly #renderer: THREE.WebGLRenderer;
   readonly #scene = new THREE.Scene();
@@ -46,6 +72,11 @@ export class V0Projection {
   readonly #tieRods: readonly [THREE.Mesh, THREE.Mesh];
   readonly #steeringArms: readonly [THREE.Mesh, THREE.Mesh];
   readonly #markers: readonly [THREE.Mesh, THREE.Mesh, THREE.Mesh, THREE.Mesh];
+  readonly #frontCue: THREE.Mesh;
+  readonly #currentTrail: THREE.Line<THREE.BufferGeometry, THREE.LineBasicMaterial>;
+  readonly #ghostTrail: THREE.Line<THREE.BufferGeometry, THREE.LineBasicMaterial>;
+  readonly #currentTrailPoints: THREE.Vector3[] = [];
+  #ghostTrailPoints: THREE.Vector3[] = [];
 
   constructor(canvas: HTMLCanvasElement) {
     this.#renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
@@ -110,6 +141,35 @@ export class V0Projection {
       () => new THREE.Mesh(markerGeometry, material(0xffd36a, 0.3)),
     ) as unknown as readonly [THREE.Mesh, THREE.Mesh, THREE.Mesh, THREE.Mesh];
 
+    const frontCueGeometry = new THREE.ConeGeometry(0.16, 0.36, 3);
+    frontCueGeometry.rotateZ(-Math.PI / 2);
+    this.#frontCue = new THREE.Mesh(frontCueGeometry, material(0xffd36a, 0.3));
+
+    this.#currentTrail = new THREE.Line(
+      trailGeometry(),
+      new THREE.LineBasicMaterial({
+        color: 0xffc857,
+        transparent: true,
+        opacity: 0.95,
+        depthTest: false,
+        depthWrite: false,
+      }),
+    );
+    this.#currentTrail.frustumCulled = false;
+    this.#ghostTrail = new THREE.Line(
+      trailGeometry(),
+      new THREE.LineBasicMaterial({
+        color: 0xa395ff,
+        transparent: true,
+        opacity: 0.82,
+        depthTest: false,
+        depthWrite: false,
+      }),
+    );
+    this.#ghostTrail.frustumCulled = false;
+    this.#currentTrail.visible = false;
+    this.#ghostTrail.visible = false;
+
     for (const mesh of [
       this.#chassis,
       this.#rack,
@@ -118,11 +178,36 @@ export class V0Projection {
       ...this.#tieRods,
       ...this.#steeringArms,
       ...this.#markers,
+      this.#frontCue,
     ]) {
       mesh.castShadow = true;
       mesh.receiveShadow = true;
       this.#scene.add(mesh);
     }
+    this.#scene.add(this.#ghostTrail, this.#currentTrail);
+  }
+
+  beginRun(): boolean {
+    const hasPreviousTrail = this.#currentTrailPoints.length >= 2;
+    if (hasPreviousTrail) {
+      this.#ghostTrailPoints = this.#currentTrailPoints.map((point) =>
+        point.clone(),
+      );
+      updateTrailGeometry(this.#ghostTrail, this.#ghostTrailPoints);
+      this.#ghostTrail.visible = true;
+    }
+    this.#currentTrailPoints.length = 0;
+    updateTrailGeometry(this.#currentTrail, this.#currentTrailPoints);
+    this.#currentTrail.visible = false;
+    return hasPreviousTrail;
+  }
+
+  get currentTrailPointCount(): number {
+    return this.#currentTrailPoints.length;
+  }
+
+  get ghostTrailPointCount(): number {
+    return this.#ghostTrailPoints.length;
   }
 
   render(trace: PhysicalSteeringTrace): void {
@@ -171,6 +256,12 @@ export class V0Projection {
       marker.position.set(point.x, point.y, point.z);
     });
 
+    this.#appendTrail(trace.chassis.position);
+    this.#frontCue.position
+      .copy(this.#chassis.position)
+      .add(new THREE.Vector3(1.05, 0.3, 0).applyQuaternion(this.#chassis.quaternion));
+    this.#frontCue.quaternion.copy(this.#chassis.quaternion);
+
     const forward = new THREE.Vector3(1, 0, 0).applyQuaternion(
       this.#chassis.quaternion,
     );
@@ -179,11 +270,16 @@ export class V0Projection {
       .clone()
       .addScaledVector(forward, 0.45)
       .add(new THREE.Vector3(0, 0.25, 0));
+    const cameraScale = THREE.MathUtils.clamp(
+      1.15 / this.#camera.aspect,
+      1,
+      1.8,
+    );
     this.#camera.position
       .copy(target)
-      .addScaledVector(forward, 3.6)
-      .addScaledVector(right, 2.5)
-      .add(new THREE.Vector3(0, 2.35, 0));
+      .addScaledVector(forward, -4.6 * cameraScale)
+      .addScaledVector(right, 1.2 * cameraScale)
+      .add(new THREE.Vector3(0, 2.65 * cameraScale, 0));
     this.#camera.lookAt(target);
     this.#renderer.render(this.#scene, this.#camera);
   }
@@ -208,6 +304,27 @@ export class V0Projection {
       }
     });
     this.#renderer.dispose();
+    this.#currentTrail.geometry.dispose();
+    this.#currentTrail.material.dispose();
+    this.#ghostTrail.geometry.dispose();
+    this.#ghostTrail.material.dispose();
+  }
+
+  #appendTrail(position: Readonly<{ x: number; z: number }>): void {
+    const point = new THREE.Vector3(position.x, TRAIL_Y, position.z);
+    const last = this.#currentTrailPoints.at(-1);
+    if (last !== undefined && point.distanceTo(last) < TRAIL_SAMPLE_DISTANCE) {
+      return;
+    }
+    this.#currentTrailPoints.push(point);
+    if (this.#currentTrailPoints.length > MAX_TRAIL_POINTS) {
+      this.#currentTrailPoints.splice(
+        0,
+        this.#currentTrailPoints.length - MAX_TRAIL_POINTS,
+      );
+    }
+    updateTrailGeometry(this.#currentTrail, this.#currentTrailPoints);
+    this.#currentTrail.visible = this.#currentTrailPoints.length >= 2;
   }
 
   #resize(): void {

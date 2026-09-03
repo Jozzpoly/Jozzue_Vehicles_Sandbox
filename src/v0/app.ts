@@ -27,7 +27,8 @@ root.innerHTML = `
       <aside class="truth-card">
         <p class="truth-label">ACTIVE TRUTH</p>
         <strong data-testid="active-variant">Variant A</strong>
-        <p>Orange: rack/arms · Cyan: physical fixed-length tie-rods</p>
+        <p><span class="front-cue-label">Gold nose marker = FRONT</span> · Orange: rack/arms · Cyan: physical fixed-length tie-rods</p>
+        <p class="trail-status" data-testid="trail-status">Current A trail · no previous run</p>
         <dl>
           <div><dt>Rack</dt><dd data-testid="rack">0.0 mm</dd></div>
           <div><dt>Wheel L / R</dt><dd data-testid="angles">0.0° / 0.0°</dd></div>
@@ -64,8 +65,11 @@ const projection = new V0Projection(canvas);
 const held = new Set<string>();
 const fixedStepSeconds = 1 / 60;
 const steeringTargetRate = 1;
+const forwardDrive = 0.58;
+const reverseDrive = 0.42;
 let steeringCommand = 0;
 let variant: SteeringVariantId = "A";
+let ghostVariant: SteeringVariantId | null = null;
 let world = await PhysicalSteeringWorld.create(variant);
 let trace = world.trace();
 let disposed = false;
@@ -79,11 +83,17 @@ status.dataset.state = "ready";
 
 function inputState(): Readonly<{ steeringRate: number; drive: number }> {
   const drive =
-    (held.has("forward") || held.has("KeyW") || held.has("ArrowUp") ? 0.42 : 0) -
-    (held.has("reverse") || held.has("KeyS") || held.has("ArrowDown") ? 0.3 : 0);
+    (held.has("forward") || held.has("KeyW") || held.has("ArrowUp")
+      ? forwardDrive
+      : 0) -
+    (held.has("reverse") || held.has("KeyS") || held.has("ArrowDown")
+      ? reverseDrive
+      : 0);
+  // The physical world maps positive steering input to world-left. Keep that
+  // convention intact and correct only the user-input boundary here.
   const steeringRate =
-    (held.has("right") || held.has("KeyD") || held.has("ArrowRight") ? 1 : 0) -
-    (held.has("left") || held.has("KeyA") || held.has("ArrowLeft") ? 1 : 0);
+    (held.has("left") || held.has("KeyA") || held.has("ArrowLeft") ? 1 : 0) -
+    (held.has("right") || held.has("KeyD") || held.has("ArrowRight") ? 1 : 0);
   return { steeringRate, drive };
 }
 
@@ -118,6 +128,12 @@ function updateTelemetry(): void {
   root!.dataset.rack = String(trace.rackTranslation);
   root!.dataset.distance = String(trace.travelledDistance);
   root!.dataset.curvature = String(trace.curvature);
+  root!.dataset.chassisX = String(trace.chassis.position.x);
+  root!.dataset.chassisZ = String(trace.chassis.position.z);
+  root!.dataset.heading = String(trace.headingRadians);
+  root!.dataset.speed = String(trace.speed);
+  root!.dataset.currentTrailPoints = String(projection.currentTrailPointCount);
+  root!.dataset.ghostTrailPoints = String(projection.ghostTrailPointCount);
   root!.dataset.leftAngle = String(trace.left.steeringAngle);
   root!.dataset.rightAngle = String(trace.right.steeringAngle);
   required<HTMLButtonElement>("[data-testid='variant-a']").classList.toggle(
@@ -128,6 +144,10 @@ function updateTelemetry(): void {
     "active",
     variant === "B",
   );
+  required<HTMLElement>("[data-testid='trail-status']").textContent =
+    ghostVariant === null
+      ? `Current ${variant} trail · no previous run`
+      : `Current ${variant} trail · ${ghostVariant} ghost`;
 }
 
 function stopActiveInputs(): void {
@@ -151,6 +171,7 @@ async function reset(nextVariant = variant): Promise<void> {
   }
   world.dispose();
   world = next;
+  if (projection.beginRun()) ghostVariant = variant;
   variant = nextVariant;
   world.step(120);
   trace = world.trace();
