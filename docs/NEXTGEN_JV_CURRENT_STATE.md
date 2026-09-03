@@ -15,20 +15,25 @@ The project has completed two bounded research programs:
 
 No current experiment defines the final JV architecture.
 
-Canonical repo closure/regrounding after E1+V0 is now complete. The next phase should not be general product implementation. It should perform fresh representative-problem selection for a question that begins to connect:
+**R0 closure/regrounding is complete.** Canonical repo truth now reflects the E1→V0 cycle, V0 has a final Owner closure, Project Soul / Current State / Fresh Takeover exist on `main`, and the Owner has installed the new self-contained ChatGPT Project Instructions for this Project.
+
+The project is therefore ready for a **fresh-conversation representative-problem selection phase**, not general product implementation.
+
+The next important frontier is to connect:
 
 `direct construction → mechanical consequence → PLAY/DRIVE → return to construction`
 
-The leading candidate is direct spatial editing of the steering linkage on the frozen V0 carrier, but that candidate has not yet been authorized as the next experiment.
+Direct spatial editing of the steering linkage on the frozen V0 carrier remains the leading candidate, but it is deliberately **not preselected**. The fresh phase must compare it against materially different candidates before authorizing implementation.
 
 ## 2. Canonical and experimental refs
 
 ### Canonical project truth
 
-- Current canonical docs merge: `main@ffdce7d820142bdee34356ccd93389d14d35e81a`
-- Previous E1-only canonical base: `640f6d9074a5dea42ca18e05afb782a90dbb5947`
+At handoff preparation, the canonical repository had already completed the E1+V0 docs/regrounding merges through `main@600469bf1d8dedcd84763186d2b66974b3d3e340`. This handoff-ready documentation update is a docs-only descendant of that state.
 
-`main@ffdce7d…` contains the current Project Soul, Current State, Fresh Takeover, E1 closure and V0 Owner closure. Its executable source remains archived E1 apparatus by design; experimental V0 code is preserved on its own branches rather than promoted into canonical source.
+A fresh takeover must always verify live `main` rather than treating the SHA above as permanently current.
+
+Canonical `main` intentionally carries project truth and archived E1 apparatus rather than the latest experimental implementation. V0 source remains preserved on its experimental branches.
 
 ### E1
 
@@ -174,7 +179,7 @@ Why it is dangerous:
 - a successful steering task could be overgeneralized into a builder architecture;
 - V0 primitive visuals may again become a confound once the question shifts from driving consequence to natural construction.
 
-Before implementation, compare this candidate against at least a small number of alternative representative problems on information gain, representativeness, cost, likely confounds and prototype gravity.
+Before implementation, compare this candidate against a small number of materially different representative problems on information gain, representativeness, cost, likely confounds and prototype gravity.
 
 ## 8. Donor and asset posture
 
@@ -193,6 +198,10 @@ Do not build a new placeholder component library simply because the current expe
 ## 9. Collaboration and execution routing — provisional empirical state
 
 Browser ChatGPT is the primary continuous second brain / co-orchestrator for this project: research, synthesis, critical planning, evidence review, project continuity and as much direct GitHub work as available tooling safely permits.
+
+The Owner confirmed on 2026-09-03 that the new **self-contained Project Instructions are installed** for `Jozzue_Vehicles_Sandbox`. They intentionally carry the project-local collaboration contract because Project Instructions can override the user's global Custom Instructions inside the Project. Do not reconstruct or replace that contract from old chats unless the Owner asks to revise it.
+
+Repository docs remain the authority for changing project/technical state; Project Instructions govern collaboration behavior and durable local working constraints.
 
 Local Codex/Work is most valuable when local repository/filesystem/runtime/browser/desktop capabilities materially improve evidence or execution. It should not be treated as the automatic implementation destination for every task.
 
@@ -220,45 +229,45 @@ Use the smallest rigor that matches the question and causal blast radius.
 - When the current state is sufficient, continue the work rather than handing routine orchestration back to the Owner.
 - Owner attention — prompting, reading, manual technical work and repeated context transfer — is a real project cost.
 
-## 11. R0 closure/regrounding status
+## 11. R0 closure/regrounding status — COMPLETE
 
-Canonical repository consolidation is complete:
+R0 is complete:
 
-- V0 final Owner closure is preserved on `main`;
-- `NEXTGEN_JV_PROJECT_SOUL.md` exists on `main`;
-- this Current State exists on `main`;
-- README now reflects the E1+V0 project epoch;
-- `NEXTGEN_JV_FRESH_TAKEOVER.md` provides a concise restart path.
+- V0 final Owner closure is canonical;
+- Project Soul is canonical;
+- Current State is canonical;
+- README reflects the E1+V0 epoch;
+- Fresh Takeover provides the restart path;
+- the Owner installed the new self-contained Project Instructions after validating them against the global collaboration contract.
 
-Two intentional R0 steps remain before the next implementation phase:
+No additional consolidation work is required before the next phase unless live verification exposes a contradiction.
 
-1. finalize the ChatGPT Project Instructions from the collaboration workflow now observed in real project use;
-2. start a fresh conversation within the same ChatGPT Project, re-ground against live `main`, and perform fresh representative-problem selection before authorizing implementation.
-
-This is not a return to broad abstract research. The repo is now ready for the next selection phase once those collaboration/startup steps are complete.
+The next bounded move is a **fresh conversation within this same ChatGPT Project**, followed by live takeover and representative-problem selection. This is intentional: the next phase should start from the canonical spine and current Project Instructions rather than continue accumulating assumptions in the closure conversation.
 
 ## 12. Near-term research roadmap
 
 Use this as a hypothesis-driven roadmap rather than a feature sequence:
 
-- **R0 — closure/regrounding:** canonical repo truth complete; Project Instructions + fresh takeover/selection remain;
-- **R1 — direct construction consequence:** test whether an authored spatial mechanical change can survive through PLAY/DRIVE and back to BUILD naturally;
-- **R2 — generality:** test a materially different construction/mechanical problem before generalizing builder architecture;
-- **R3 — adaptive component semantics:** resolve useful default adaptation versus explicit Owner intent/locks through representative tasks;
-- **R4 — representative vehicle substrate:** determine how much real vehicle/contact/suspension/asset fidelity is required before placeholders dominate product judgement;
+- **R0 — closure/regrounding: COMPLETE.** Canonical project truth + collaboration setup are handoff-ready.
+- **R1 — direct construction consequence:** test whether an authored spatial mechanical change can survive through PLAY/DRIVE and back to BUILD naturally.
+- **R2 — generality:** test a materially different construction/mechanical problem before generalizing builder architecture.
+- **R3 — adaptive component semantics:** resolve useful default adaptation versus explicit Owner intent/locks through representative tasks.
+- **R4 — representative vehicle substrate:** determine how much real vehicle/contact/suspension/asset fidelity is required before placeholders dominate product judgement.
 - **R5 — architecture convergence:** only after repeated cross-problem invariants emerge, promote stable patterns toward a real JV foundation.
 
 These labels are navigation, not gates. A better experiment can reorder or collapse them.
 
-## 13. Current stop condition
+## 13. Current stop condition / handoff boundary
 
-Do not begin V1 merely because V0 succeeded.
+Do not begin V1 or another implementation in this closure conversation merely because V0 succeeded.
 
-The next implementation should start only after the representative problem is freshly selected and its question can be stated narrowly enough that:
+At the next fresh takeover:
 
-- success/failure changes what we believe;
-- the carrier and presentation are adequate to expose the answer;
-- the implementation does not require pretending that unresolved builder/component architecture is already solved;
-- the Owner can test the intended product property without unnecessary technical ceremony.
+- verify live `main` and the current canonical spine;
+- recover the scoped E1/V0 results without reopening them;
+- identify the highest-value remaining unknowns;
+- compare a small set of materially different representative-problem candidates;
+- recommend the bounded problem that best separates the live uncertainty;
+- only then decide whether further research, donor recovery, implementation or Owner input is the right next action.
 
-Until then, the correct work is final collaboration setup and fresh selection — not more V0 polish.
+The fresh conversation should not treat direct steering construction, this roadmap, or the last recommendation in the old conversation as a commitment.
