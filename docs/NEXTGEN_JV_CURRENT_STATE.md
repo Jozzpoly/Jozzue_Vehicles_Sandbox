@@ -15,7 +15,7 @@ The project has completed two bounded research programs:
 
 No current experiment defines the final JV architecture.
 
-The next phase should not be general product implementation. It should select a fresh representative problem that begins to connect:
+Canonical repo closure/regrounding after E1+V0 is now complete. The next phase should not be general product implementation. It should perform fresh representative-problem selection for a question that begins to connect:
 
 `direct construction → mechanical consequence → PLAY/DRIVE → return to construction`
 
@@ -23,11 +23,12 @@ The leading candidate is direct spatial editing of the steering linkage on the f
 
 ## 2. Canonical and experimental refs
 
-### Canonical docs base before this closure
+### Canonical project truth
 
-- `main@640f6d9074a5dea42ca18e05afb782a90dbb5947`
+- Current canonical docs merge: `main@ffdce7d820142bdee34356ccd93389d14d35e81a`
+- Previous E1-only canonical base: `640f6d9074a5dea42ca18e05afb782a90dbb5947`
 
-At that commit `main` contains the E1 docs-only closure and archived E1 control apparatus. It is behind the actual project state described here until this regrounding work is merged.
+`main@ffdce7d…` contains the current Project Soul, Current State, Fresh Takeover, E1 closure and V0 Owner closure. Its executable source remains archived E1 apparatus by design; experimental V0 code is preserved on its own branches rather than promoted into canonical source.
 
 ### E1
 
@@ -41,7 +42,7 @@ At that commit `main` contains the E1 docs-only closure and archived E1 control 
 - First Owner rehearsal input checkpoint: `work/front-steering-owner-rehearsal@184c2ed9fb71632afa30f0d60032b8e2b923aa1e`
 - Final deconfounded Owner specimen: `work/front-steering-v0-deconfound@69d8a8ee91117d4ce44c7dd14657418241844b2e`
 - Technical receipt: `evidence/v0/V0_DRIVABLE_STEERING_RECEIPT_2026-09-01.md` on the V0 specimen lineage
-- Final Owner closure: `evidence/v0/V0_OWNER_CLOSURE_2026-09-03.md` on this docs-only regrounding branch
+- Canonical final Owner closure: `evidence/v0/V0_OWNER_CLOSURE_2026-09-03.md` on `main`
 
 Preserve these branches as research provenance. Do not merge experimental code merely to make `main` look current.
 
@@ -107,7 +108,7 @@ Stop V0 feature development unless a future experiment requires a minimal carrie
 
 ## 5. What is now relatively strong
 
-The following directions have repeated support and should be treated as strong product constraints unless later evidence contradicts them:
+The following directions have repeated support and should be treated as strong product constraints unless later evidence contradicts them.
 
 ### Short creative round trip
 
@@ -219,24 +220,28 @@ Use the smallest rigor that matches the question and causal blast radius.
 - When the current state is sufficient, continue the work rather than handing routine orchestration back to the Owner.
 - Owner attention — prompting, reading, manual technical work and repeated context transfer — is a real project cost.
 
-## 11. Immediate closure/regrounding work
+## 11. R0 closure/regrounding status
 
-Before a new product experiment begins:
+Canonical repository consolidation is complete:
 
-1. preserve the V0 final Owner closure on a docs-only canonical path;
-2. establish/update `NEXTGEN_JV_PROJECT_SOUL.md` and this Current State document;
-3. simplify/update README so cold readers see the actual project epoch rather than the pre-V0 state;
-4. prepare a concise fresh-takeover entry point if it materially reduces restart cost;
-5. finalize Project Instructions from the workflow that has now been observed in real use rather than from speculative process design;
-6. start the next phase in a fresh conversation within the same ChatGPT Project and perform fresh representative-problem selection before authorizing implementation.
+- V0 final Owner closure is preserved on `main`;
+- `NEXTGEN_JV_PROJECT_SOUL.md` exists on `main`;
+- this Current State exists on `main`;
+- README now reflects the E1+V0 project epoch;
+- `NEXTGEN_JV_FRESH_TAKEOVER.md` provides a concise restart path.
 
-This is a short consolidation phase, not a return to broad abstract research.
+Two intentional R0 steps remain before the next implementation phase:
+
+1. finalize the ChatGPT Project Instructions from the collaboration workflow now observed in real project use;
+2. start a fresh conversation within the same ChatGPT Project, re-ground against live `main`, and perform fresh representative-problem selection before authorizing implementation.
+
+This is not a return to broad abstract research. The repo is now ready for the next selection phase once those collaboration/startup steps are complete.
 
 ## 12. Near-term research roadmap
 
 Use this as a hypothesis-driven roadmap rather than a feature sequence:
 
-- **R0 — closure/regrounding:** make canonical project truth match E1+V0 evidence and current product intent;
+- **R0 — closure/regrounding:** canonical repo truth complete; Project Instructions + fresh takeover/selection remain;
 - **R1 — direct construction consequence:** test whether an authored spatial mechanical change can survive through PLAY/DRIVE and back to BUILD naturally;
 - **R2 — generality:** test a materially different construction/mechanical problem before generalizing builder architecture;
 - **R3 — adaptive component semantics:** resolve useful default adaptation versus explicit Owner intent/locks through representative tasks;
@@ -256,4 +261,4 @@ The next implementation should start only after the representative problem is fr
 - the implementation does not require pretending that unresolved builder/component architecture is already solved;
 - the Owner can test the intended product property without unnecessary technical ceremony.
 
-Until then, the correct work is closure, regrounding and selection — not more V0 polish.
+Until then, the correct work is final collaboration setup and fresh selection — not more V0 polish.
