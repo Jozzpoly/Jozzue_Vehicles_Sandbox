@@ -17,16 +17,20 @@ Two bounded research programs are closed:
 
 Neither program has architecture authority.
 
-The project is now in a short **closure/regrounding and next representative-problem selection** phase. Do not interpret V0 success as authorization to turn the primitive carrier into the product.
+**R0 closure/regrounding is complete.** Canonical project truth, V0 Owner closure, Project Soul, Current State, Fresh Takeover and the Project-local ChatGPT collaboration contract are now prepared. The project is ready to start the next phase in a fresh conversation with **representative-problem selection**, not implementation-by-inertia.
+
+Do not interpret V0 success as authorization to turn the primitive carrier into the product.
 
 ## Start here
 
-For a fresh takeover, read in this order:
+For a fresh takeover, read and verify live in this order:
 
-1. [`docs/NEXTGEN_JV_PROJECT_SOUL.md`](docs/NEXTGEN_JV_PROJECT_SOUL.md) — durable product intent and deliberate non-decisions.
-2. [`docs/NEXTGEN_JV_CURRENT_STATE.md`](docs/NEXTGEN_JV_CURRENT_STATE.md) — exact current research state, refs, unknowns, provisional workflow and near-term roadmap.
-3. [`evidence/v0/V0_OWNER_CLOSURE_2026-09-03.md`](evidence/v0/V0_OWNER_CLOSURE_2026-09-03.md) — V0 technical→Owner closure, confounds, deconfounding and scoped PASS.
-4. [`evidence/e1/E1_CLOSURE_2026-08-31.md`](evidence/e1/E1_CLOSURE_2026-08-31.md) — E1 final disposition and limits.
+1. this `README.md`;
+2. [`docs/NEXTGEN_JV_PROJECT_SOUL.md`](docs/NEXTGEN_JV_PROJECT_SOUL.md) — durable product intent and deliberate non-decisions;
+3. [`docs/NEXTGEN_JV_CURRENT_STATE.md`](docs/NEXTGEN_JV_CURRENT_STATE.md) — exact current research state, refs, unknowns, provisional workflow and near-term roadmap;
+4. [`docs/NEXTGEN_JV_FRESH_TAKEOVER.md`](docs/NEXTGEN_JV_FRESH_TAKEOVER.md) — startup mandate for the next phase;
+5. [`evidence/v0/V0_OWNER_CLOSURE_2026-09-03.md`](evidence/v0/V0_OWNER_CLOSURE_2026-09-03.md) — V0 technical→Owner closure, confounds, deconfounding and scoped PASS;
+6. [`evidence/e1/E1_CLOSURE_2026-08-31.md`](evidence/e1/E1_CLOSURE_2026-08-31.md) — E1 final disposition and limits.
 
 Open older contracts, implementation designs and receipts only when a question actually requires their detailed provenance.
 
@@ -56,7 +60,7 @@ It remains a candidate because important questions are still open:
 - would the edit be genuine spatial construction or a scalar slider disguised in 3D?
 - when connected geometry changes, what adapts automatically and what reflects explicit Owner intent/locks?
 - are V0 primitives sufficiently readable once the research question becomes construction quality rather than driving consequence?
-- is steering the highest-information next representative problem compared with other candidates?
+- is steering the highest-information next representative problem compared with materially different candidates?
 
 Select the next problem on information gain, representativeness, likely confounds, cost and prototype gravity before authorizing implementation.
 
@@ -69,6 +73,8 @@ Select the next problem on information gain, representativeness, likely confound
 5. Donor code, assets, old docs and previous recommendations are evidence/candidates, not automatic authority.
 
 A PASS must remain scoped to the evidence that earned it.
+
+Within the ChatGPT Project, current Project Instructions carry the collaboration behavior contract; repository docs carry changing project/technical truth. Do not use one as a substitute for the other.
 
 ## Prototype-gravity boundaries
 

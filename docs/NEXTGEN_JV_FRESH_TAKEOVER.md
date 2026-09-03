@@ -10,23 +10,27 @@ Repository:
 
 `Jozzpoly/Jozzue_Vehicles_Sandbox`
 
-First verify:
+R0 closure/regrounding is complete. The Owner has also installed the current self-contained ChatGPT Project Instructions for `Jozzue_Vehicles_Sandbox`.
 
-- current `main` HEAD;
-- whether the V0 closure/regrounding docs have been merged to `main`;
-- exact preserved research refs listed below;
-- any newer branch/evidence that post-dates this file.
+At takeover:
 
-Live repository state overrides this handoff for technical facts.
+- verify current `main` HEAD;
+- verify the canonical spine listed below exists on live `main`;
+- verify the preserved E1/V0 research refs;
+- check for any newer branch/evidence that post-dates this file and materially changes the frontier.
 
-## 2. Read only the current spine first
+Live repository state overrides this handoff for technical facts. The active Project Instructions govern collaboration behavior; do not assume global Custom Instructions will fill missing project-local behavior.
+
+## 2. Read the current spine first
 
 Read in this order:
 
-1. `docs/NEXTGEN_JV_PROJECT_SOUL.md`
-2. `docs/NEXTGEN_JV_CURRENT_STATE.md`
-3. `evidence/v0/V0_OWNER_CLOSURE_2026-09-03.md`
-4. `evidence/e1/E1_CLOSURE_2026-08-31.md`
+1. `README.md`
+2. `docs/NEXTGEN_JV_PROJECT_SOUL.md`
+3. `docs/NEXTGEN_JV_CURRENT_STATE.md`
+4. `docs/NEXTGEN_JV_FRESH_TAKEOVER.md` (this file)
+5. `evidence/v0/V0_OWNER_CLOSURE_2026-09-03.md`
+6. `evidence/e1/E1_CLOSURE_2026-08-31.md`
 
 Open older contracts, implementation docs, source or donor history only when the current question requires them.
 
@@ -49,7 +53,7 @@ These are evidence/provenance refs. They do not define future architecture.
 
 ## 4. Starting research state
 
-E1 is closed with its central sufficiency hypothesis unresolved. Its portable value is primarily about the short construction loop, locality/preservation of authored intent, and the gap between technical reachability and natural building.
+E1 is closed with its central sufficiency hypothesis unresolved. Portable value: the short construction loop, locality/preservation of authored intent, and the gap between technical reachability and natural building.
 
 V0 is closed with:
 
@@ -58,9 +62,9 @@ V0 is closed with:
 - no product/vehicle PASS;
 - no architecture authority.
 
-Do not reopen E1 or continue polishing V0 unless new evidence shows that a specific closed claim is invalid or the next separately selected experiment requires a minimal carrier repair.
+Do not reopen E1 or continue polishing V0 unless new evidence invalidates a closed claim or a separately selected experiment requires a minimal carrier repair.
 
-## 5. The next phase is selection, not implementation-by-inertia
+## 5. The next phase is fresh selection, not implementation-by-inertia
 
 The next important frontier is to connect direct construction to a causal, Owner-readable driving consequence.
 
@@ -71,8 +75,9 @@ Before authorizing implementation:
 - identify the highest-value current unknowns;
 - generate a small set of materially different representative-problem candidates;
 - compare them on information gain, representativeness, likely confounds, implementation cost and prototype gravity;
-- explicitly check whether a proposed "direct" interaction is genuine construction rather than parameter configuration disguised spatially;
-- identify any adaptation/intent semantics that the task would accidentally assume.
+- explicitly check whether any proposed "direct" interaction is genuine construction rather than parameter configuration disguised spatially;
+- identify adaptation/intent semantics the task would accidentally assume;
+- check whether placeholder readability would already make the candidate unfair, and whether real donor assets should enter first.
 
 Choose the smallest experiment that can materially change what the project believes.
 
@@ -105,7 +110,7 @@ Owner judgement remains authoritative for feel, naturalness, intent and product 
 
 Current Luna/Sol routing observations are provisional empirical hints, not permanent rankings; see `NEXTGEN_JV_CURRENT_STATE.md`.
 
-## 8. First takeover output
+## 8. First takeover output and continuation
 
 After live re-grounding, do **not** immediately implement.
 
@@ -118,4 +123,6 @@ Return a compact but substantive strategic state:
 - the recommended next bounded experiment and why it dominates the alternatives;
 - the main falsifiers/confounds/prototype-gravity risk.
 
-Then wait only if a real Owner judgement is needed. Otherwise continue autonomous bounded research/planning in the selected scope.
+Then continue autonomously with bounded research/planning when the state is sufficient. Ask the Owner only if a real judgement or hard capability boundary is needed.
+
+The old conversation's last recommendation, direct-steering candidate and R1 label are starting context, not commitments.
