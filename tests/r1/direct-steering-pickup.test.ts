@@ -57,6 +57,24 @@ test("R1 neutral oracle is referenced to an authored non-axis pickup direction",
   assert.ok(Math.abs(neutral.right.angleRadians) < 1e-10);
 });
 
+test("R1 wraps authored oracle rotation across the signed-angle branch cut", () => {
+  const radius = 0.24;
+  const authoredOrientation = (167 * Math.PI) / 180;
+  const geometry = createAuthoredSteeringGeometry(
+    {
+      x: -radius * Math.cos(authoredOrientation),
+      z: radius * Math.sin(authoredOrientation),
+    },
+    { x: -radius, z: 0 },
+  );
+  const left = solveSteeringOracle(geometry, -0.075).left;
+  assert.ok(
+    Math.abs(left.angleRadians - 0.2542416855615702) < 1e-12,
+    `expected wrapped LEFT oracle angle near +0.25424 rad, got ${left.angleRadians}`,
+  );
+  assert.ok(left.angleRadians > 0 && left.angleRadians <= Math.PI);
+});
+
 test("R1 same-radius different-direction layouts separate physical response", async () => {
   const radius = 0.24;
   const angle = Math.PI / 20;

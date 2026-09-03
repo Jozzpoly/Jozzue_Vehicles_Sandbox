@@ -184,7 +184,11 @@ function solveCorner(
     authoredPickup.z,
     -authoredPickup.x,
   );
-  const angleRadians = rawAngleRadians - authoredNeutralAngleRadians;
+  const angleDeltaRadians = rawAngleRadians - authoredNeutralAngleRadians;
+  const angleRadians = Math.atan2(
+    Math.sin(angleDeltaRadians),
+    Math.cos(angleDeltaRadians),
+  );
   return {
     side,
     pivot,
