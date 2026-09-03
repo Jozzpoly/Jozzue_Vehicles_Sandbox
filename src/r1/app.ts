@@ -4,6 +4,7 @@ import { V0Projection } from "../v0/projection.js";
 import {
   createAuthoredSteeringGeometry,
   type PlanarPoint,
+  type SteeringGeometry,
   type SteeringSide,
 } from "../v0/steering-geometry.js";
 
@@ -96,6 +97,8 @@ let world: PhysicalSteeringWorld | null = null;
 let trace = null as Awaited<ReturnType<PhysicalSteeringWorld["trace"]>> | null;
 let steeringCommand = 0;
 let draggingSide: SteeringSide | null = null;
+let dragBaseline: SteeringGeometry | null = null;
+let dragPreview: SteeringGeometry | null = null;
 let disposed = false;
 let lastTime = performance.now();
 let accumulator = 0;
@@ -119,17 +122,17 @@ function setModeControls(): void {
       : "Drive with the physical rack and tie-rods. The linkage, not a hidden wheel-angle mapping, owns steering. BUILD recovers the authored points exactly.";
 }
 
-function updateAuthoredReadout(): void {
+function updateAuthoredReadout(geometry: SteeringGeometry = authored): void {
   required<HTMLElement>("[data-testid='left-pickup']").textContent = formatPickup(
-    authored.pickupLocal.LEFT,
+    geometry.pickupLocal.LEFT,
   );
   required<HTMLElement>("[data-testid='right-pickup']").textContent = formatPickup(
-    authored.pickupLocal.RIGHT,
+    geometry.pickupLocal.RIGHT,
   );
-  root!.dataset.leftPickupX = String(authored.pickupLocal.LEFT.x);
-  root!.dataset.leftPickupZ = String(authored.pickupLocal.LEFT.z);
-  root!.dataset.rightPickupX = String(authored.pickupLocal.RIGHT.x);
-  root!.dataset.rightPickupZ = String(authored.pickupLocal.RIGHT.z);
+  root!.dataset.leftPickupX = String(geometry.pickupLocal.LEFT.x);
+  root!.dataset.leftPickupZ = String(geometry.pickupLocal.LEFT.z);
+  root!.dataset.rightPickupX = String(geometry.pickupLocal.RIGHT.x);
+  root!.dataset.rightPickupZ = String(geometry.pickupLocal.RIGHT.z);
   const leftScreen = projection.pickupScreenPoint("LEFT");
   const rightScreen = projection.pickupScreenPoint("RIGHT");
   root!.dataset.leftPickupScreenX = String(leftScreen.x);
@@ -138,9 +141,9 @@ function updateAuthoredReadout(): void {
   root!.dataset.rightPickupScreenY = String(rightScreen.y);
 }
 
-function renderBuild(): void {
-  projection.renderBuild(authored);
-  updateAuthoredReadout();
+function renderBuild(geometry: SteeringGeometry = authored): void {
+  projection.renderBuild(geometry);
+  updateAuthoredReadout(geometry);
   root!.dataset.mode = "BUILD";
   status.textContent = hadPhysicalRun
     ? "READY · exact authored BUILD recovered"
@@ -240,18 +243,18 @@ function resetAuthored(): void {
 }
 
 function updateDraggedPickup(event: PointerEvent): void {
-  if (draggingSide === null || mode !== "BUILD") return;
+  if (draggingSide === null || dragBaseline === null || mode !== "BUILD") return;
   const point = projection.buildPickupFromPointer(
     draggingSide,
     event.clientX,
     event.clientY,
   );
   if (point === null) return;
-  authored = createAuthoredSteeringGeometry(
-    draggingSide === "LEFT" ? point : authored.pickupLocal.LEFT,
-    draggingSide === "RIGHT" ? point : authored.pickupLocal.RIGHT,
+  dragPreview = createAuthoredSteeringGeometry(
+    draggingSide === "LEFT" ? point : dragBaseline.pickupLocal.LEFT,
+    draggingSide === "RIGHT" ? point : dragBaseline.pickupLocal.RIGHT,
   );
-  renderBuild();
+  renderBuild(dragPreview);
 }
 
 canvas.addEventListener("pointerdown", (event) => {
@@ -259,18 +262,34 @@ canvas.addEventListener("pointerdown", (event) => {
   const side = projection.pickBuildPickup(event.clientX, event.clientY);
   if (side === null) return;
   draggingSide = side;
+  dragBaseline = authored;
+  dragPreview = authored;
   canvas.setPointerCapture(event.pointerId);
   canvas.classList.add("dragging");
   updateDraggedPickup(event);
 });
 canvas.addEventListener("pointermove", updateDraggedPickup);
-const releaseDrag = (event: PointerEvent): void => {
-  if (canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
+const commitDrag = (event: PointerEvent): void => {
+  if (draggingSide === null) return;
+  authored = dragPreview ?? authored;
   draggingSide = null;
+  dragBaseline = null;
+  dragPreview = null;
   canvas.classList.remove("dragging");
+  if (canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
+  renderBuild();
 };
-canvas.addEventListener("pointerup", releaseDrag);
-canvas.addEventListener("pointercancel", releaseDrag);
+const cancelDrag = (): void => {
+  if (draggingSide === null) return;
+  draggingSide = null;
+  dragBaseline = null;
+  dragPreview = null;
+  canvas.classList.remove("dragging");
+  renderBuild();
+};
+canvas.addEventListener("pointerup", commitDrag);
+canvas.addEventListener("pointercancel", cancelDrag);
+canvas.addEventListener("lostpointercapture", cancelDrag);
 
 buildButton.addEventListener("click", returnToBuild);
 runButton.addEventListener("click", () => void enterDrive());

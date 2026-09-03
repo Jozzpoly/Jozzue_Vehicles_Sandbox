@@ -176,10 +176,15 @@ function solveCorner(
       ? 0
       : 1;
   const pickup = candidates[branch];
-  const angleRadians = Math.atan2(
+  const rawAngleRadians = Math.atan2(
     pickup.z - pivot.z,
     -(pickup.x - pivot.x),
   );
+  const authoredNeutralAngleRadians = Math.atan2(
+    authoredPickup.z,
+    -authoredPickup.x,
+  );
+  const angleRadians = rawAngleRadians - authoredNeutralAngleRadians;
   return {
     side,
     pivot,

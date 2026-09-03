@@ -71,3 +71,32 @@ test("R1 presents both pickup points and remains readable on a narrow viewport",
   await expect(page.locator("body")).toHaveCSS("overflow", "hidden");
   await expect(page.getByTestId("runtime-status")).toHaveAttribute("data-state", "ready");
 });
+
+test("R1 cancels interrupted pickup drags without a partial authored commit", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByTestId("mode-label")).toHaveText("BUILD · Direct pickup authoring");
+  const before = await pickup(page, "left");
+  await page.mouse.move(before.screenX, before.screenY);
+  await page.mouse.down();
+  await page.mouse.move(before.screenX + 70, before.screenY - 34, { steps: 8 });
+  await page.evaluate(() => {
+    document.querySelector("canvas")?.dispatchEvent(
+      new PointerEvent("pointercancel", { bubbles: true, pointerId: 1 }),
+    );
+  });
+  await page.mouse.up();
+  const afterCancel = await pickup(page, "left");
+  expect(afterCancel.x).toBe(before.x);
+  expect(afterCancel.z).toBe(before.z);
+
+  await page.mouse.move(before.screenX, before.screenY);
+  await page.mouse.down();
+  await page.mouse.move(before.screenX - 60, before.screenY + 28, { steps: 8 });
+  await page.evaluate(() => {
+    document.querySelector("canvas")?.dispatchEvent(new Event("lostpointercapture"));
+  });
+  await page.mouse.up();
+  const afterLostCapture = await pickup(page, "left");
+  expect(afterLostCapture.x).toBe(before.x);
+  expect(afterLostCapture.z).toBe(before.z);
+});
