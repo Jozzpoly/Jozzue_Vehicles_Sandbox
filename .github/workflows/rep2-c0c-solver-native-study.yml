@@ -1,0 +1,30 @@
+name: Rep2 C0c Solver Native Study
+
+on:
+  push:
+    branches:
+      - experiment/rep2-c0c-solver-native-kc
+    paths:
+      - scripts/rep2-c0c-solver-native-comparator.mjs
+      - evidence/rep2/REP2_C0C_SOLVER_NATIVE_KC_CONTRACT_2026-09-04.md
+      - .github/workflows/rep2-c0c-solver-native-study.yml
+
+jobs:
+  study:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Compile and run existing regression suite
+        run: npm run test
+      - name: Run C0c comparator
+        run: node scripts/rep2-c0c-solver-native-comparator.mjs | tee rep2-c0c-study.log
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rep2-c0c-solver-native-study
+          path: rep2-c0c-study.log
