@@ -6,6 +6,9 @@ if (params.has("e1")) {
 } else if (params.has("v0")) {
   document.title = "JV Front Steering V0";
   await import("./v0/app.ts");
+} else if (params.has("rep2")) {
+  document.title = "JV Rep2 Visual Correspondence";
+  await import("./rep2/app.ts");
 } else {
   document.title = "JV R1 Direct Steering Pickup";
   await import("./r1/app.ts");
