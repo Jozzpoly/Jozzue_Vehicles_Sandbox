@@ -84,10 +84,11 @@ function maxAbs(values: readonly number[]): number {
 
 function difference(a: readonly Sample[], b: readonly Sample[]): TrajectoryDifference {
   assert.equal(a.length, b.length);
-  const angle = a.map((value, index) => value.angle - b[index].angle);
-  const omega = a.map((value, index) => value.omega - b[index].omega);
-  const length = a.map((value, index) => value.length - b[index].length);
-  const energy = a.map((value, index) => value.energy - b[index].energy);
+  assert.ok(a.length > 0);
+  const angle = a.map((value, index) => value.angle - b[index]!.angle);
+  const omega = a.map((value, index) => value.omega - b[index]!.omega);
+  const length = a.map((value, index) => value.length - b[index]!.length);
+  const energy = a.map((value, index) => value.energy - b[index]!.energy);
   return {
     angleRms: rms(angle),
     angleMax: maxAbs(angle),
@@ -101,9 +102,10 @@ function difference(a: readonly Sample[], b: readonly Sample[]): TrajectoryDiffe
 }
 
 function energySummary(samples: readonly Sample[]): EnergySummary {
+  assert.ok(samples.length > 0);
   const energies = samples.map((value) => value.energy);
-  const initial = energies[0];
-  const final = energies[energies.length - 1];
+  const initial = energies[0]!;
+  const final = energies[energies.length - 1]!;
   const minimum = Math.min(...energies);
   const maximum = Math.max(...energies);
   const maxPositiveOvershoot = Math.max(0, maximum - initial);
