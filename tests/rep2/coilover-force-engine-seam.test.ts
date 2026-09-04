@@ -27,6 +27,22 @@ function createDynamicArm(b3: Box3DModule, worldId: b3WorldId): b3BodyId {
   return armId;
 }
 
+function createShapedArm(
+  b3: Box3DModule,
+  worldId: b3WorldId,
+  overrideMass: boolean,
+): b3BodyId {
+  const def = b3.b3DefaultBodyDef();
+  def.type = b3.b3BodyType.b3_dynamicBody;
+  def.enableSleep = false;
+  const armId = b3.b3CreateBody(worldId, def);
+  const shapeDef = b3.b3DefaultShapeDef();
+  shapeDef.density = 40;
+  b3.b3CreateBoxShape(armId, shapeDef, 0.35, 0.04, 0.04);
+  if (overrideMass) b3.b3Body_SetMassData(armId, diagonalMassData());
+  return armId;
+}
+
 function createWorld(b3: Box3DModule): b3WorldId {
   const def = b3.b3DefaultWorldDef();
   def.gravity = vec3();
@@ -62,6 +78,34 @@ test("C0 engine seam: manual-mass shapeless body responds to a pure Z torque", a
   }
 });
 
+test("C0 engine seam: shaped body with shape-derived mass responds to a pure Z torque", async () => {
+  const b3 = await Box3DFactory();
+  const worldId = createWorld(b3);
+  try {
+    const armId = createShapedArm(b3, worldId, false);
+    b3.b3Body_ApplyTorque(armId, vec3(0, 0, -20), true);
+    step(b3, worldId);
+    const omega = b3.b3Body_GetAngularVelocity(armId);
+    assert.ok(Math.abs(omega.z) > 1e-4, `expected shaped body omega.z, got ${JSON.stringify(omega)}`);
+  } finally {
+    b3.b3DestroyWorld(worldId);
+  }
+});
+
+test("C0 engine seam: shaped body keeps force integration after explicit SetMassData", async () => {
+  const b3 = await Box3DFactory();
+  const worldId = createWorld(b3);
+  try {
+    const armId = createShapedArm(b3, worldId, true);
+    b3.b3Body_ApplyTorque(armId, vec3(0, 0, -20), true);
+    step(b3, worldId);
+    const omega = b3.b3Body_GetAngularVelocity(armId);
+    assert.ok(Math.abs(omega.z) > 1e-4, `expected shaped+manual-mass omega.z, got ${JSON.stringify(omega)}`);
+  } finally {
+    b3.b3DestroyWorld(worldId);
+  }
+});
+
 test("C0 engine seam: revolute preserves response to torque on its documented free Z axis", async () => {
   const b3 = await Box3DFactory();
   const worldId = createWorld(b3);
@@ -73,6 +117,22 @@ test("C0 engine seam: revolute preserves response to torque on its documented fr
     step(b3, worldId);
     const omega = b3.b3Body_GetAngularVelocity(armId);
     assert.ok(Math.abs(omega.z) > 1e-4, `expected revolute body omega.z, got ${JSON.stringify(omega)}`);
+  } finally {
+    b3.b3DestroyWorld(worldId);
+  }
+});
+
+test("C0 engine seam: shaped revolute responds to an off-centre force", async () => {
+  const b3 = await Box3DFactory();
+  const worldId = createWorld(b3);
+  try {
+    const armId = createShapedArm(b3, worldId, true);
+    attachRevolute(b3, worldId, armId);
+
+    b3.b3Body_ApplyForce(armId, vec3(0, 80, 0), { x: -0.25, y: 0, z: 0 }, true);
+    step(b3, worldId);
+    const omega = b3.b3Body_GetAngularVelocity(armId);
+    assert.ok(Math.abs(omega.z) > 1e-4, `expected shaped off-centre-force omega.z, got ${JSON.stringify(omega)}`);
   } finally {
     b3.b3DestroyWorld(worldId);
   }
