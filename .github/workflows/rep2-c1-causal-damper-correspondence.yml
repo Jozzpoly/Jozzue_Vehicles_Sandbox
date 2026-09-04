@@ -7,7 +7,9 @@ on:
     paths:
       - scripts/rep2-c1-donor-probe.mjs
       - src/rep2/c1-app.ts
+      - src/rep2/c1-damper-adapter.ts
       - src/main.ts
+      - tests/rep2/c1-damper-adapter.test.ts
       - tests/browser/rep2-c1-causal-damper-correspondence.spec.ts
       - playwright.rep2-c1.config.ts
       - evidence/rep2/REP2_C1_CAUSAL_DAMPER_CORRESPONDENCE_CONTRACT_2026-09-04.md
@@ -52,7 +54,7 @@ jobs:
           mkdir -p artifacts
           node scripts/rep2-c1-donor-probe.mjs --out artifacts/rep2-c1-donor-probe.json
       - run: npx playwright install --with-deps chromium
-      - name: Run real-browser C1.0 donor import gate
+      - name: Run real-browser C1 donor correspondence gate
         run: npx playwright test --config=playwright.rep2-c1.config.ts
       - uses: actions/upload-artifact@v4
         if: always()
