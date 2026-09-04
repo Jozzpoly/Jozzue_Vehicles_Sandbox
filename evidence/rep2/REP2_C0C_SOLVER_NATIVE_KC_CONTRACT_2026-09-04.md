@@ -2,7 +2,7 @@
 
 Date: 2026-09-04
 
-Status: **ACTIVE EXPERIMENT CONTRACT — no solver representation selected**
+Status: **ACTIVE EXPERIMENT CONTRACT — revised from exact solver source before comparator implementation**
 
 Inputs:
 
@@ -41,37 +41,102 @@ Installation owns:
 
 Changing mass, inertia or attachment leverage must change the mechanism response through physics. It must **not** mutate the authored `k/c/L0` values.
 
-## Candidate mapping — hypothesis, not assumption
+## Exact pinned solver facts that constrain the mapping
 
-For the one-DOF hinged-arm bench, let:
+Source inspection at the exact donor/substrate commit established:
 
-- `θ` be arm angle;
-- `L(θ)` be live eye separation;
-- `I_hinge` be the arm generalized rotational inertia about the revolute pivot;
-- `J_L = dL/dθ` be the length Jacobian.
+1. `b3MassData.inertia` is the inertia tensor about the body center of mass; `center` stores that COM separately.
+2. `b3Body_SetMassData` stores/inverts that COM tensor directly; it does not parallel-axis-shift it to a joint pivot.
+3. the distance joint computes its own scalar axial effective mass from its live distance Jacobian:
 
-The mechanism-level scalar effective mass seen by an axial spring is:
+   `K = invMassA + invMassB + crA^T invIA crA + crB^T invIB crB`
 
-`m_eff = I_hinge / J_L^2`.
+   `m_axial = 1 / K`.
 
-The candidate physical-to-solver map is then:
+4. the spring softness is created from `hertz`, `dampingRatio` and the current solver microstep `h`;
+5. the spring impulse then uses `massScale * m_axial`.
 
-`omega = sqrt(k / m_eff)`
+Therefore two masses that are easy to conflate must stay separate:
+
+- **distance-constraint axial mass** `m_axial` — the mass normalization actually used by the native spring law;
+- **whole-mechanism constrained generalized mass** `m_generalized = I_hinge / (dL/dθ)^2` for this one-DOF revolute fixture — useful for predicting the resulting mechanism frequency after the revolute constraint participates.
+
+They are not generally equal.
+
+### Critical correction from the initial contract
+
+The first version of this contract proposed using `m_generalized` directly to derive native Hertz. Exact solver inspection showed that this risks solving the wrong problem: matching whole-mechanism frequency instead of preserving the authored axial force law.
+
+That proposal is retained only as a **competing negative/diagnostic mapping**, not as the preferred physical hypothesis.
+
+The authority for C0c remains the C0a law:
+
+`F_axis = -(k*x + c*v_axis)`.
+
+If a mapping reproduces motion by silently changing force-per-extension, it fails the JV causal-semantic requirement even if its trajectory happens to look similar in one fixture.
+
+## Mapping hypotheses to falsify
+
+All formulas below are hypotheses until the pinned runtime trajectories and reaction forces support them.
+
+### H1 — solver-Jacobian physical-k mapping
+
+Use the exact live axial effective mass corresponding to the native distance constraint:
+
+`m_axial = 1 / (J_distance M^-1 J_distance^T)`.
+
+For `k > 0`:
+
+`omega = sqrt(k / m_axial)`
 
 `hertz = omega / (2*pi)`
 
-`dampingRatio = c / (2 * sqrt(k * m_eff))`.
+`dampingRatio = c / (2 * sqrt(k * m_axial))`.
 
-This is valid only for `k > 0` and finite, non-singular `J_L`.
+This is the primary candidate because it attempts to preserve the physical axial `k` and `c` that the native softness normalizes by `m_axial`.
 
-C0c must compute `J_L` from the exact live authored geometry, not from a hidden suspension category or a pre-authored handling scalar.
+C0c must compute `m_axial` from the same mechanism-local ingredients as the native Jacobian: current axis, eye-to-COM lever arms, inverse masses and inverse inertias. No vehicle category, hidden handling scalar or per-case tuning is allowed.
 
-Because `m_eff` can change as geometry moves, C0c must compare at least:
+Because `m_axial` may change as the mechanism moves, compare:
 
-1. **mapped-once** — calibrate from initial state and keep native hertz/ratio fixed;
-2. **mapped-outer** — recompute the physical mapping before each normal `1/60` outer step, then let Box3D solve four internal substeps.
+1. **axial-mapped-once** — compute at the initial state and keep hertz/ratio fixed;
+2. **axial-mapped-outer** — recompute before every normal `1/60` outer step, then let Box3D solve four internal substeps.
 
-No internal Box3D callback or engine fork is added in C0c.
+### H2 — generalized-frequency mapping
+
+For the hinged one-DOF fixture:
+
+`J_L = dL/dθ`
+
+`I_hinge = I_COM + m*r_COM^2`
+
+`m_generalized = I_hinge / J_L^2`.
+
+Then use the same harmonic conversion with `m_generalized`.
+
+This mapping intentionally targets the whole mechanism's generalized natural frequency. It is included because it was the plausible pre-source hypothesis and because comparing it to H1 can expose whether trajectory matching is being purchased by changing the component's axial force semantics.
+
+It is **not** allowed to win merely because angle trajectories look closer. Reaction force / physical energy correspondence must also survive.
+
+### H3 — fixed-Hertz control
+
+Take one baseline Hertz/damping pair and reuse it unchanged under mass and leverage mutation.
+
+This is the intentionally suspect path representing Hertz treated as component truth.
+
+## Runtime generalized-inertia oracle
+
+Before the comparator, C0c separately checks the revolute fixture's actual generalized inertia with a known applied torque.
+
+Expected analytic value for the baseline rod:
+
+- `m = 8 kg`;
+- `L = 0.7 m`;
+- COM offset from hinge = `0.35 m`;
+- `I_COM,z = m*L^2/12 = 0.326666... kg*m^2`;
+- `I_hinge = I_COM,z + m*0.35^2 = 1.306666... kg*m^2`.
+
+The oracle is evidence for mechanism semantics only; measured inertia must not become a fitted hidden tuning parameter.
 
 ## Reference
 
@@ -99,19 +164,17 @@ Use the already-qualified external physical law from C0b as a numerical referenc
 
 Double arm mass while preserving geometry and exact authored `k/c/L0`.
 
-The physical reference must slow because mechanism inertia changed. The solver wrapper must recover that through its mapping rather than by changing component stiffness.
+The physical reference must slow because mechanism inertia changed. H1 must preserve the same axial component law by changing its native mass normalization, not by changing component stiffness.
 
 ### Case C — leverage mutation
 
 Use at least one materially different non-singular attachment radius while preserving neutral eye separation and exact authored `k/c/L0`.
 
-This changes `dL/dθ`, restoring moment and generalized effective mass through real geometry.
+This changes the real attachment Jacobian and restoring moment. H1 may change because the distance constraint's axial mass changes; H2 changes because whole-mechanism generalized mass changes. Their separation is useful evidence rather than a nuisance.
 
 ### Case D — fixed-Hertz negative control
 
-Take the baseline solver-native Hertz/damping values and reuse them unchanged in the mass/leverage mutations.
-
-This is intentionally the semantically suspect path. It establishes what happens if Hertz is mistaken for component truth.
+Reuse baseline native Hertz/damping values unchanged in the mass/leverage mutations.
 
 If fixed Hertz happens to match one case, that is calibration coincidence, not general validation.
 
@@ -122,19 +185,22 @@ At common 60 Hz times record:
 - hinge angle;
 - angular velocity;
 - eye separation;
+- native distance-joint reaction force when available;
+- reference physical axial force `-(k*x+c*v)` on the same state;
 - physical spring potential using authored `k` and `L0`;
 - arm kinetic energy;
 - total authored-mechanical energy;
-- mapped Hertz and damping ratio over time for mapped-outer;
-- `J_L` and inferred `m_eff`.
+- mapped Hertz and damping ratio over time;
+- exact live `m_axial` used by H1;
+- `J_L` and `m_generalized` used by H2.
 
 Compare all solver-native paths against the same external fine reference.
 
-No single aggregate score may hide trajectory structure.
+No single aggregate score may hide trajectory or force-law structure.
 
 ## Pure damper semantic edge
 
-The exact native API parameterizes damping through `hertz + dampingRatio`. The candidate mapping becomes singular for `k = 0, c > 0`.
+The exact native API parameterizes damping through `hertz + dampingRatio`. Both harmonic mappings become singular for `k = 0, c > 0`.
 
 C0c must record this explicitly as a representation gap. It must **not** fake pure damping by inserting an arbitrary epsilon spring.
 
@@ -144,16 +210,17 @@ A successful combined spring+damper result therefore qualifies only the `k > 0` 
 
 The solver-native candidate is falsified as a clean physical wrapper if any of the following occurs in the bounded cases:
 
-1. mapped paths fail to improve systematically over the fixed-Hertz negative control when mass or leverage changes;
-2. preserving authored `k/c/L0` requires per-case hand tuning unrelated to the explicit effective-mass mapping;
-3. live spatial leverage is erased or reversed by the solver representation;
-4. mapped-outer introduces instability/energy behavior materially worse than the already-qualified fresh-force reference without a bounded explanation;
-5. the mapping needs hidden vehicle-category semantics rather than mechanism-local state.
+1. H1 fails to preserve force/trajectory semantics materially better than fixed-Hertz when mass or leverage changes;
+2. preserving authored `k/c/L0` requires per-case hand tuning unrelated to the explicit native Jacobian mapping;
+3. H2 can match trajectory only by materially violating the authored axial force law — this counts against H2, not in its favor;
+4. live spatial leverage is erased or reversed by the solver representation;
+5. outer-step remapping remains materially insufficient even though Box3D solves the spring inside its four internal substeps;
+6. the mapping needs hidden vehicle-category semantics rather than mechanism-local state.
 
 ## Verdict classes
 
-1. **NATIVE KC WRAPPER CREDIBLE** — one explicit mechanism-local mapping preserves the physical reference across baseline, mass and leverage mutations; mapped-outer is bounded at normal `60/4` stepping.
-2. **NATIVE KC NEEDS MORE THAN OUTER REMAP** — mapping is physically meaningful but outer-step updates remain insufficient; a substep callback/engine seam becomes justified.
+1. **NATIVE KC WRAPPER CREDIBLE** — one explicit mechanism-local mapping preserves the physical force/trajectory reference across baseline, mass and leverage mutations; normal `60/4` stepping is bounded.
+2. **NATIVE KC NEEDS MORE THAN OUTER REMAP** — the physical mapping is meaningful but outer-step parameter updates remain insufficient; a substep callback/engine seam becomes justified.
 3. **NATIVE HERTZ SEMANTIC DRIFT** — native spring is numerically usable but no clean explicit mapping preserves component `k/c` across the required mutations.
 4. **NATIVE SPRING PARTIAL ONLY** — `k > 0` spring/combined semantics are credible but independent damping remains an explicit unresolved representation gap.
 5. **INCONCLUSIVE** — apparatus or reference cannot distinguish these classes without changing the question.
@@ -176,6 +243,6 @@ C0c does not:
 
 ## Natural stop
 
-Stop after the baseline, mass mutation, leverage mutation and fixed-Hertz control have comparable trajectory evidence against the same fine reference, and one verdict class can be justified.
+Stop after the baseline, mass mutation, leverage mutation, competing mapping and fixed-Hertz control have comparable force + trajectory evidence against the same fine reference, and one verdict class can be justified.
 
 Do not continue automatically into a full vehicle or a custom engine constraint.
