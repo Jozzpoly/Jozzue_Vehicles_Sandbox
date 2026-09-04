@@ -37,6 +37,17 @@ function step(b3: Box3DModule, worldId: b3WorldId): void {
   b3.b3World_Step(worldId, DT, 1);
 }
 
+function attachRevolute(b3: Box3DModule, worldId: b3WorldId, armId: b3BodyId): void {
+  const baseDef = b3.b3DefaultBodyDef();
+  const baseId = b3.b3CreateBody(worldId, baseDef);
+  const jointDef = b3.b3DefaultRevoluteJointDef();
+  jointDef.base.bodyIdA = baseId;
+  jointDef.base.bodyIdB = armId;
+  jointDef.base.localFrameA = { p: vec3(), q: identityQuat() };
+  jointDef.base.localFrameB = { p: vec3(), q: identityQuat() };
+  b3.b3CreateRevoluteJoint(worldId, jointDef);
+}
+
 test("C0 engine seam: manual-mass shapeless body responds to a pure Z torque", async () => {
   const b3 = await Box3DFactory();
   const worldId = createWorld(b3);
@@ -55,16 +66,8 @@ test("C0 engine seam: revolute preserves response to torque on its documented fr
   const b3 = await Box3DFactory();
   const worldId = createWorld(b3);
   try {
-    const baseDef = b3.b3DefaultBodyDef();
-    const baseId = b3.b3CreateBody(worldId, baseDef);
     const armId = createDynamicArm(b3, worldId);
-
-    const jointDef = b3.b3DefaultRevoluteJointDef();
-    jointDef.base.bodyIdA = baseId;
-    jointDef.base.bodyIdB = armId;
-    jointDef.base.localFrameA = { p: vec3(), q: identityQuat() };
-    jointDef.base.localFrameB = { p: vec3(), q: identityQuat() };
-    b3.b3CreateRevoluteJoint(worldId, jointDef);
+    attachRevolute(b3, worldId, armId);
 
     b3.b3Body_ApplyTorque(armId, vec3(0, 0, -20), true);
     step(b3, worldId);
@@ -79,21 +82,45 @@ test("C0 engine seam: revolute responds to an off-centre force with nonzero hing
   const b3 = await Box3DFactory();
   const worldId = createWorld(b3);
   try {
-    const baseDef = b3.b3DefaultBodyDef();
-    const baseId = b3.b3CreateBody(worldId, baseDef);
     const armId = createDynamicArm(b3, worldId);
-
-    const jointDef = b3.b3DefaultRevoluteJointDef();
-    jointDef.base.bodyIdA = baseId;
-    jointDef.base.bodyIdB = armId;
-    jointDef.base.localFrameA = { p: vec3(), q: identityQuat() };
-    jointDef.base.localFrameB = { p: vec3(), q: identityQuat() };
-    b3.b3CreateRevoluteJoint(worldId, jointDef);
+    attachRevolute(b3, worldId, armId);
 
     b3.b3Body_ApplyForce(armId, vec3(0, 80, 0), { x: -0.25, y: 0, z: 0 }, true);
     step(b3, worldId);
     const omega = b3.b3Body_GetAngularVelocity(armId);
     assert.ok(Math.abs(omega.z) > 1e-4, `expected off-centre-force omega.z, got ${JSON.stringify(omega)}`);
+  } finally {
+    b3.b3DestroyWorld(worldId);
+  }
+});
+
+test("C0 engine seam: manual-mass body responds immediately to an angular impulse", async () => {
+  const b3 = await Box3DFactory();
+  const worldId = createWorld(b3);
+  try {
+    const armId = createDynamicArm(b3, worldId);
+    b3.b3Body_ApplyAngularImpulse(armId, vec3(0, 0, -0.08), true);
+    const omega = b3.b3Body_GetAngularVelocity(armId);
+    assert.ok(Math.abs(omega.z) > 1e-4, `expected immediate angular-impulse omega.z, got ${JSON.stringify(omega)}`);
+  } finally {
+    b3.b3DestroyWorld(worldId);
+  }
+});
+
+test("C0 engine seam: revolute retains point-impulse response on the free Z axis", async () => {
+  const b3 = await Box3DFactory();
+  const worldId = createWorld(b3);
+  try {
+    const armId = createDynamicArm(b3, worldId);
+    attachRevolute(b3, worldId, armId);
+
+    b3.b3Body_ApplyLinearImpulse(armId, vec3(0, 0.32, 0), { x: -0.25, y: 0, z: 0 }, true);
+    const immediate = b3.b3Body_GetAngularVelocity(armId);
+    assert.ok(Math.abs(immediate.z) > 1e-4, `expected immediate point-impulse omega.z, got ${JSON.stringify(immediate)}`);
+
+    step(b3, worldId);
+    const afterConstraint = b3.b3Body_GetAngularVelocity(armId);
+    assert.ok(Math.abs(afterConstraint.z) > 1e-4, `expected revolute to retain free-axis impulse response, got ${JSON.stringify(afterConstraint)}`);
   } finally {
     b3.b3DestroyWorld(worldId);
   }
