@@ -141,7 +141,9 @@ test("A4 editing the selected left geometry does not rewrite the opposite rear b
     const b = changed.trace();
     assert.ok(distance(a.oppositeRearAnchorWorld, b.oppositeRearAnchorWorld) < EPS);
     assert.ok(distance(a.oppositeRearWheel.position, b.oppositeRearWheel.position) < EPS);
-    assert.equal(a.oppositeRearAnchorWorld.z, REP2_CARRIER_CONFIG.trackHalfWidth);
+    assert.ok(
+      Math.abs(a.oppositeRearAnchorWorld.z - REP2_CARRIER_CONFIG.trackHalfWidth) < EPS,
+    );
   } finally {
     baseline.dispose();
     changed.dispose();
@@ -161,6 +163,7 @@ test("A5 physical seam remains finite, contacts the world, and drives the carrie
     assert.ok(finiteTrace(driven));
     assert.ok(driven.chassis.position.x > settled.chassis.position.x + 0.4);
     assert.ok(driven.selectedWheelContacts >= 1);
+    assert.ok(distance(driven.wheelEndpointWorldFromArm, driven.wheelCenterWorld) < 1e-3);
     assert.equal(driven.ownedJointCount, 5);
   } finally {
     world.dispose();
