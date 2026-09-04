@@ -128,6 +128,39 @@ function boxObject(box) {
   };
 }
 
+function nearestOriginBracket(points, epsilon = 1e-7) {
+  let nearestPositive = Infinity;
+  let nearestNegative = -Infinity;
+  for (const point of points) {
+    if (point.y > epsilon) nearestPositive = Math.min(nearestPositive, point.y);
+    if (point.y < -epsilon) nearestNegative = Math.max(nearestNegative, point.y);
+  }
+  if (!Number.isFinite(nearestPositive) || !Number.isFinite(nearestNegative)) {
+    return null;
+  }
+
+  const tolerance = 1e-6;
+  const positivePlane = points.filter((point) => Math.abs(point.y - nearestPositive) <= tolerance);
+  const negativePlane = points.filter((point) => Math.abs(point.y - nearestNegative) <= tolerance);
+  const planeBounds = (plane) => {
+    const box = new THREE.Box3();
+    for (const point of plane) box.expandByPoint(point);
+    return boxObject(box);
+  };
+
+  return {
+    nearestNegativeY: nearestNegative,
+    nearestPositiveY: nearestPositive,
+    centerOffsetY: 0.5 * (nearestPositive + nearestNegative),
+    halfSpanY: 0.5 * (nearestPositive - nearestNegative),
+    symmetryErrorY: Math.abs(nearestPositive + nearestNegative),
+    negativePlaneVertexCount: negativePlane.length,
+    positivePlaneVertexCount: positivePlane.length,
+    negativePlaneBounds: planeBounds(negativePlane),
+    positivePlaneBounds: planeBounds(positivePlane),
+  };
+}
+
 async function run() {
   const response = await fetch(DONOR.url, { redirect: "follow" });
   if (!response.ok) fail(`HTTP ${response.status} fetching exact donor`);
@@ -205,6 +238,7 @@ async function run() {
       vertexCount: 0,
       sceneBox: new THREE.Box3(),
       jointLocalBox: new THREE.Box3(),
+      jointLocalPoints: [],
       maxSecondaryWeight: 0,
     });
   }
@@ -234,6 +268,7 @@ async function run() {
     const jointLocalPoint = scenePoint.clone().applyMatrix4(jointInverse);
     group.sceneBox.expandByPoint(scenePoint);
     group.jointLocalBox.expandByPoint(jointLocalPoint);
+    group.jointLocalPoints.push(jointLocalPoint);
     group.vertexCount += 1;
     group.maxSecondaryWeight = Math.max(group.maxSecondaryWeight, secondaryWeight);
   }
@@ -248,12 +283,27 @@ async function run() {
       rigidVertexCount: group.vertexCount,
       rigidSceneBounds: boxObject(group.sceneBox),
       rigidJointLocalBounds: boxObject(group.jointLocalBox),
+      nearestOriginBracket: nearestOriginBracket(group.jointLocalPoints),
       maxSecondaryWeight: group.maxSecondaryWeight,
     };
   });
 
+  for (const name of ["Part_Upper", "Part_Lower"]) {
+    const part = parts.find((candidate) => candidate.name === name);
+    if (!part?.nearestOriginBracket) fail(`${name} does not geometrically bracket its authored node origin`);
+    if (part.nearestOriginBracket.symmetryErrorY > 1e-6) {
+      fail(`${name} nearest authored geometry is not Y-symmetric around its node origin`);
+    }
+    if (
+      part.nearestOriginBracket.positivePlaneVertexCount === 0 ||
+      part.nearestOriginBracket.negativePlaneVertexCount === 0
+    ) {
+      fail(`${name} lacks geometry on both sides of its node origin`);
+    }
+  }
+
   const summary = {
-    schema: "rep2-c1-donor-probe-v1",
+    schema: "rep2-c1-donor-probe-v2",
     donor: {
       ...DONOR,
       observedGitBlobSha: observedSha,
@@ -274,8 +324,9 @@ async function run() {
     parts,
     interpretationBoundary: {
       nodeOriginsAreMeasuredBindReferences: true,
+      endOriginsAreGeometricallyBracketed: true,
       nodeOriginsAreAcceptedMechanicalEyes: false,
-      note: "C1.0 measures authored bind references. Mechanical-eye acceptance requires geometric/rendered interpretation, not names alone.",
+      note: "C1.0 now proves the two end-node origins are authored geometric end references bracketed by real donor geometry. Mechanical authority still comes only from future C1 live eye state.",
     },
   };
 
