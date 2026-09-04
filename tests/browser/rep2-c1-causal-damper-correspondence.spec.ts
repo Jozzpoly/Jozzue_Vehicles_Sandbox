@@ -13,7 +13,10 @@ test("C1.0 loads the exact real donor and exposes authored bind references", asy
   page.on("pageerror", (error) => pageErrors.push(error.message));
 
   await page.goto("/?c1=1");
-  await page.waitForFunction(() => window.__REP2_C1__?.status !== "loading", undefined, {
+  await page.waitForFunction(() => {
+    const evidence = window.__REP2_C1__;
+    return Boolean(evidence && (evidence.status === "ready" || evidence.status === "error"));
+  }, undefined, {
     timeout: 30_000,
   });
 
