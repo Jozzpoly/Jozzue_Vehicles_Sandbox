@@ -187,8 +187,6 @@ function refreshSkinnedMeshBounds(object: THREE.Object3D): number {
     const skinned = candidate as THREE.SkinnedMesh;
     if (!skinned.isSkinnedMesh) return;
     skinned.skeleton.update();
-    skinned.boundingBox = null;
-    skinned.boundingSphere = null;
     skinned.computeBoundingBox();
     skinned.computeBoundingSphere();
     count += 1;
