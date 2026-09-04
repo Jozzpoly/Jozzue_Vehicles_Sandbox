@@ -1,0 +1,64 @@
+name: Rep2 C1 Causal Damper Correspondence
+
+on:
+  push:
+    branches:
+      - experiment/rep2-c1-causal-damper-correspondence
+    paths:
+      - scripts/rep2-c1-donor-probe.mjs
+      - src/rep2/c1-app.ts
+      - src/main.ts
+      - tests/browser/rep2-c1-causal-damper-correspondence.spec.ts
+      - playwright.rep2-c1.config.ts
+      - evidence/rep2/REP2_C1_CAUSAL_DAMPER_CORRESPONDENCE_CONTRACT_2026-09-04.md
+      - .github/workflows/rep2-c1-causal-damper-correspondence.yml
+
+jobs:
+  source-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Verify exact donor provenance and bind structure
+        run: |
+          mkdir -p artifacts
+          node scripts/rep2-c1-donor-probe.mjs --out artifacts/rep2-c1-donor-probe.json
+      - name: Run inherited source tests and production build
+        run: npm run check
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rep2-c1-source-evidence
+          path: artifacts/rep2-c1-donor-probe.json
+          if-no-files-found: warn
+
+  rendered-correspondence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Verify exact donor before browser load
+        run: |
+          mkdir -p artifacts
+          node scripts/rep2-c1-donor-probe.mjs --out artifacts/rep2-c1-donor-probe.json
+      - run: npx playwright install --with-deps chromium
+      - name: Run real-browser C1.0 donor import gate
+        run: npx playwright test --config=playwright.rep2-c1.config.ts
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rep2-c1-rendered-evidence
+          path: |
+            artifacts/rep2-c1-donor-probe.json
+            test-results/rep2-c1
+          if-no-files-found: warn
