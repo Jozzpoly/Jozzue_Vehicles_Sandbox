@@ -1,0 +1,18 @@
+name: Rep2 C0c Hinge Inertia Oracle
+
+on:
+  push:
+    branches:
+      - experiment/rep2-c0c-solver-native-kc
+
+jobs:
+  oracle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: node scripts/rep2-c0c-hinge-inertia-oracle.mjs
