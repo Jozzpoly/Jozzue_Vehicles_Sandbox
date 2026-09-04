@@ -35,6 +35,9 @@ export interface C1DamperAdaptationSnapshot {
   readonly visualUpperWorld: C1Point3;
   readonly visualStretchWorld: C1Point3;
   readonly visualLowerWorld: C1Point3;
+  readonly visualUpperScale: C1Point3;
+  readonly visualStretchScale: C1Point3;
+  readonly visualLowerScale: C1Point3;
   readonly upperError: number;
   readonly lowerError: number;
   readonly liveGap: number;
@@ -191,18 +194,21 @@ export function applyC1DamperBetween(
   setWorldTransform(binding.stretch, stretchTarget, stretchQuaternion, stretchScale);
 
   binding.scene.updateMatrixWorld(true);
-  const visualUpperWorld = binding.upper.getWorldPosition(new THREE.Vector3());
-  const visualStretchWorld = binding.stretch.getWorldPosition(new THREE.Vector3());
-  const visualLowerWorld = binding.lower.getWorldPosition(new THREE.Vector3());
+  const upperWorld = worldTransform(binding.upper);
+  const stretchWorld = worldTransform(binding.stretch);
+  const lowerWorld = worldTransform(binding.lower);
 
   return {
     requestedUpperWorld: point(top),
     requestedLowerWorld: point(bottom),
-    visualUpperWorld: point(visualUpperWorld),
-    visualStretchWorld: point(visualStretchWorld),
-    visualLowerWorld: point(visualLowerWorld),
-    upperError: visualUpperWorld.distanceTo(top),
-    lowerError: visualLowerWorld.distanceTo(bottom),
+    visualUpperWorld: point(upperWorld.position),
+    visualStretchWorld: point(stretchWorld.position),
+    visualLowerWorld: point(lowerWorld.position),
+    visualUpperScale: point(upperWorld.scale),
+    visualStretchScale: point(stretchWorld.scale),
+    visualLowerScale: point(lowerWorld.scale),
+    upperError: upperWorld.position.distanceTo(top),
+    lowerError: lowerWorld.position.distanceTo(bottom),
     liveGap,
     stretchScaleRatio,
     stretchFractionFromUpper: binding.bind.stretchFractionFromUpper,
