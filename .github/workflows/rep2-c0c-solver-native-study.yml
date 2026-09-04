@@ -6,6 +6,7 @@ on:
       - experiment/rep2-c0c-solver-native-kc
     paths:
       - scripts/rep2-c0c-solver-native-comparator.mjs
+      - scripts/rep2-c0c-summarize.mjs
       - evidence/rep2/REP2_C0C_SOLVER_NATIVE_KC_CONTRACT_2026-09-04.md
       - .github/workflows/rep2-c0c-solver-native-study.yml
 
@@ -24,7 +25,11 @@ jobs:
         run: npm run test
       - name: Run C0c comparator
         run: node scripts/rep2-c0c-solver-native-comparator.mjs | tee rep2-c0c-study.log
+      - name: Build C0c acceptance summary
+        run: node scripts/rep2-c0c-summarize.mjs rep2-c0c-study.log | tee rep2-c0c-summary.log
       - uses: actions/upload-artifact@v4
         with:
           name: rep2-c0c-solver-native-study
-          path: rep2-c0c-study.log
+          path: |
+            rep2-c0c-study.log
+            rep2-c0c-summary.log
