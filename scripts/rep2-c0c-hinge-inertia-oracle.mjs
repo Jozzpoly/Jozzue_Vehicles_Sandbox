@@ -28,7 +28,7 @@ function diagonalMassData(mass, center, ix, iy, iz) {
   };
 }
 
-async function run(dt, useInternalSubsteps = false) {
+async function run(outerDt, internalSubsteps = 1) {
   const b3 = await Box3DFactory();
   const worldDef = b3.b3DefaultWorldDef();
   worldDef.gravity = vec3();
@@ -75,16 +75,14 @@ async function run(dt, useInternalSubsteps = false) {
     b3.b3CreateRevoluteJoint(worldId, hingeDef);
 
     b3.b3Body_ApplyTorque(armId, vec3(0, 0, TORQUE_Z), true);
-    if (useInternalSubsteps) {
-      b3.b3World_Step(worldId, dt * 4, 4);
-    } else {
-      b3.b3World_Step(worldId, dt, 1);
-    }
+    b3.b3World_Step(worldId, outerDt, internalSubsteps);
 
     const omegaZ = b3.b3Body_GetAngularVelocity(armId).z;
-    const inferredInertia = (TORQUE_Z * dt) / omegaZ;
+    const inferredInertia = (TORQUE_Z * outerDt) / omegaZ;
     return {
-      dt,
+      outerDt,
+      internalSubsteps,
+      microDt: outerDt / internalSubsteps,
       omegaZ,
       inferredInertia,
       relativeError: (inferredInertia - I_HINGE_ANALYTIC) / I_HINGE_ANALYTIC,
@@ -95,12 +93,12 @@ async function run(dt, useInternalSubsteps = false) {
 }
 
 const singleStep = [];
-for (const dt of DTS) singleStep.push(await run(dt));
+for (const dt of DTS) singleStep.push(await run(dt, 1));
 
-// Same total h=1/240 velocity microstep, but reached as one 1/60 outer step
-// with four internal substeps. The external torque remains accumulated across
-// all four substeps, matching the exact pinned semantics characterized by C0b.
-const internalFour = await run(1 / 240, true);
+// Same 1/60 outer interval used by JV-like stepping, split into four internal
+// 1/240 substeps. The externally accumulated constant torque acts across the
+// full outer interval, so inferred inertia must use 1/60 as elapsed time.
+const internalFour = await run(1 / 60, 4);
 
 console.log(
   `REP2_C0C_HINGE_INERTIA ${JSON.stringify({
