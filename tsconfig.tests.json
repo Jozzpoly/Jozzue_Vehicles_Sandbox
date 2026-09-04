@@ -24,8 +24,10 @@
     "src/v0/steering-geometry.ts",
     "src/v0/physical-steering-world.ts",
     "src/v0/driving-evidence.ts",
+    "src/rep2/suspension-link-world.ts",
     "tests/e1/**/*.ts",
     "tests/v0/**/*.ts",
-    "tests/r1/**/*.ts"
+    "tests/r1/**/*.ts",
+    "tests/rep2/**/*.ts"
   ]
 }
