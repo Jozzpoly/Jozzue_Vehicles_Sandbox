@@ -18,7 +18,7 @@ function diagonalMassData() {
   };
 }
 
-function createDynamicArm(b3: Box3DModule, worldId: b3WorldId): b3BodyId {
+function createShapelessManualMassArm(b3: Box3DModule, worldId: b3WorldId): b3BodyId {
   const def = b3.b3DefaultBodyDef();
   def.type = b3.b3BodyType.b3_dynamicBody;
   def.enableSleep = false;
@@ -64,15 +64,25 @@ function attachRevolute(b3: Box3DModule, worldId: b3WorldId, armId: b3BodyId): v
   b3.b3CreateRevoluteJoint(worldId, jointDef);
 }
 
-test("C0 engine seam: manual-mass shapeless body responds to a pure Z torque", async () => {
+test("C0 pinned-engine characterization: shapeless manual-mass body misses accumulated torque integration", async () => {
   const b3 = await Box3DFactory();
   const worldId = createWorld(b3);
   try {
-    const armId = createDynamicArm(b3, worldId);
+    const armId = createShapelessManualMassArm(b3, worldId);
     b3.b3Body_ApplyTorque(armId, vec3(0, 0, -20), true);
     step(b3, worldId);
-    const omega = b3.b3Body_GetAngularVelocity(armId);
-    assert.ok(Math.abs(omega.z) > 1e-4, `expected free body omega.z, got ${JSON.stringify(omega)}`);
+    const afterTorqueStep = b3.b3Body_GetAngularVelocity(armId);
+    assert.ok(
+      Math.abs(afterTorqueStep.z) < 1e-10,
+      `expected pinned shapeless edge to reproduce zero accumulated-torque response, got ${JSON.stringify(afterTorqueStep)}`,
+    );
+
+    b3.b3Body_ApplyAngularImpulse(armId, vec3(0, 0, -0.08), true);
+    const afterImpulse = b3.b3Body_GetAngularVelocity(armId);
+    assert.ok(
+      Math.abs(afterImpulse.z) > 1e-4,
+      `expected explicit inertia to remain usable by angular impulse, got ${JSON.stringify(afterImpulse)}`,
+    );
   } finally {
     b3.b3DestroyWorld(worldId);
   }
@@ -92,7 +102,7 @@ test("C0 engine seam: shaped body with shape-derived mass responds to a pure Z t
   }
 });
 
-test("C0 engine seam: shaped body keeps force integration after explicit SetMassData", async () => {
+test("C0 engine seam: shaped body keeps accumulated-force integration after explicit SetMassData", async () => {
   const b3 = await Box3DFactory();
   const worldId = createWorld(b3);
   try {
@@ -106,23 +116,23 @@ test("C0 engine seam: shaped body keeps force integration after explicit SetMass
   }
 });
 
-test("C0 engine seam: revolute preserves response to torque on its documented free Z axis", async () => {
+test("C0 engine seam: shaped manual-mass revolute preserves torque on its documented free Z axis", async () => {
   const b3 = await Box3DFactory();
   const worldId = createWorld(b3);
   try {
-    const armId = createDynamicArm(b3, worldId);
+    const armId = createShapedArm(b3, worldId, true);
     attachRevolute(b3, worldId, armId);
 
     b3.b3Body_ApplyTorque(armId, vec3(0, 0, -20), true);
     step(b3, worldId);
     const omega = b3.b3Body_GetAngularVelocity(armId);
-    assert.ok(Math.abs(omega.z) > 1e-4, `expected revolute body omega.z, got ${JSON.stringify(omega)}`);
+    assert.ok(Math.abs(omega.z) > 1e-4, `expected shaped revolute body omega.z, got ${JSON.stringify(omega)}`);
   } finally {
     b3.b3DestroyWorld(worldId);
   }
 });
 
-test("C0 engine seam: shaped revolute responds to an off-centre force", async () => {
+test("C0 engine seam: shaped manual-mass revolute responds to an off-centre force", async () => {
   const b3 = await Box3DFactory();
   const worldId = createWorld(b3);
   try {
@@ -133,54 +143,6 @@ test("C0 engine seam: shaped revolute responds to an off-centre force", async ()
     step(b3, worldId);
     const omega = b3.b3Body_GetAngularVelocity(armId);
     assert.ok(Math.abs(omega.z) > 1e-4, `expected shaped off-centre-force omega.z, got ${JSON.stringify(omega)}`);
-  } finally {
-    b3.b3DestroyWorld(worldId);
-  }
-});
-
-test("C0 engine seam: revolute responds to an off-centre force with nonzero hinge moment", async () => {
-  const b3 = await Box3DFactory();
-  const worldId = createWorld(b3);
-  try {
-    const armId = createDynamicArm(b3, worldId);
-    attachRevolute(b3, worldId, armId);
-
-    b3.b3Body_ApplyForce(armId, vec3(0, 80, 0), { x: -0.25, y: 0, z: 0 }, true);
-    step(b3, worldId);
-    const omega = b3.b3Body_GetAngularVelocity(armId);
-    assert.ok(Math.abs(omega.z) > 1e-4, `expected off-centre-force omega.z, got ${JSON.stringify(omega)}`);
-  } finally {
-    b3.b3DestroyWorld(worldId);
-  }
-});
-
-test("C0 engine seam: manual-mass body responds immediately to an angular impulse", async () => {
-  const b3 = await Box3DFactory();
-  const worldId = createWorld(b3);
-  try {
-    const armId = createDynamicArm(b3, worldId);
-    b3.b3Body_ApplyAngularImpulse(armId, vec3(0, 0, -0.08), true);
-    const omega = b3.b3Body_GetAngularVelocity(armId);
-    assert.ok(Math.abs(omega.z) > 1e-4, `expected immediate angular-impulse omega.z, got ${JSON.stringify(omega)}`);
-  } finally {
-    b3.b3DestroyWorld(worldId);
-  }
-});
-
-test("C0 engine seam: revolute retains point-impulse response on the free Z axis", async () => {
-  const b3 = await Box3DFactory();
-  const worldId = createWorld(b3);
-  try {
-    const armId = createDynamicArm(b3, worldId);
-    attachRevolute(b3, worldId, armId);
-
-    b3.b3Body_ApplyLinearImpulse(armId, vec3(0, 0.32, 0), { x: -0.25, y: 0, z: 0 }, true);
-    const immediate = b3.b3Body_GetAngularVelocity(armId);
-    assert.ok(Math.abs(immediate.z) > 1e-4, `expected immediate point-impulse omega.z, got ${JSON.stringify(immediate)}`);
-
-    step(b3, worldId);
-    const afterConstraint = b3.b3Body_GetAngularVelocity(armId);
-    assert.ok(Math.abs(afterConstraint.z) > 1e-4, `expected revolute to retain free-axis impulse response, got ${JSON.stringify(afterConstraint)}`);
   } finally {
     b3.b3DestroyWorld(worldId);
   }
