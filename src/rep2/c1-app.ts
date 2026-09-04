@@ -156,22 +156,20 @@ loader.load(
       throw new Error(`expected loaded skinned donor mesh, got mesh=${meshCount}, skinned=${skinnedMeshCount}`);
     }
 
+    const upperOrigin = partOrigins.Part_Upper;
+    const lowerOrigin = partOrigins.Part_Lower;
+    if (!upperOrigin || !lowerOrigin) {
+      throw new Error("required donor bind references were not measured");
+    }
+
     scene.add(gltf.scene);
     gltf.scene.updateMatrixWorld(true);
     const box = new THREE.Box3().setFromObject(gltf.scene);
     if (box.isEmpty()) throw new Error("loaded donor has empty rendered bounds");
     const size = box.getSize(new THREE.Vector3());
     const markerRadius = Math.max(Math.max(size.x, size.y, size.z) * 0.025, 0.02);
-    addBindReferenceMarker(new THREE.Vector3(
-      partOrigins.Part_Upper.x,
-      partOrigins.Part_Upper.y,
-      partOrigins.Part_Upper.z,
-    ), markerRadius);
-    addBindReferenceMarker(new THREE.Vector3(
-      partOrigins.Part_Lower.x,
-      partOrigins.Part_Lower.y,
-      partOrigins.Part_Lower.z,
-    ), markerRadius);
+    addBindReferenceMarker(new THREE.Vector3(upperOrigin.x, upperOrigin.y, upperOrigin.z), markerRadius);
+    addBindReferenceMarker(new THREE.Vector3(lowerOrigin.x, lowerOrigin.y, lowerOrigin.z), markerRadius);
     fitCamera(box.clone().expandByScalar(markerRadius * 2));
     resize();
 
