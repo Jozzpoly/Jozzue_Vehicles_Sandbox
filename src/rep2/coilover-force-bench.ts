@@ -30,6 +30,7 @@ export interface Rep2CoiloverForceTrace {
   readonly armEyeWorld: b3Vec3;
   readonly chassisEyeVelocity: b3Vec3;
   readonly armEyeVelocity: b3Vec3;
+  readonly armCenterVelocity: b3Vec3;
   readonly axisFromChassisToArm: b3Vec3;
   readonly currentLength: number;
   readonly extension: number;
@@ -42,12 +43,20 @@ export interface Rep2CoiloverForceTrace {
   readonly armEyeLeverFromHinge: b3Vec3;
   readonly momentOnArmAboutHinge: b3Vec3;
   readonly armAngularVelocity: b3Vec3;
+  readonly springPotentialEnergy: number;
+  readonly armKineticEnergy: number;
+  readonly passiveMechanicalEnergy: number;
+  readonly componentPowerOnBodies: number;
+  readonly springPotentialPower: number;
+  readonly dampingDissipationPower: number;
+  readonly passivityResidual: number;
 }
 
 export interface Rep2CoiloverBenchOptions {
   readonly geometry: Rep2CoiloverBenchGeometry;
   readonly component: Rep2CoiloverComponent;
   readonly initialArmAngleRadians?: number;
+  readonly initialArmAngularVelocityZ?: number;
   readonly armMass?: number;
   readonly armLength?: number;
 }
@@ -117,6 +126,15 @@ function clonePoint(value: Readonly<b3Vec3>): b3Vec3 {
   return vec3(value.x, value.y, value.z);
 }
 
+function validateStep(timeStep: number, subSteps: number, label: string): void {
+  if (!finite(timeStep) || timeStep <= 0) {
+    throw new RangeError(`${label} timeStep must be finite and positive.`);
+  }
+  if (!Number.isInteger(subSteps) || subSteps < 1) {
+    throw new RangeError(`${label} substep count must be a positive integer.`);
+  }
+}
+
 function validateOptions(options: Rep2CoiloverBenchOptions): Required<Rep2CoiloverBenchOptions> {
   const geometry: Rep2CoiloverBenchGeometry = Object.freeze({
     chassisEyeLocal: Object.freeze(clonePoint(options.geometry.chassisEyeLocal)),
@@ -128,6 +146,7 @@ function validateOptions(options: Rep2CoiloverBenchOptions): Required<Rep2Coilov
     restLength: options.component.restLength,
   });
   const initialArmAngleRadians = options.initialArmAngleRadians ?? 0;
+  const initialArmAngularVelocityZ = options.initialArmAngularVelocityZ ?? 0;
   const armMass = options.armMass ?? 8;
   const armLength = options.armLength ?? 0.7;
 
@@ -144,14 +163,22 @@ function validateOptions(options: Rep2CoiloverBenchOptions): Required<Rep2Coilov
   ) {
     throw new RangeError("Rep2 C0 spring properties must be finite and non-negative with a positive rest length.");
   }
-  if (!finite(initialArmAngleRadians) || !finite(armMass) || !finite(armLength) || armMass <= 0 || armLength <= 0) {
-    throw new RangeError("Rep2 C0 arm properties must be finite and positive.");
+  if (
+    !finite(initialArmAngleRadians) ||
+    !finite(initialArmAngularVelocityZ) ||
+    !finite(armMass) ||
+    !finite(armLength) ||
+    armMass <= 0 ||
+    armLength <= 0
+  ) {
+    throw new RangeError("Rep2 C0 arm state/properties must be finite with positive mass and length.");
   }
 
   return {
     geometry,
     component,
     initialArmAngleRadians,
+    initialArmAngularVelocityZ,
     armMass,
     armLength,
   };
@@ -178,6 +205,8 @@ export class Rep2CoiloverForceBench {
   readonly #hingeId: b3JointId;
   readonly #geometry: Rep2CoiloverBenchGeometry;
   readonly #component: Rep2CoiloverComponent;
+  readonly #armMass: number;
+  readonly #armInertiaZ: number;
   #disposed = false;
 
   static async create(options: Rep2CoiloverBenchOptions): Promise<Rep2CoiloverForceBench> {
@@ -192,6 +221,7 @@ export class Rep2CoiloverForceBench {
     this.#b3 = b3;
     this.#geometry = options.geometry;
     this.#component = options.component;
+    this.#armMass = options.armMass;
 
     const worldDef = b3.b3DefaultWorldDef();
     worldDef.gravity = vec3();
@@ -223,6 +253,7 @@ export class Rep2CoiloverForceBench {
     );
 
     const rodInertia = (options.armMass * options.armLength * options.armLength) / 12;
+    this.#armInertiaZ = rodInertia;
     b3.b3Body_SetMassData(
       this.#armId,
       diagonalMassData(
@@ -253,6 +284,10 @@ export class Rep2CoiloverForceBench {
     hingeDef.base.localFrameB = { p: vec3(), q: identityQuat() };
     hingeDef.base.collideConnected = false;
     this.#hingeId = b3.b3CreateRevoluteJoint(this.#worldId, hingeDef);
+
+    if (options.initialArmAngularVelocityZ !== 0) {
+      b3.b3Body_SetAngularVelocity(this.#armId, vec3(0, 0, options.initialArmAngularVelocityZ));
+    }
   }
 
   get geometry(): Rep2CoiloverBenchGeometry {
@@ -290,6 +325,7 @@ export class Rep2CoiloverForceBench {
     const axisFromChassisToArm = scale(span, 1 / currentLength);
     const chassisEyeVelocity = this.#eyeVelocity(this.#baseId, chassisEyeWorld);
     const armEyeVelocity = this.#eyeVelocity(this.#armId, armEyeWorld);
+    const armCenterVelocity = clonePoint(this.#b3.b3Body_GetLinearVelocity(this.#armId));
     const relativeVelocity = subtract(armEyeVelocity, chassisEyeVelocity);
     const relativeAxialSpeed = dot(relativeVelocity, axisFromChassisToArm);
     const extension = currentLength - this.#component.restLength;
@@ -301,6 +337,24 @@ export class Rep2CoiloverForceBench {
     const hingeWorld = this.#b3.b3Body_GetWorldPoint(this.#armId, vec3());
     const armEyeLeverFromHinge = subtract(armEyeWorld, hingeWorld);
     const momentOnArmAboutHinge = cross(armEyeLeverFromHinge, forceOnArm);
+    const armAngularVelocity = clonePoint(this.#b3.b3Body_GetAngularVelocity(this.#armId));
+
+    const springPotentialEnergy = 0.5 * this.#component.springStiffness * extension * extension;
+    // The revolute's only free rotational DOF is local/world Z in this bench,
+    // so Izz is sufficient for the rotational term. Translational kinetic
+    // energy uses the body's COM velocity, which Box3D stores as linearVelocity.
+    const armKineticEnergy =
+      0.5 * this.#armMass * dot(armCenterVelocity, armCenterVelocity) +
+      0.5 * this.#armInertiaZ * armAngularVelocity.z * armAngularVelocity.z;
+    const passiveMechanicalEnergy = springPotentialEnergy + armKineticEnergy;
+
+    const componentPowerOnBodies =
+      dot(forceOnArm, armEyeVelocity) + dot(forceOnChassis, chassisEyeVelocity);
+    const springPotentialPower = springContribution * relativeAxialSpeed;
+    const dampingDissipationPower =
+      this.#component.dampingCoefficient * relativeAxialSpeed * relativeAxialSpeed;
+    const passivityResidual =
+      componentPowerOnBodies + springPotentialPower + dampingDissipationPower;
 
     return {
       hingeAngle: this.#b3.b3RevoluteJoint_GetAngle(this.#hingeId),
@@ -308,6 +362,7 @@ export class Rep2CoiloverForceBench {
       armEyeWorld: clonePoint(armEyeWorld),
       chassisEyeVelocity,
       armEyeVelocity,
+      armCenterVelocity,
       axisFromChassisToArm,
       currentLength,
       extension,
@@ -319,7 +374,14 @@ export class Rep2CoiloverForceBench {
       forceOnArm,
       armEyeLeverFromHinge,
       momentOnArmAboutHinge,
-      armAngularVelocity: clonePoint(this.#b3.b3Body_GetAngularVelocity(this.#armId)),
+      armAngularVelocity,
+      springPotentialEnergy,
+      armKineticEnergy,
+      passiveMechanicalEnergy,
+      componentPowerOnBodies,
+      springPotentialPower,
+      dampingDissipationPower,
+      passivityResidual,
     };
   }
 
@@ -330,14 +392,50 @@ export class Rep2CoiloverForceBench {
     return trace;
   }
 
+  /**
+   * Apply the component law once, then let Box3D reuse that accumulated force
+   * across all internal substeps of this public outer step. This intentionally
+   * models the JV-like stale-force path C0b needs to characterize.
+   */
+  advanceOuter(timeStep: number, internalSubSteps = 1): Rep2CoiloverForceTrace {
+    this.#assertActive();
+    validateStep(timeStep, internalSubSteps, "Rep2 C0 outer advance");
+    this.applyForce();
+    this.#b3.b3World_Step(this.#worldId, timeStep, internalSubSteps);
+    return this.trace();
+  }
+
+  /**
+   * Divide one observation interval into public Box3D steps and re-evaluate the
+   * state-dependent component law before every one. This is the explicit-force
+   * convergence path; it does not pretend to be an internal Box3D callback.
+   */
+  advanceFresh(timeStep: number, refreshCount = 1): Rep2CoiloverForceTrace {
+    this.#assertActive();
+    validateStep(timeStep, refreshCount, "Rep2 C0 fresh advance");
+    const h = timeStep / refreshCount;
+    for (let index = 0; index < refreshCount; index += 1) {
+      this.applyForce();
+      this.#b3.b3World_Step(this.#worldId, h, 1);
+    }
+    return this.trace();
+  }
+
+  /** Advance the same substrate without applying the component law at all. */
+  advanceWithoutComponentForce(timeStep: number, internalSubSteps = 1): Rep2CoiloverForceTrace {
+    this.#assertActive();
+    validateStep(timeStep, internalSubSteps, "Rep2 C0 free advance");
+    this.#b3.b3World_Step(this.#worldId, timeStep, internalSubSteps);
+    return this.trace();
+  }
+
   step(count = 1): Rep2CoiloverForceTrace {
     this.#assertActive();
     if (!Number.isInteger(count) || count < 0) {
       throw new RangeError("Rep2 C0 step count must be a non-negative integer.");
     }
     for (let index = 0; index < count; index += 1) {
-      this.applyForce();
-      this.#b3.b3World_Step(this.#worldId, STEP_DT, 1);
+      this.advanceFresh(STEP_DT, 1);
     }
     return this.trace();
   }
