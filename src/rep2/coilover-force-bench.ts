@@ -11,6 +11,7 @@ import { identityQuat, vec3 } from "../v0/math.js";
 
 const STEP_DT = 1 / 240;
 const MIN_EYE_SEPARATION = 1e-4;
+const SOLVER_EXTENT_HALF = 0.02;
 
 export interface Rep2CoiloverComponent {
   readonly springStiffness: number;
@@ -207,6 +208,21 @@ export class Rep2CoiloverForceBench {
     armDef.rotation = quatAboutZ(options.initialArmAngleRadians);
     armDef.enableSleep = false;
     this.#armId = b3.b3CreateBody(this.#worldId, armDef);
+
+    // Pinned box3d.js 0.0.2 does not integrate accumulated force/torque
+    // reliably for a shapeless dynamic body even after SetMassData. Give the
+    // solver a tiny real extent, then overwrite all physical mass properties
+    // below. This shape is substrate scaffolding only; it is not C0 mechanism
+    // authority and there are no other collidable shapes in this bench.
+    const extentShapeDef = b3.b3DefaultShapeDef();
+    extentShapeDef.density = 1;
+    b3.b3CreateBoxShape(
+      this.#armId,
+      extentShapeDef,
+      SOLVER_EXTENT_HALF,
+      SOLVER_EXTENT_HALF,
+      SOLVER_EXTENT_HALF,
+    );
 
     const rodInertia = (options.armMass * options.armLength * options.armLength) / 12;
     b3.b3Body_SetMassData(
