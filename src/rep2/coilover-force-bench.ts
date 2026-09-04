@@ -209,11 +209,9 @@ export class Rep2CoiloverForceBench {
     armDef.enableSleep = false;
     this.#armId = b3.b3CreateBody(this.#worldId, armDef);
 
-    // Pinned box3d.js 0.0.2 does not integrate accumulated force/torque
-    // reliably for a shapeless dynamic body even after SetMassData. Give the
-    // solver a tiny real extent, then overwrite all physical mass properties
-    // below. This shape is substrate scaffolding only; it is not C0 mechanism
-    // authority and there are no other collidable shapes in this bench.
+    // Pinned box3d.js 0.0.2 needs a real shape to establish finite solver
+    // extents. The tiny shape below is substrate scaffolding only; physical
+    // mass/COM/inertia are explicitly overwritten afterwards.
     const extentShapeDef = b3.b3DefaultShapeDef();
     extentShapeDef.density = 1;
     b3.b3CreateBoxShape(
@@ -232,6 +230,20 @@ export class Rep2CoiloverForceBench {
         vec3(-0.5 * options.armLength, 0, 0),
         vec3(Math.max(0.002, 0.05 * rodInertia), rodInertia, rodInertia),
       ),
+    );
+
+    // Pinned engine defect: b3Body_SetMassData updates invInertiaLocal but not
+    // invInertiaWorld. Force/torque integration reads the world tensor, so a
+    // shaped body otherwise keeps the old shape-derived inertia and a
+    // shapeless body keeps zero. A no-op transform refresh uses the engine's
+    // own normal path to rebuild invInertiaWorld from the authored tensor.
+    // Current upstream Box3D has regression coverage for SetMassData producing
+    // all solver-visible mass/inertia state; this compatibility refresh is
+    // therefore experiment substrate, not component semantics.
+    b3.b3Body_SetTransform(
+      this.#armId,
+      b3.b3Body_GetPosition(this.#armId),
+      b3.b3Body_GetRotation(this.#armId),
     );
 
     const hingeDef = b3.b3DefaultRevoluteJointDef();
