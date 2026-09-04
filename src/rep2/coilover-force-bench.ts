@@ -286,7 +286,22 @@ export class Rep2CoiloverForceBench {
     this.#hingeId = b3.b3CreateRevoluteJoint(this.#worldId, hingeDef);
 
     if (options.initialArmAngularVelocityZ !== 0) {
-      b3.b3Body_SetAngularVelocity(this.#armId, vec3(0, 0, options.initialArmAngularVelocityZ));
+      const omega = options.initialArmAngularVelocityZ;
+      const halfLength = 0.5 * options.armLength;
+      const angle = options.initialArmAngleRadians;
+      const centerFromHinge = vec3(
+        -halfLength * Math.cos(angle),
+        -halfLength * Math.sin(angle),
+        0,
+      );
+      // For a rigid body rotating about the origin hinge, v_COM = omega x r_COM.
+      // Setting both velocities avoids manufacturing a first-step hinge
+      // correction impulse in the free/damper-only C0b controls.
+      b3.b3Body_SetAngularVelocity(this.#armId, vec3(0, 0, omega));
+      b3.b3Body_SetLinearVelocity(
+        this.#armId,
+        cross(vec3(0, 0, omega), centerFromHinge),
+      );
     }
   }
 
