@@ -94,10 +94,29 @@ panel.textContent = "C1.0 — loading exact donor…";
 function addBindReferenceMarker(position: THREE.Vector3, radius: number): void {
   const marker = new THREE.Mesh(
     new THREE.SphereGeometry(radius, 18, 12),
-    new THREE.MeshStandardMaterial({ color: 0xffc857, roughness: 0.45 }),
+    new THREE.MeshBasicMaterial({
+      color: 0xff2fb3,
+      wireframe: true,
+      depthTest: false,
+      depthWrite: false,
+    }),
   );
   marker.position.copy(position);
+  marker.renderOrder = 1000;
   scene.add(marker);
+
+  const axes = new THREE.AxesHelper(radius * 2.6);
+  axes.position.copy(position);
+  axes.renderOrder = 1001;
+  axes.traverse((object) => {
+    const material = (object as THREE.Line).material;
+    if (material && !Array.isArray(material)) {
+      material.depthTest = false;
+      material.depthWrite = false;
+      material.needsUpdate = true;
+    }
+  });
+  scene.add(axes);
 }
 
 function fitCamera(box: THREE.Box3): void {
@@ -167,7 +186,7 @@ loader.load(
     const box = new THREE.Box3().setFromObject(gltf.scene);
     if (box.isEmpty()) throw new Error("loaded donor has empty rendered bounds");
     const size = box.getSize(new THREE.Vector3());
-    const markerRadius = Math.max(Math.max(size.x, size.y, size.z) * 0.025, 0.02);
+    const markerRadius = Math.max(Math.max(size.x, size.y, size.z) * 0.035, 0.025);
     addBindReferenceMarker(new THREE.Vector3(upperOrigin.x, upperOrigin.y, upperOrigin.z), markerRadius);
     addBindReferenceMarker(new THREE.Vector3(lowerOrigin.x, lowerOrigin.y, lowerOrigin.z), markerRadius);
     fitCamera(box.clone().expandByScalar(markerRadius * 2));
@@ -195,8 +214,8 @@ loader.load(
     panel.textContent = [
       "Rep2 C1.0 — real donor import",
       "",
-      "Yellow markers = authored node origins only.",
-      "They are NOT yet accepted as mechanical eyes.",
+      "Magenta wireframe + axes = authored node origins only.",
+      "They are candidate visual attachment references, NOT mechanical authority.",
       "",
       JSON.stringify(evidence, null, 2),
     ].join("\n");
