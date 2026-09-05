@@ -17,7 +17,7 @@ execFileSync(
   { cwd: repositoryRoot, stdio: "inherit" },
 );
 
-const testFiles = ["e1", "v0", "r1", "rep2", "rep3", "s0"].flatMap((suite) => {
+const testFiles = ["e1", "v0", "r1", "rep2", "rep3", "s0", "rep4"].flatMap((suite) => {
   const directory = join(buildRoot, "tests", suite);
   return readdirSync(directory)
     .filter((name) => name.endsWith(".test.js"))
