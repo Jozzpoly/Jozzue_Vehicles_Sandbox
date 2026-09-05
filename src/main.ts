@@ -9,6 +9,9 @@ if (params.has("e1")) {
 } else if (params.has("c1")) {
   document.title = "JV Rep2 C1 Causal Damper Correspondence";
   await import("./rep2/c1-app.ts");
+} else if (params.has("rep3")) {
+  document.title = "JV Rep3 Geometry-Derived Hinge";
+  await import("./rep3/stage-b-app.ts");
 } else {
   document.title = "JV R1 Direct Steering Pickup";
   await import("./r1/app.ts");
