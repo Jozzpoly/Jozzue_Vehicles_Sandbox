@@ -9,13 +9,15 @@ export default defineConfig({
   reporter: "list",
   outputDir: "test-results/rep2-c1",
   webServer: {
-    command: `${JSON.stringify(process.execPath)} node_modules/vite/bin/vite.js --host 127.0.0.1 --port 4173 --strictPort`,
-    url: "http://127.0.0.1:4173",
+    command: `${JSON.stringify(process.execPath)} node_modules/vite/bin/vite.js --host 127.0.0.1 --port 41731 --strictPort`,
+    url: "http://127.0.0.1:41731",
+    // Fail closed on an occupied port so a stale server from another checkout
+    // cannot satisfy this evidence run.
     reuseExistingServer: false,
     timeout: 30_000,
   },
   use: {
-    baseURL: "http://127.0.0.1:4173",
+    baseURL: "http://127.0.0.1:41731",
     browserName: "chromium",
     headless: true,
     viewport: { width: 1440, height: 900 },

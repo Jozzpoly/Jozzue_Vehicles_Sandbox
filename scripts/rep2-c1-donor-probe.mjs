@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { writeFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import * as THREE from "three";
 
 const DONOR = Object.freeze({
@@ -8,8 +8,12 @@ const DONOR = Object.freeze({
   path: "assets/source/Asset_Dumper.gltf",
   gitBlobSha: "dcdaf197bf48ef8894af4de27682d55dd0b1343d",
   byteLength: 32240,
-  url: "https://raw.githubusercontent.com/Jozzpoly/Box3d_FunProject/241fe10a9056836332c21d9614471d32d749ce3d/assets/source/Asset_Dumper.gltf",
+  sourceUrl: "https://raw.githubusercontent.com/Jozzpoly/Box3d_FunProject/241fe10a9056836332c21d9614471d32d749ce3d/assets/source/Asset_Dumper.gltf",
+  runtimeUrl: "/assets/rep2/Asset_Dumper.gltf",
+  repositoryPath: "public/assets/rep2/Asset_Dumper.gltf",
 });
+
+const LOCAL_DONOR = new URL("../public/assets/rep2/Asset_Dumper.gltf", import.meta.url);
 
 function fail(message) {
   throw new Error(`Rep2 C1 donor probe: ${message}`);
@@ -162,9 +166,7 @@ function nearestOriginBracket(points, epsilon = 1e-7) {
 }
 
 async function run() {
-  const response = await fetch(DONOR.url, { redirect: "follow" });
-  if (!response.ok) fail(`HTTP ${response.status} fetching exact donor`);
-  const bytes = Buffer.from(await response.arrayBuffer());
+  const bytes = Buffer.from(await readFile(LOCAL_DONOR));
   const observedSha = gitBlobSha(bytes);
 
   if (bytes.length !== DONOR.byteLength) {
@@ -326,7 +328,7 @@ async function run() {
       nodeOriginsAreMeasuredBindReferences: true,
       endOriginsAreGeometricallyBracketed: true,
       nodeOriginsAreAcceptedMechanicalEyes: false,
-      note: "C1.0 now proves the two end-node origins are authored geometric end references bracketed by real donor geometry. Mechanical authority still comes only from future C1 live eye state.",
+      note: "C1.0 proves the end-node origins are authored geometric references bracketed by real donor geometry. C1's live mechanical authority comes from the separate native-spring relation, never from these visual nodes.",
     },
   };
 
