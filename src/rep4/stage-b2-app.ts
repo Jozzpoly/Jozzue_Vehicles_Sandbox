@@ -484,17 +484,23 @@ function finishAxisDrag(event?: PointerEvent): void {
 canvas.addEventListener("pointerdown", (event) => {
   pointerToNdc(event.clientX, event.clientY);
   raycaster.setFromCamera(pointerNdc, camera);
+
+  // Physical authored hardpoints win acquisition over the oversized invisible
+  // gizmo pickers. A nearby active gizmo must not make another visible
+  // mechanical point impossible to select.
+  const markerHit = raycaster.intersectObjects(Object.values(editableMarkers), false)[0];
+  if (markerHit !== undefined) {
+    selectHardpoint(markerHit.object.userData.hardpointId as Rep4B2HardpointId);
+    event.preventDefault();
+    return;
+  }
+
   if (selectedId !== null && gizmo.visible) {
     const gizmoHit = raycaster.intersectObjects(gizmoPickers, false)[0];
     if (gizmoHit !== undefined) {
       beginAxisDrag(gizmoHit.object.userData.axis as AxisName, event);
       return;
     }
-  }
-  const markerHit = raycaster.intersectObjects(Object.values(editableMarkers), false)[0];
-  if (markerHit !== undefined) {
-    selectHardpoint(markerHit.object.userData.hardpointId as Rep4B2HardpointId);
-    event.preventDefault();
   }
 });
 canvas.addEventListener("pointermove", applyAxisDrag);
