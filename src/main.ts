@@ -12,6 +12,9 @@ if (params.has("e1")) {
 } else if (params.has("rep3")) {
   document.title = "JV Rep3 Geometry-Derived Hinge";
   await import("./rep3/stage-b-app.ts");
+} else if (params.has("grammarC")) {
+  document.title = "JV Construction Grammar Family C";
+  await import("./grammar/component-in-hand-app.ts");
 } else if (params.has("grammar")) {
   document.title = "JV Construction Grammar Spikes V0";
   await import("./grammar/spikes-app-v1.ts");
