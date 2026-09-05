@@ -1,0 +1,30 @@
+name: Rep3 Hinge Line Stage A
+
+on:
+  push:
+    branches:
+      - experiment/rep3-geometry-derived-hinge-line
+
+jobs:
+  stage-a-authority:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Compile and run inherited + Rep3 source tests
+        run: npm run test
+      - name: Emit exact Rep3 Stage A A1-A5 evidence
+        run: node scripts/rep3-stage-a-evidence.mjs artifacts/rep3-stage-a-geometry-derived-hinge.json
+      - name: Production build
+        run: npm run build
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rep3-stage-a-geometry-derived-hinge-evidence
+          path: artifacts/rep3-stage-a-geometry-derived-hinge.json
+          if-no-files-found: warn
