@@ -1,0 +1,22 @@
+name: Rep4 Stage A Tie Ownership
+
+on:
+  push:
+    branches:
+      - experiment/rep4-multi-relation-corner
+
+jobs:
+  tie-ownership:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Compile and run inherited + Rep4 tests
+        run: npm run test
+      - name: Production build regression
+        run: npm run build
