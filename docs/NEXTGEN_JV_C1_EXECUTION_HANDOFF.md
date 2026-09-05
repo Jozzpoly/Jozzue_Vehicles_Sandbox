@@ -1,8 +1,48 @@
 # Nextgen JV — C1 causal damper correspondence execution handoff
 
-Date: 2026-09-04
+Date: 2026-09-05
 
-Status: **EXECUTION READY — C1 implementation not started**
+Status: **CLOSED — BOUNDED TECHNICAL PASS**
+
+Accepted implementation:
+
+`codex/nextgen-jv-live-frontier@8c7cb1515577f0c885e576266ad10997e69b26e7`
+
+Accepted CI:
+
+`https://github.com/Jozzpoly/Jozzue_Vehicles_Sandbox/actions/runs/33953935724`
+
+Closure receipt:
+
+`evidence/rep2/REP2_C1_CAUSAL_DAMPER_CORRESPONDENCE_RECEIPT_2026-09-05.md`
+
+C1 established a bounded live chain from one authority record through a native
+Box3D distance spring and live body eyes to the exact real donor, with an
+independent Three.js scene-graph observer that detects a stale visual eye and
+then verifies recovery. Owner checkpoint remains **NOT RUN**; no product,
+vehicle, or architecture PASS is claimed.
+
+Stop implementation on this branch. The next move is a separate docs-only
+canonicalization branch from a freshly verified `origin/main`, followed by
+fresh problem reselection. Do not merge this experimental lineage to recover
+documentation.
+
+Reproduction:
+
+1. `node scripts/rep2-c1-donor-probe.mjs`
+2. `npm run check`
+3. `npx playwright test --config playwright.rep2-c1.config.ts`
+
+On this Windows machine use the recorded exact Node/npm fallback when the npm
+shim is unavailable. Playwright server reuse is disabled and a busy port must
+fail closed.
+
+The branch-local `README.md`, `NEXTGEN_JV_CURRENT_STATE.md`,
+`NEXTGEN_JV_FRESH_TAKEOVER.md`, and `NEXTGEN_JV_PROJECT_SOUL.md` are inherited
+from an older line and are not canonical current project truth.
+
+The remainder of this document preserves the pre-verdict execution brief and
+acceptance boundary from `005bc82aeb75167ca153b3d704585af4ef022049` for audit.
 
 This is the compact startup spine for continuing the current Rep2 work on the exact C1 branch. It exists because the current canonical `main` docs predate the C0a/C0b/C0c and C1-readiness work.
 
