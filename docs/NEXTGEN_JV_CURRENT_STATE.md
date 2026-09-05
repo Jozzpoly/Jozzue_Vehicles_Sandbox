@@ -10,57 +10,40 @@ Closed research layers:
 
 - **E1 — construction-loop research:** CLOSED; central sufficiency hypothesis unresolved.
 - **V0 — drivable physical steering consequence:** CLOSED with technical PASS and Owner readability PASS for bounded research-carrier reuse only.
-- **R1 — direct spatial steering construction consequence:** CLOSED with bounded positive Owner-backed causal-construction evidence; current authoring surface is not product-accepted.
-- **Rep2 — donor/force/correspondence line:** donor forensics, Stage A, C0a/C0b/C0c and C1 are bounded evidence. C1 is **CLOSED — BOUNDED TECHNICAL PASS** with no Owner/product/vehicle/architecture PASS.
-
-A fresh post-C1 reselection has now been completed.
-
-**Selected next representative problem: Rep3 — geometry-derived hinge line.**
-
-Rep3 asks whether recognizable physical mounting geometry can itself define the real hinge relation:
-
-`two physical mounts → derived hinge line → native revolute relation → live arm / wheel-endpoint motion`
-
-rather than requiring a separately authored hidden solver axis.
-
-Rep3 Stage P, the pinned-substrate feasibility gate, has passed on Linux CI. The current frontier is therefore **Rep3 Stage A — causal geometry-derived relation gate**.
+- **R1 — direct spatial steering construction consequence:** CLOSED with bounded positive Owner-backed causal-construction evidence; authoring surface not product-accepted.
+- **Rep2 — donor/force/correspondence line:** donor forensics, Stage A, C0a/C0b/C0c and C1 are closed bounded evidence. C1 is a bounded technical PASS with no Owner/product/vehicle/architecture PASS.
+- **Rep3 — geometry-derived hinge line:** CLOSED after Stage P/A technical qualification, real-Chromium Stage-B preflight and first Owner hands-on. Geometry-derived hinge authority is technically viable and human operation is demonstrated; construction-quality, feel and product verdicts are **NOT EARNED** because the minimal apparatus was too sparse/raw/placeholder-heavy to manifest enough of the target experience.
 
 No experiment defines final JV architecture.
 
-## 2. Canonical and active refs
+The current frontier is **fresh representative-problem selection after Rep3**.
 
-Canonical default branch after post-C1 docs canonicalization:
+The key change from Rep3 is methodological: the next Owner-facing apparatus must remain bounded but must have enough **representative task richness / Owner-judgement eligibility** for the specific experiential claim we intend to ask the Owner to make.
 
-`main@9df1833c26955e8b0a3d2017ea14c154891adbd6`
+## 2. Canonical and preserved refs
+
+Canonical `main` at the start of Rep3-closure canonicalization:
+
+`a177569e74fb5e438e1eb3760f97e080f104b091`
+
+Verify live `main` before acting; this file may be merged after that base.
 
 Rep2 C1 closure:
 
 - closure branch: `codex/nextgen-jv-live-frontier@d83308dd36559c7357c4ebfb62ccbaed444f4001`
 - accepted implementation: `8c7cb1515577f0c885e576266ad10997e69b26e7`
-- receipt: `evidence/rep2/REP2_C1_CAUSAL_DAMPER_CORRESPONDENCE_RECEIPT_2026-09-05.md` on that lineage
+- canonical closure index: `evidence/rep2/REP2_RESEARCH_CLOSURE_INDEX_2026-09-05.md`
 
-Active Rep3 research branch:
+Rep3:
 
-`experiment/rep3-geometry-derived-hinge-line@122ff50822dd0e3dade9f9ec2ec108c3e6e7185d`
+- experiment pre-closure head: `experiment/rep3-geometry-derived-hinge-line@798cf235b4550bbfb9725364f4f3d85da0cd8d67`
+- Stage-A qualified head: `33c248a6f8991a22f11a92509626d13033458038`
+- Stage-B qualified runtime / frozen Owner specimen: `3de78caf3c7c0066b352d62097591b48fce90d20`
+- frozen Owner alias: `rep3-stage-b-owner-checkpoint@3de78caf3c7c0066b352d62097591b48fce90d20`
+- experiment-closure docs: `experiment/rep3-geometry-derived-hinge-line-closure@1238c6281d67be8b76d8eb4db72b052291135280`
+- canonical closure: `evidence/rep3/REP3_OWNER_CLOSURE_2026-09-05.md`
 
-Rep3 pre-verdict contract:
-
-`evidence/rep3/REP3_GEOMETRY_DERIVED_HINGE_LINE_CONTRACT_2026-09-05.md`
-
-Contract commit:
-
-`989b50e8843daa015d669e0a02b8907afccbd7a2`
-
-Stage P workflow/run:
-
-- workflow: `Rep3 Hinge Line Stage P`
-- run: `33956208177`
-- exact head: `122ff50822dd0e3dade9f9ec2ec108c3e6e7185d`
-- job: `101279905241`
-- artifact: `9966443775`
-- artifact digest: `sha256:14008e9bd18b225844ac8cb9bef2824359ed0a700d538b967b90d8267e882dc8`
-
-Preserve experimental implementation on its named branch. Do not merge it into `main` merely because it is current.
+Rep3 experiment-local detailed receipts remain on the preserved Rep3 lineage and are not required reading unless their exact provenance is needed.
 
 ## 3. Durable evidence inherited from earlier work
 
@@ -79,134 +62,299 @@ V0 established a bounded physical steering chain:
 
 `input → physical rack → fixed-length tie-rods → steering knuckles/wheels → contact → trajectory`
 
-Owner hands-on established that the primitive carrier was readable enough to reuse for bounded research, not that it was a good vehicle/product.
+Owner hands-on established research-carrier readability only, not good vehicle/product feel.
 
 ### R1
 
 R1 established bounded positive evidence that direct spatial authoring can causally change steering/driving behavior and participate in repeated BUILD → DRIVE → BUILD experimentation.
 
-It also established a validation warning:
+Retained validation warning:
 
 > privileged automation reachability is not evidence of human affordance discoverability.
 
-### Rep2 donor forensics / Stage A / C0 / C1
+### Rep2
 
 Important retained conclusions:
 
 - real Blockbench/glTF donors can be reused without inheriting historical rig authority;
-- historical JV_CORE showed concrete visual/physical authority divergence, so plausible animation is not proof of causal correspondence;
-- Stage A established authored pivot/endpoint geometry → real arm/hinge → wheel endpoint/path/contact, but did not author hinge-axis orientation;
-- C0a established physical component properties + installation geometry → real leverage/body response;
-- C0b falsified one stale external-force substep path;
-- C0c qualified a bounded native `k/c/restLength + eyes` mapping for `k>0` linear spring / combined spring+damper using axial effective mass;
-- C1 established a bounded single-authority chain from mechanical relation to native Box3D spring and exact real donor visual projection.
+- historical JV_CORE contained concrete visual/physical authority divergence, so plausible animation is not proof of causal correspondence;
+- direct authored suspension geometry can drive a real arm/hinge/wheel endpoint path;
+- fixed physical spring/damper properties plus installation geometry can change real leverage/body response;
+- one stale external-force/substep seam was falsified;
+- a bounded native Box3D `k/c/restLength + eyes` mapping was qualified for `k > 0` linear spring / combined spring+damper using axial effective mass;
+- C1 established one authority chain from mechanical relation to native Box3D spring and exact real-donor visual projection.
 
-C1 strengthened this durable product constraint:
+Durable causal constraint:
 
 > **One presented mechanical relation has one authority truth. Physics and visible representation are downstream projections of that same relation.**
 
-This is not `render mesh == solver geometry`; it rejects a second live visual mechanical story around a different hidden physical relation.
+This rejects a parallel live visual mechanism that falsely explains behavior caused by a different hidden physical relation; it does not require render mesh to equal solver geometry.
 
-## 4. Rep3 selection decision
+## 4. Rep3 final result
 
-Fresh reselection compared at least these classes:
+Rep3 tested a materially new construction class:
 
-- minimal drivable C1-class carrier;
-- another adaptive real component;
-- Cardan/driveline;
-- geometry-derived hinge/axis authoring.
+`two physical mounts → derived hinge line / midpoint → native revolute relation → live arm endpoint motion`
 
-### Why not the drivable carrier yet
+with no independently authored hinge-axis parameter in the normal authority path.
 
-It is product-close but currently high blast radius: compliant suspension would entangle contact, ride, steering, drive, chassis motion and presentation. A negative Owner result would be hard to localize.
+### Stage P
 
-### Why not Cardan yet
+CLOSED — bounded pinned-substrate feasibility PASS.
 
-Historical recovery found `Cardan_shaft.gltf` as a real visual donor but no recovered causal drivetrain path using it. Historical M5 drive authority lives in wheel-joint spin motors. Selecting Cardan now would require simultaneous invention of transmission authority, phase/orientation semantics and adaptive visual behavior.
+`box3d.js@0.0.2` represented and independently read back materially non-default 3D revolute axes and constrained real motion around them.
 
-### Why Rep3
+### Stage A
 
-Stage A already exposed the exact missing semantic: pivot/endpoint geometry was authored, but revolute local frames remained identity-oriented. Rep3 therefore tests a materially new construction class at low blast radius:
+CLOSED — bounded technical authority/metamorphism PASS.
 
-> **Can the geometry of a recognizable mechanism define the constraint itself?**
+Exact qualified head:
 
-This tests geometry-first viability without deciding final G/A/H architecture:
+`33c248a6f8991a22f11a92509626d13033458038`
 
-- G: geometry-first relation;
-- A: explicit abstract-axis-first relation;
-- H: hybrid/default inference + explicit correction/lock where needed.
+Key results:
 
-## 5. Rep3 Stage P — CLOSED bounded substrate PASS
+- native bodies / pivot / hinge direction read back consistently with the two authored mounts;
+- different mount-line direction produced `0.19430488561029874 m` max/final endpoint path separation in the controlled comparison;
+- line-preserving span change `0.3 m → 1.1 m` produced `0 m` trajectory separation in the ideal rigid hinge;
+- swapping mount endpoint labels changed only axis sign/gauge, with max trajectory separation `5.960464477539063e-8 m`;
+- coincident / near-coincident / non-finite authority rejected explicitly.
 
-Stage P only asked whether pinned `box3d.js@0.0.2` can honestly express and independently read back a materially non-default 3D revolute axis.
+Claim boundary:
 
-Linux CI on exact `122ff508…` passed:
+> recognizable authored geometry can own a real hinge relation in this tested class.
 
-- inherited + Rep3 source tests: **72/72 PASS**;
-- production TypeScript/Vite build: PASS;
-- exact machine evidence artifact emitted.
+This does not select pure geometry-first authoring as final architecture.
 
-The normal world-Z case and a materially tilted axis `normalize(0,1,1)` both produced real native revolute motion around the requested line.
+### Stage B machine/render preflight
 
-Selected artifact measurements:
+Exact runtime:
 
-- baseline native axis alignment error: `0`;
-- tilted native axis A alignment error: `4.44e-16`;
-- tilted native axis B alignment error: `2.18e-10`;
-- tilted native pivot separation: `9.06e-6 m`;
-- tilted max axial-coordinate drift: `2.02e-5 m`;
-- tilted max radial-distance drift: `6.91e-6 m`;
-- tilted max angular-velocity off-axis: `4.15e-4`;
-- final endpoint separation between world-Z and tilted-axis runs: `0.1943048064 m`.
+`3de78caf3c7c0066b352d62097591b48fce90d20`
 
-Claim boundary remains narrow:
+Real Chromium passed rendered acquisition of both bearings, world-axis gizmo manipulation, camera orbit, real Box3D PLAY consequence, exact BUILD recovery and zero page/console errors. Stage P/A regression gates also passed at that exact runtime.
 
-> pinned browser substrate feasibility only.
+### Stage B Owner hands-on
 
-Stage P does **not** prove Stage A authority semantics, rendered/Owner readability, product value, vehicle behavior or architecture.
+The Owner independently:
 
-## 6. Current frontier — Rep3 Stage A
+- acquired both bearings;
+- manipulated them in 3D across multiple axes;
+- made large geometry changes;
+- orbit-inspected the mechanism;
+- used repeated BUILD → PLAY → BUILD cycles;
+- explored substantially different derived hinge orientations, including near-vertical.
 
-Do **not** redo reselection or Stage P unless new evidence contradicts them.
+Human operation reachability is therefore demonstrated.
 
-The next bounded task is Stage A from the frozen pre-verdict contract.
+The decisive feedback was that the apparatus was **too raw, too limited and too placeholder-heavy to support meaningful feel/product judgement**. There was simply too little independent construction space and consequence space.
 
-Normal authority path must contain physical mount geometry, not a separately authored hinge axis:
+Final Rep3 disposition:
 
-- `mountAWorld`;
-- `mountBWorld`;
-- fixed apparatus/body geometry needed for execution;
-- no editable `axis`, Euler angle, solver quaternion or second visual hinge line.
+- technical causal viability: **PASS within scope**;
+- human operation/basic discoverability: **demonstrated**;
+- construction quality: **NOT EARNED**;
+- feel: **NOT EARNED**;
+- product acceptance: **NOT EARNED**;
+- builder/architecture acceptance: **NOT EARNED**.
 
-Derived relation:
+Do not convert `NOT EARNED` into FAIL.
 
-- `pivot = midpoint(mountA, mountB)`;
-- `axisLine = line(mountA, mountB)`;
-- native revolute local-frame Z directions derive from that line.
+Do not polish or enlarge Rep3 itself.
 
-Required Stage A evidence:
+## 5. Workflow correction after Rep3
 
-1. **A1 native authority correspondence** — live joint bodies, pivot and world axis read back from the actual native joint and correspond to derived geometry.
-2. **A2 materially different mount direction changes real motion** — same midpoint/arm/start/load, different hinge-line directions → materially different live endpoint path/motion plane.
-3. **A3 line-preserving spacing metamorphism** — same midpoint/axis direction but different bearing spacing remains kinematically equivalent in this ideal rigid-hinge apparatus.
-4. **A4 endpoint-order metamorphism** — swapping mount labels must not change free unlimited hinge trajectory.
-5. **A5 singularity handling** — coincident/near-coincident/non-finite mount pairs reject explicitly rather than inventing fallback authority.
+Rep3 exposed a failure mode in otherwise rigorous bounded experimentation: a prototype can be technically excellent yet too narrow to answer an experiential question.
 
-Only after Stage A is technically clean should Rep3 proceed to a minimal real-browser Owner-facing Stage B.
+Retained project rule:
 
-## 7. Rep3 Stage B boundary
+> **Only ask the Owner to judge a quality that the current prototype materially manifests. If the apparatus is too sparse to expose that quality, record NOT EARNED and increase only the representative scope needed for the next question.**
 
-Stage B is intentionally small and Owner-facing only after machine preflight.
+This is a question-fit rule, not a demand for high fidelity everywhere.
 
-It should present a recognizable support + two clearly visible physical mount/bearing handles + rigid arm + wheel/spindle endpoint, with direct 3D translation and a short BUILD → PLAY → BUILD loop.
+Before authorizing an Owner gate, classify the intended claim:
 
-The key Owner questions are whether the two mounts visibly/readably define how the arm can rotate, whether moving them intentionally changes the motion plane, and whether this feels like building/repositioning a mechanism rather than configuring a solver axis.
+- **implementation/causality:** source, native readback, deterministic machine tests may be sufficient;
+- **rendered reachability/readability:** real browser interaction and presentation evidence are required;
+- **construction quality / naturalness / feel / value:** the prototype must expose a representative enough task and interaction loop that the Owner can form that judgement from experience.
 
-Natural STOP: first honest Stage B Owner verdict.
+A prototype should remain the smallest manifestation that makes the targeted possibilities and limitations visible without materially distorting the target question.
 
-Do not grow Rep3 into a full wishbone, coilover integration, tire/contact system, drivable vehicle or generic builder.
+### Owner delivery surface
 
-## 8. Strong product constraints to protect
+The delivery path is part of the evaluation setup.
+
+StackBlitz/WebContainers successfully launched the frozen public Vite/Three.js/Box3D.js Rep3 checkpoint and fullscreen removed the initial IDE-chrome issue. It is therefore a useful auxiliary browser-runner candidate, not a failed tool.
+
+However it was introduced without prior qualification and raw experiment branches can expose stale branch-local documentation beside newer runtime code. Cold-start, provenance clarity and fidelity/performance relative to a directly deployed artifact remain separate questions.
+
+Therefore:
+
+- do not count StackBlitz UI chrome as a Rep3 negative result after fullscreen was found;
+- do not promote StackBlitz to canonical JV infrastructure yet;
+- qualify a new delivery/hosting/runtime layer separately before a critical feel/readability checkpoint when practical;
+- keep runtime/evidence provenance explicit and do not treat experiment-branch README as canonical project truth.
+
+## 6. Support research synthesis
+
+External support research was used to challenge the post-Rep3 interpretation, not to override Owner evidence.
+
+Useful retained ideas:
+
+- Houde & Hill: prototypes can target **role**, **look-and-feel** or **implementation**; prototype detail alone does not define what question it can answer.
+- Lim / Stolterman / Tenenberg: prototypes filter selected design qualities; scope, resolution and material should be economically chosen so the target qualities become visible/measurable without distorting understanding of the whole.
+- representative-design / ecological-validity work: user-experience conclusions depend on task, cues and context being representative enough for the intended claim.
+- Shneiderman-style direct manipulation: continuous representation of the objects of interest plus rapid, incremental, reversible actions with visible consequence remains strongly aligned with JV's desired builder interaction.
+
+Mechanical-builder analogs are inspiration only:
+
+- GearBlocks demonstrates the experiential power of many simple functional mechanical elements combined with immediate build/interact/improve loops;
+- Trailmakers demonstrates combinatorial complexity emerging from simple connection semantics;
+- Dream Car Builder demonstrates point/link-based vehicle construction with real mechanical consequences;
+- Onshape/Fusion demonstrate that geometry-anchored joints/mates can coexist with explicit orientation semantics when geometry alone is insufficient.
+
+None of these products or CAD systems has architecture authority over JV.
+
+## 7. Current frontier — select the first richer representative mechanism
+
+Do not immediately build a full vehicle and do not run another one-joint microbench merely because it is cheap.
+
+The next selected apparatus should cross a minimum **Owner-judgement eligibility** threshold while preserving causal diagnosability.
+
+Minimum desired properties:
+
+1. several genuinely independent authored mechanical decisions rather than one near-scalar relation;
+2. those decisions interact so the Owner can form an intention, observe a consequence and revise the construction;
+3. direct spatial manipulation of recognizable mechanical geometry;
+4. enough real donor visual capital to avoid repeating placeholder-dominant presentation where relevant;
+5. physical/visual authority remains single-source and inspectable;
+6. no tire/contact/driving unless the selected question genuinely requires them;
+7. a natural STOP before the apparatus becomes a generic builder or half-built vehicle.
+
+### Candidate comparison
+
+#### A. Multi-relation suspension/mechanism bench — LEADING CLASS
+
+Potential shapes:
+
+- **trailing arm + real damper:** geometry-derived hinge mount pair + arm/wheel endpoint + authored upper/lower damper eyes with fixed physical `k/c/restLength`;
+- **bounded two-arm / upright corner:** upper/lower arm hinge geometry + upright/knuckle connection + optionally qualified damper relation.
+
+Why it is strong:
+
+- combines Rep3 and Rep2 evidence instead of inventing an unrelated system;
+- highly vehicle-representative without requiring driving/contact;
+- creates multiple independent hardpoint decisions and coupled consequences;
+- real donors already exist: `Asset_Dumper.gltf`, `OneSided_Steering_Suspension_Rig.gltf`, `One_Sided_wheel_mount.gltf`, `Offroad_Big_Wheels.gltf`;
+- current Box3D.js family exposes spherical joints as well as revolute/distance relations, so a two-arm candidate is not ruled out at the API level, although the exact pinned-version seam and multi-link stability are not yet qualified.
+
+Main risk:
+
+- a full two-arm corner adds a new spherical-joint / overconstraint / kinematic-composition seam and could become too large too quickly.
+
+Current mitigation:
+
+- perform a tiny **machine-only composition feasibility probe** before selecting two-arm/upright for an Owner apparatus;
+- if that probe reveals large solver/authority ambiguity, prefer a trailing-arm + damper composition, which reuses already-qualified revolute and distance-spring seams while still materially increasing experiential richness.
+
+#### B. Immediate drivable suspension carrier
+
+Pros: highest proximity to the long-term `get in and drive` loop.
+
+Current problem: too many coupled unknowns — contact, ride, steering, drive, chassis motion and presentation — so a negative result would be difficult to diagnose. Do not select merely because the Owner wants richer experience.
+
+#### C. Cardan / driveline
+
+Pros: new mechanical class and real donor visual capital.
+
+Current problem: no recovered causal transmission path; selecting it would simultaneously invent transmission authority, orientation/phase semantics and adaptive visual behavior. Lower near-term leverage than suspension composition.
+
+#### D. Generic multi-link / topology construction grammar
+
+Pros: directly attacks broad builder expressiveness.
+
+Current problem: high architecture/prototype gravity and weak vehicle-specific falsification. Too early to let a disposable experiment define generic component/reference/topology semantics.
+
+### Current recommendation
+
+Treat **small multi-relation suspension/mechanism bench** as the leading class, but do not freeze the exact topology until the composition-feasibility probe separates:
+
+- `trailing arm + damper` — lower blast radius, known joint classes, moderate experiential bandwidth;
+- `two-arm/upright (+ optional damper)` — higher experiential bandwidth and vehicle representativeness, but a new multi-joint stability/authority seam.
+
+## 8. Planned next execution sequence
+
+### S0 — bounded feasibility / selection probe
+
+Goal: choose the smallest mechanism that is rich enough for Owner judgement without buying unnecessary physics complexity.
+
+Machine-only questions:
+
+- does pinned `box3d.js@0.0.2` expose a reliable spherical-joint seam sufficient for a bench linkage?
+- can two arm bodies + upright be assembled without pathological overconstraint/drift under representative motion?
+- can the relation be constructed from explicit live hardpoints with independent native readback rather than hidden frame presets?
+- can the recovered real donor be projected from the same authority without reviving historical socket/rig authority?
+- what is the minimal set of authored choices needed to produce materially different motion and installation response?
+
+Natural S0 STOP:
+
+- select `two-arm/upright` only if the new seam is clean enough that its extra richness buys more information than confusion;
+- otherwise select `trailing-arm + damper` and move on rather than debugging a generalized suspension solver.
+
+### S1 — freeze a pre-verdict contract
+
+Before product-facing implementation, record:
+
+- central unknown;
+- authored authority record;
+- what is derived vs explicitly authored;
+- expected metamorphisms/falsification;
+- real donor provenance;
+- Owner question and the exact experiential qualities the apparatus must manifest;
+- explicit non-scope and natural STOP.
+
+Do not infer final component/data model from the contract.
+
+### S2 — machine causal composition gate
+
+Prove the selected mechanism's real authority chain before UI polish.
+
+Likely required evidence:
+
+- native joint bodies/frames/anchors correspond to authored hardpoints;
+- changing one hardpoint class causes the expected real kinematic consequence;
+- changing damper installation geometry changes leverage/body response while authored component `k/c/restLength` remain fixed;
+- unrelated authored relations remain unchanged under localized edits where expected;
+- singular or physically incoherent configurations diagnose explicitly; permit unusual configurations unless they threaten solver/program integrity;
+- visible donor endpoints are observed from live physical authority, not duplicated visual endpoints.
+
+### S3 — Owner-facing representative apparatus
+
+Only after S2 is clean.
+
+Required experiential threshold:
+
+- several meaningful hardpoints/components can be manipulated directly;
+- the Owner can create materially different but valid configurations without following a scripted recipe;
+- PLAY produces an understandable coupled mechanical consequence;
+- BUILD recovery preserves authored intent;
+- real donor visuals are used wherever they materially improve recognition/readability;
+- gizmo/camera/numeric affordances support exploration, not merely test execution.
+
+The Owner should be able to answer questions such as:
+
+- am I constructing a recognizable mechanism rather than tuning solver parameters?
+- can I form an intention, predict roughly what a hardpoint change will do, test it and revise?
+- do coupled relations remain understandable rather than becoming magic?
+- is this beginning to produce a construction loop worth extending toward a vehicle?
+
+### S4 — stop and reselect
+
+STOP after the first honest Owner verdict on the richer apparatus.
+
+Do not automatically add tire contact, steering, drivetrain or a chassis carrier. Those become next questions only if the Owner result and evidence justify them.
+
+## 9. Strong product constraints to protect
 
 - short loop: `build → run → observe → improve → get in and drive`;
 - real authored mechanics should own presented consequences;
@@ -215,17 +363,19 @@ Do not grow Rep3 into a full wishbone, coilover integration, tire/contact system
 - permissive diagnosis rather than paternalistic blocking where program integrity permits;
 - physical component semantics before hidden outcome-preserving retuning;
 - real assets early enough to avoid placeholder-product gravity;
-- Owner hands-on remains authority for feel/readability/value; telemetry does not substitute for it.
+- Owner hands-on remains authority for feel/readability/value;
+- prototype scope must match the claim being tested;
+- evidence-scaled validation rather than ritual.
 
-## 9. Important open questions
+## 10. Important open questions
 
 Still unresolved:
 
-- whether geometry-first, axis-first or hybrid relation authoring generalizes beyond Rep3;
-- final builder grammar;
+- where geometry-first vs explicit-axis vs hybrid relation semantics should generalize;
+- final builder grammar and topology-edit semantics;
 - final component/reference/data model;
-- final adaptive-component/intent-lock semantics;
-- hinge limits/motors/zero-angle/bushing semantics;
+- adaptive-component intent locks;
+- joint limits/motors/zero-angle/bushing semantics;
 - pure damping and large-travel spring remapping;
 - full suspension topology;
 - tire/contact and drivetrain/transmission models;
@@ -234,10 +384,10 @@ Still unresolved:
 
 Do not turn these unknowns into architecture for planning convenience.
 
-## 10. Execution routing
+## 11. Execution routing
 
 Browser ChatGPT is currently the primary JV research/execution surface.
 
-The Owner is temporarily reserving Codex/Work for separate experiments with newly available AI. Do not make JV progress depend on Codex or hand routine work to it by default until that routing changes.
+The Owner is temporarily reserving Codex/Work for separate experiments. Do not make JV progress depend on Codex or hand routine work to it by default.
 
 Use Browser ChatGPT + GitHub/web/runtime capabilities directly where sufficient. Ask the Owner for the smallest possible local/manual action only at a genuine capability boundary.
