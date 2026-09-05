@@ -19,7 +19,14 @@ function baseline() {
 }
 function alternate() {
   const b=baseline();
-  return {...b, chassisTiePointWorld:v(0.28,0,-0.18)};
+  return {...b, chassisTiePointWorld:v(0.28,-0.1,0.32)};
+}
+function wrapRadians(a){return Math.atan2(Math.sin(a),Math.cos(a));}
+function signedTwist(q,axis){
+  const m=Math.hypot(axis.x,axis.y,axis.z);
+  const ax=axis.x/m, ay=axis.y/m, az=axis.z/m;
+  const projected=q.v.x*ax+q.v.y*ay+q.v.z*az;
+  return wrapRadians(2*Math.atan2(projected,q.s));
 }
 function summarize(r){
   return {
@@ -31,6 +38,7 @@ function summarize(r){
     maxLowerBallSeparation:r.maxLowerBallSeparation,
     maxUprightOrientationDeparture:r.maxUprightOrientationDeparture,
     maxUprightDisplacement:r.maxUprightDisplacement,
+    finalSignedTwist:signedTwist(r.final.uprightRotation,r.derived.initialTwistAxisWorld),
     initialPosition:r.initial.uprightPositionWorld,
     finalPosition:r.final.uprightPositionWorld,
     initialRotation:r.initial.uprightRotation,
@@ -49,8 +57,10 @@ const [twistTie,twistFree,travelBase,travelAlt]=await Promise.all([
   runRep4TieOwnedProbe(baseline(),"TIE","TRAVEL",90),
   runRep4TieOwnedProbe(alternate(),"TIE","TRAVEL",90),
 ]);
+const travelBaseTwist=signedTwist(travelBase.final.uprightRotation,travelBase.derived.initialTwistAxisWorld);
+const travelAltTwist=signedTwist(travelAlt.final.uprightRotation,travelAlt.derived.initialTwistAxisWorld);
 const evidence={
-  schema:"rep4-a3-tie-diagnostics-v1",
+  schema:"rep4-a3-tie-diagnostics-v2",
   twistTie:summarize(twistTie),
   twistFree:summarize(twistFree),
   travelBaseline:summarize(travelBase),
@@ -58,6 +68,7 @@ const evidence={
   comparisons:{
     freeMinusTiedMaxOrientation:twistFree.maxUprightOrientationDeparture-twistTie.maxUprightOrientationDeparture,
     travelFinalOrientationSeparation:qsep(travelBase.final.uprightRotation,travelAlt.final.uprightRotation),
+    travelSignedTwistSeparation:Math.abs(wrapRadians(travelAltTwist-travelBaseTwist)),
     travelMaxOrientationDepartureDifference:Math.abs(travelBase.maxUprightOrientationDeparture-travelAlt.maxUprightOrientationDeparture),
     travelDisplacementDifference:Math.abs(travelBase.maxUprightDisplacement-travelAlt.maxUprightDisplacement),
   }
