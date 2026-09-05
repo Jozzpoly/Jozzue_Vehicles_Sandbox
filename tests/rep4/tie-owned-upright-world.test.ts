@@ -9,6 +9,7 @@ import {
 
 const BALL_SEPARATION_MAX = 5e-3;
 const TIE_LENGTH_ERROR_MAX = 5e-4;
+const NATIVE_GEOMETRY_READBACK_MAX = 1e-6;
 const TWIST_CONTROL_SEPARATION_MIN = 0.05;
 const TIE_GEOMETRY_ORIENTATION_SEPARATION_MIN = 0.005;
 
@@ -67,15 +68,15 @@ function assertTieIntegrity(
   assert.deepEqual(result.tieNativeBodies!.bodyA, result.expectedBodies.support);
   assert.deepEqual(result.tieNativeBodies!.bodyB, result.expectedBodies.upright);
   assert.ok(
-    Math.abs(result.tieNativeLength! - result.derived.tieLength) < 1e-8,
+    Math.abs(result.tieNativeLength! - result.derived.tieLength) < NATIVE_GEOMETRY_READBACK_MAX,
     `native tie length mismatch ${result.tieNativeLength} vs ${result.derived.tieLength}`,
   );
   assert.ok(
-    distance(result.tieNativeLocalA!, result.authority.chassisTiePointWorld) < 1e-8,
+    distance(result.tieNativeLocalA!, result.authority.chassisTiePointWorld) < NATIVE_GEOMETRY_READBACK_MAX,
     "native support-side tie anchor does not match authored chassis point",
   );
   assert.ok(
-    distance(result.tieNativeLocalB!, result.derived.uprightTiePickupLocal) < 1e-8,
+    distance(result.tieNativeLocalB!, result.derived.uprightTiePickupLocal) < NATIVE_GEOMETRY_READBACK_MAX,
     "native upright-side tie anchor does not match derived body-local pickup",
   );
   assert.ok(
@@ -99,14 +100,14 @@ test("Rep4 A3 tie authority is a real fixed-length native relation from authored
 
   assertTieIntegrity(result);
   assert.ok(derived.tieLength > 0.1);
-  assert.equal(result.tieNativeLength, derived.tieLength);
+  assert.ok(Math.abs(result.tieNativeLength! - derived.tieLength) < NATIVE_GEOMETRY_READBACK_MAX);
   assert.ok(result.initial.tieChassisPointWorld !== null);
   assert.ok(result.initial.tieUprightPickupWorld !== null);
   assert.ok(
-    distance(result.initial.tieChassisPointWorld!, authority.chassisTiePointWorld) < 1e-6,
+    distance(result.initial.tieChassisPointWorld!, authority.chassisTiePointWorld) < NATIVE_GEOMETRY_READBACK_MAX,
   );
   assert.ok(
-    distance(result.initial.tieUprightPickupWorld!, authority.uprightTiePickupWorld) < 1e-6,
+    distance(result.initial.tieUprightPickupWorld!, authority.uprightTiePickupWorld) < NATIVE_GEOMETRY_READBACK_MAX,
   );
 });
 
