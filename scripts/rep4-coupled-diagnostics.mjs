@@ -32,6 +32,7 @@ function signedTwist(q,authorityValue){
   const projected=q.v.x*ax+q.v.y*ay+q.v.z*az;
   return wrapRadians(2*Math.atan2(projected,q.s));
 }
+function distance(a,b){return Math.hypot(a.x-b.x,a.y-b.y,a.z-b.z);}
 
 function summarize(authorityValue,result){
   return {
@@ -54,15 +55,52 @@ function summarize(authorityValue,result){
   };
 }
 
+async function observeTieDuringTravel(baseAuthority,tieAuthority){
+  const samples=[];
+  for(let step=1;step<=30;step+=1){
+    const [base,tie]=await Promise.all([
+      runRep4DamperedCornerProbe(baseAuthority,"DAMPER",step),
+      runRep4DamperedCornerProbe(tieAuthority,"DAMPER",step),
+    ]);
+    const baseDisplacement=distance(base.initial.uprightPositionWorld,base.final.uprightPositionWorld);
+    const tieDisplacement=distance(tie.initial.uprightPositionWorld,tie.final.uprightPositionWorld);
+    const baseTwist=signedTwist(base.final.uprightRotation,baseAuthority);
+    const tieTwist=signedTwist(tie.final.uprightRotation,tieAuthority);
+    samples.push({
+      step,
+      timeSeconds:step/60,
+      baseDisplacement,
+      tieDisplacement,
+      baseTwist,
+      tieTwist,
+      signedTwistSeparation:Math.abs(wrapRadians(tieTwist-baseTwist)),
+      displacementDifference:Math.abs(tieDisplacement-baseDisplacement),
+    });
+  }
+  const atBaselinePeakTravel=samples.reduce((best,sample)=>
+    sample.baseDisplacement>best.baseDisplacement?sample:best,
+  samples[0]);
+  const atMaxTwistSeparation=samples.reduce((best,sample)=>
+    sample.signedTwistSeparation>best.signedTwistSeparation?sample:best,
+  samples[0]);
+  return {
+    sampleWindow:{startStep:1,endStep:30,dtSeconds:1/60},
+    atBaselinePeakTravel,
+    atMaxTwistSeparation,
+    samples,
+  };
+}
+
 const baseAuthority=authority(0,"inner");
 const tieAuthority=authority(-0.1,"inner");
 const damperAuthority=authority(0,"outer");
 const bothAuthority=authority(-0.1,"outer");
-const [base,tieEdit,damperEdit,bothEdit]=await Promise.all([
+const [base,tieEdit,damperEdit,bothEdit,tieDuringTravel]=await Promise.all([
   runRep4DamperedCornerProbe(baseAuthority,"DAMPER",120),
   runRep4DamperedCornerProbe(tieAuthority,"DAMPER",120),
   runRep4DamperedCornerProbe(damperAuthority,"DAMPER",120),
   runRep4DamperedCornerProbe(bothAuthority,"DAMPER",120),
+  observeTieDuringTravel(baseAuthority,tieAuthority),
 ]);
 
 const baseSummary=summarize(baseAuthority,base);
@@ -70,18 +108,22 @@ const tieSummary=summarize(tieAuthority,tieEdit);
 const damperSummary=summarize(damperAuthority,damperEdit);
 const bothSummary=summarize(bothAuthority,bothEdit);
 const evidence={
-  schema:"rep4-a5-coupled-diagnostics-v1",
+  schema:"rep4-a5-coupled-diagnostics-v2",
   baseline:baseSummary,
   tieEdit:tieSummary,
   damperEdit:damperSummary,
   bothEdit:bothSummary,
+  tieDuringTravel,
   comparisons:{
-    tieOnlySignedTwistSeparation:Math.abs(wrapRadians(tieSummary.finalSignedTwist-baseSummary.finalSignedTwist)),
-    tieOnlyTravelDifference:Math.abs(tieSummary.maxUprightDisplacement-baseSummary.maxUprightDisplacement),
-    damperOnlySignedTwistSeparation:Math.abs(wrapRadians(damperSummary.finalSignedTwist-baseSummary.finalSignedTwist)),
+    tieOnlyFinalSignedTwistSeparation:Math.abs(wrapRadians(tieSummary.finalSignedTwist-baseSummary.finalSignedTwist)),
+    tieOnlyMaxSameTimeTwistSeparation:tieDuringTravel.atMaxTwistSeparation.signedTwistSeparation,
+    tieOnlyTwistSeparationAtBaselinePeakTravel:tieDuringTravel.atBaselinePeakTravel.signedTwistSeparation,
+    tieOnlyDisplacementDifferenceAtBaselinePeakTravel:tieDuringTravel.atBaselinePeakTravel.displacementDifference,
+    tieOnlyLongRunMaxTravelDifference:Math.abs(tieSummary.maxUprightDisplacement-baseSummary.maxUprightDisplacement),
+    damperOnlyFinalSignedTwistSeparation:Math.abs(wrapRadians(damperSummary.finalSignedTwist-baseSummary.finalSignedTwist)),
     damperOnlyTravelDifference:Math.abs(damperSummary.maxUprightDisplacement-baseSummary.maxUprightDisplacement),
     damperOnlyMaxExtensionDifference:Math.abs((damperSummary.maxAbsDamperExtension??0)-(baseSummary.maxAbsDamperExtension??0)),
-    bothVsBaseSignedTwistSeparation:Math.abs(wrapRadians(bothSummary.finalSignedTwist-baseSummary.finalSignedTwist)),
+    bothVsBaseFinalSignedTwistSeparation:Math.abs(wrapRadians(bothSummary.finalSignedTwist-baseSummary.finalSignedTwist)),
     bothVsBaseTravelDifference:Math.abs(bothSummary.maxUprightDisplacement-baseSummary.maxUprightDisplacement),
   }
 };
