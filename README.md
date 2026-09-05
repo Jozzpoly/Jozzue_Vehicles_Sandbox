@@ -10,152 +10,108 @@ The repository preserves bounded research programs that reduce product uncertain
 
 ## Current truth
 
-The project has now accumulated five major evidence layers:
+Closed evidence layers:
 
-- **E1 — construction-loop research:** CLOSED; central sufficiency hypothesis unresolved. It found bounded value in authored edit → causal PLAY → exact BUILD recovery and preserving already placed intent, but did not establish a satisfying/general construction grammar.
-- **V0 — drivable physical steering consequence:** CLOSED; technical consequence PASS plus Owner readability PASS for bounded research-carrier reuse only.
-- **R1 — direct spatial steering construction consequence:** CLOSED with bounded positive Owner-backed causal-construction evidence. Directly authored pickup geometry changed real driving behavior and supported repeated BUILD → DRIVE → BUILD; the authoring surface remained raw and exposed a human-discoverability failure.
-- **Rep2 — donor / force / correspondence line:** CLOSED bounded evidence. Real donor capital was recovered; physical spring/damper semantics and single-authority visual/mechanical correspondence were qualified in scoped benches. C1 is a bounded technical PASS only.
-- **Rep3 — geometry-derived hinge line:** CLOSED after Stage P/A technical qualification, rendered preflight and the first Owner Stage-B run. Two physical bearing locations successfully owned a real native hinge line and human direct manipulation was demonstrated. The apparatus was too sparse/raw/placeholder-heavy to support a meaningful construction-quality or feel verdict, so those claims are **NOT EARNED**, not FAIL.
+- **E1:** bounded BUILD/PLAY/recovery learning; no satisfying/general construction grammar established.
+- **V0:** bounded physical steering consequence + Owner readability for research-carrier reuse only.
+- **R1:** direct spatial pickup edits causally changed real steering/driving behavior; UI remained raw.
+- **Rep2:** real donor recovery, spring/damper force-path work and single-authority mechanical↔visual correspondence were qualified in scoped benches.
+- **Rep3:** two authored bearing locations successfully owned a real native hinge relation; human operation was demonstrated, but the one-hinge apparatus was too sparse for construction/feel judgement.
+- **S0 / Rep4:** a two-arm/upright/tie/damper corner with one real donor was technically composed and driven through direct BUILD → native PLAY → exact BUILD. The Owner saw clear progress but still judged the construction experience as very poor/raw/limited and requiring serious qualitative change rather than more polish of the same hardpoint-editing approach.
 
 None of these programs has architecture authority.
 
-The current frontier is **fresh representative-problem selection after Rep3**, with a new constraint: the next Owner-facing experiment must be rich enough to make the specific Owner judgement it asks for materially observable.
+## Current frontier
 
-## Durable causal and validation rules
+The project is **not** continuing with Rep4 B4/B5 or another `more editable hardpoints` iteration.
 
-When JV presents something as the mechanism causing behavior, the visible mechanical story should correspond to the same real relation that owns the consequence:
+Rep4 exposed a more fundamental problem:
+
+> widening the hardpoint/parameter space is not the same as widening the **construction space**.
+
+The next research target is therefore **direct construction grammar / topology agency**.
+
+Instead of hardening another integrated suspension prototype first, the project will compare a small set of fast, disposable **interaction / experience spikes** that let the Owner create, remove or reconnect meaningful relations/components. Only a grammar that earns positive Owner evidence should then be integrated with the already-qualified causal mechanics.
+
+This is a deliberate workflow change intended to improve both quality and iteration speed.
+
+## Durable rules
+
+When JV presents something as the mechanism causing behavior:
 
 > **One presented mechanical relation has one authority truth. Physics and visible representation are downstream projections of that same relation.**
 
-Rep3 adds a second durable workflow rule:
+When asking the Owner for an experiential verdict:
 
-> **Only ask the Owner to judge a quality that the current prototype materially manifests. If the apparatus is too sparse to expose that quality, record the verdict as NOT EARNED and increase only the representative scope needed for the next question.**
+> **Only ask the Owner to judge a quality that the current prototype materially manifests.**
 
-This is not an instruction to maximize prototype fidelity or scope. The target remains the smallest representative apparatus that answers the actual uncertainty without distorting it or creating unnecessary prototype gravity.
+After Rep4, add:
+
+> **Do not spend integration-grade validation on an interaction idea before it has earned enough Owner value to justify hardening.**
+
+Use three prototype roles deliberately:
+
+- **causal / implementation lab** — narrow, rigorous machine work for real mechanics/runtime uncertainty;
+- **interaction / experience spikes** — fast comparative exploration of construction grammar, with lightweight browser smoke and explicit non-causal labeling when appropriate;
+- **integration specimens** — reconnect a promising grammar to qualified real mechanics only after both sides have earned evidence.
 
 ## Start here
 
 For a fresh takeover, read and verify live in this order:
 
 1. this `README.md`;
-2. [`docs/NEXTGEN_JV_PROJECT_SOUL.md`](docs/NEXTGEN_JV_PROJECT_SOUL.md) — durable product intent and deliberate non-decisions;
-3. [`docs/NEXTGEN_JV_CURRENT_STATE.md`](docs/NEXTGEN_JV_CURRENT_STATE.md) — exact current research state, evidence, candidate frontier and workflow;
-4. [`docs/NEXTGEN_JV_FRESH_TAKEOVER.md`](docs/NEXTGEN_JV_FRESH_TAKEOVER.md) — startup mandate after Rep3;
-5. [`evidence/rep3/REP3_OWNER_CLOSURE_2026-09-05.md`](evidence/rep3/REP3_OWNER_CLOSURE_2026-09-05.md) — Rep3 technical→human closure, Owner verdict and workflow lesson;
-6. [`evidence/rep2/REP2_RESEARCH_CLOSURE_INDEX_2026-09-05.md`](evidence/rep2/REP2_RESEARCH_CLOSURE_INDEX_2026-09-05.md);
-7. [`evidence/r1/R1_OWNER_CLOSURE_2026-09-04.md`](evidence/r1/R1_OWNER_CLOSURE_2026-09-04.md);
-8. [`evidence/v0/V0_OWNER_CLOSURE_2026-09-03.md`](evidence/v0/V0_OWNER_CLOSURE_2026-09-03.md);
-9. [`evidence/e1/E1_CLOSURE_2026-08-31.md`](evidence/e1/E1_CLOSURE_2026-08-31.md).
+2. [`docs/NEXTGEN_JV_PROJECT_SOUL.md`](docs/NEXTGEN_JV_PROJECT_SOUL.md);
+3. [`docs/NEXTGEN_JV_CURRENT_STATE.md`](docs/NEXTGEN_JV_CURRENT_STATE.md);
+4. [`docs/NEXTGEN_JV_FRESH_TAKEOVER.md`](docs/NEXTGEN_JV_FRESH_TAKEOVER.md);
+5. [`evidence/rep4/REP4_OWNER_CLOSURE_2026-09-05.md`](evidence/rep4/REP4_OWNER_CLOSURE_2026-09-05.md);
+6. older closure/receipt material only when a current question requires its provenance.
 
-Open experiment-local contracts, detailed receipts, source and historical donor material only when the current question requires their provenance.
+## Exact current Rep4 evidence refs
 
-## Exact preserved research refs
+- Stage-A qualified runtime: `bb8c12e7a3c69bd56d247ff90684f4961bc8a336`
+- B1 qualified visual correspondence: `91c682ff8faf8f31db1ef505e04e5d66118cb1b4`
+- B2 qualified direct construction: `53d28b90bb3a7e3d2ccdb373873768aa575e740e`
+- B3 qualified / Owner specimen: `c852132ba152791867363925baadbfd08c14840c`
+- frozen Owner alias: `rep4-b3-owner-checkpoint@c852132ba152791867363925baadbfd08c14840c`
+- B3 workflow: `33971984660`
+- B3 artifact: `9971217303`, digest `sha256:f3004a36a896125e7bb791d3cd5a275aba95af0851803a31a53d01ddae0d7329`
 
-### E1
+Preserve these as evidence. Do not merge experimental implementation merely to make `main` contain the newest runnable specimen.
 
-- frozen historical control: `55b62da06632e9325c9f6e1cbfb4e9acb4ba6bde`
-- final F1 specimen: `experiment/e1-final-f1@b9426adfcecb6f8340ffe21ff94fbd38c4c439ef`
+## Next interaction research
 
-### V0
+The first comparative spike should test materially different construction semantics against the same small context, for example:
 
-- technical specimen: `work/front-steering-v0@673dd584d5783b59e177c4ed48c9a64f83a72e49`
-- first Owner rehearsal: `work/front-steering-owner-rehearsal@184c2ed9fb71632afa30f0d60032b8e2b923aa1e`
-- final deconfounded Owner specimen: `work/front-steering-v0-deconfound@69d8a8ee91117d4ce44c7dd14657418241844b2e`
+- **connect-by-drag:** drag between meaningful connection points to create/remove/reconnect an adaptive link;
+- **component-first:** place a recognizable component and adapt/snap its functional endpoints into the construction;
+- a hybrid only if the comparison justifies it.
 
-### R1
+Minimum threshold for Owner time:
 
-- experiment branch: `experiment/nextgen-jv-direct-spatial-pickup`
-- final checkpoint: `9d1ce9217ad9ed255ec30181730d57ab87165b85`
+> the Owner can create at least one meaningful configuration whose relation/topology was not already completely pre-authored by the experiment.
 
-### Rep2
-
-- donor/visual-rig forensics: `research/jv-core-visual-rig-forensics@b7539e4b8f361609d3dc9fd1f2f60491dab6512c`
-- Stage A accepted direct-link specimen: `954b6eb8e5f3bc3466134e77934cecc841ff5e5a`
-- C0a closure: `experiment/rep2-coilover-force-path@fa372932e92ceaae3767da24e5045552749bc73a`
-- C0b closure: `experiment/rep2-c0b-numerical-qualification@0213994430ac7915409a3b964045d816caf5313c`
-- C0c closure: `experiment/rep2-c0c-solver-native-kc@ca69ccabd6a9d2df6ec1874c46a38d0b1f0d3230`
-- C1 closure branch: `codex/nextgen-jv-live-frontier@d83308dd36559c7357c4ebfb62ccbaed444f4001`
-- C1 accepted implementation: `8c7cb1515577f0c885e576266ad10997e69b26e7`
-
-### Rep3
-
-- experiment pre-closure head: `experiment/rep3-geometry-derived-hinge-line@798cf235b4550bbfb9725364f4f3d85da0cd8d67`
-- Stage-A qualified head: `33c248a6f8991a22f11a92509626d13033458038`
-- Stage-B qualified runtime / Owner specimen: `3de78caf3c7c0066b352d62097591b48fce90d20`
-- frozen Owner alias: `rep3-stage-b-owner-checkpoint@3de78caf3c7c0066b352d62097591b48fce90d20`
-- experiment-closure docs: `experiment/rep3-geometry-derived-hinge-line-closure@1238c6281d67be8b76d8eb4db72b052291135280`
-
-Preserve these refs as inspectable evidence. Do not merge experimental implementation merely to make `main` contain the newest runnable specimen.
-
-## What Rep3 added
-
-Rep3 established a bounded causal path:
-
-`authored mount A/B geometry → derived hinge line/pivot → native Box3D revolute relation → real endpoint motion`
-
-without an independently authored hinge-axis field.
-
-Machine metamorphisms verified native correspondence, material motion-plane change from mount direction, line-preserving spacing equivalence, endpoint-order gauge invariance and explicit singularity rejection. Real Chromium preflight then exercised visible handle acquisition, world-axis gizmo manipulation, camera orbit, PLAY and exact BUILD recovery.
-
-The Owner could independently operate both bearings and explore substantially different hinge orientations. However the minimal one-hinge/one-arm apparatus exposed a methodological limit: **technical cleanliness does not make a prototype rich enough for product/feel judgement**.
-
-Do not polish Rep3 into a larger product. Carry its causal evidence forward and select a more representative next problem.
-
-## Current frontier — post-Rep3 representative-problem selection
-
-No next implementation is selected yet.
-
-The next selection must compare candidates not only on information gain, causal blast radius and prototype gravity, but also on **Owner-judgement eligibility / experiential bandwidth**: does the apparatus give the Owner enough meaningful independent construction choices and consequences to support the judgement we plan to ask for?
-
-Current leading candidate class is a **small multi-relation suspension/mechanism subassembly on a bench**, not a full vehicle. It could combine already-qualified causal pieces and real donors while keeping tire/contact/drive out of scope. A trailing-arm + damper composition and a carefully bounded two-arm/upright corner are leading shapes to compare.
-
-Other candidates remain live until that comparison is complete:
-
-- Cardan/driveline orientation/transmission semantics;
-- a generic multi-link/topology construction problem;
-- a minimal drivable carrier if the selected question truly requires driving;
-- another materially different adaptive component.
-
-Do not let existing code or the desire to reach a full car select the next problem by inertia.
+Fast spikes should receive enough browser preflight to remove crashes/acquisition/delivery confounds, but should **not** inherit full Rep4 integration-grade validation until an interaction idea earns value.
 
 ## Prototype-gravity boundaries
 
 Do not silently inherit experimental apparatus into the product:
 
-- E1's PointRef/AxisRef, relation grammar, evaluator and UI are E1-local;
-- V0's carrier/contact/oracle/camera/trail implementation is V0-local;
-- R1's pickup `{x,z}` authoring, neutral auto-fit and primitive direct-drag surface are R1-local;
-- Rep2 bench topology and C1 authority/adapter/evidence UI are Rep2-local;
-- Rep3's two-bearing authority record, slab/arm apparatus, gizmo UI and StackBlitz delivery path are Rep3-local evidence;
-- Three.js, current Box3D integration forms and current Web packaging are experiment substrates, not final choices;
-- Native JV, JV-Web, JV_CORE and existing Blockbench/glTF material are donor capital, not a reference ontology or final component model.
-
-The project should retain knowledge while remaining willing to discard code.
+- Rep4's hardpoint records, panel UI, torus wheel, exact suspension topology and gizmo implementation remain experiment-local;
+- Rep4 causal composition, native-trace projection, BUILD recovery and qualified donor adapter are reusable evidence/donor capital, not architecture;
+- interaction-spike code may be discarded freely;
+- do not prematurely define a generic component/reference/topology data model;
+- `.bbmodel` remains authoring input, not runtime contract;
+- real donor assets should enter early enough to avoid placeholder-product gravity, without reviving legacy rig/socket physics authority;
+- Three.js, current Box3D integration and current web packaging remain research substrates.
 
 ## Working practice
 
-Active implementation belongs on a named working/experimental branch, not directly on `main`.
+Active implementation belongs on named working/experimental branches, not directly on `main`.
 
 At coherent boundaries use:
 
 `checkpoint → validate → commit → push`
 
-A checkpoint is reproducible state, not acceptance.
+But validation must remain **claim-scaled**. A disposable look-and-feel spike should not pay the same evidence cost as a physics/integration specimen.
 
-Browser ChatGPT is the primary continuous second brain / research and execution surface. The Owner is currently reserving local Codex/Work for separate experiments, so JV progress should not depend on Codex or route there by default.
-
-Match validation to the claim:
-
-- source/native readback for mechanical authority;
-- deterministic machine tests for metamorphisms and falsification;
-- real browser/render interaction for presentation and reachability;
-- Owner hands-on only for qualities the prototype actually manifests.
-
-Before a critical Owner checkpoint, qualify new delivery/hosting/runtime layers separately when practical. StackBlitz is currently an auxiliary browser-runner candidate, not canonical project infrastructure.
-
-## Archived default-branch runtime
-
-Canonical `main` may intentionally carry older experimental apparatus rather than the newest runnable specimen. Running the default source tree is therefore not evidence of the current product direction.
-
-Use exact research refs when reproducing experiments and the current closure/state documents to understand what those experiments actually established.
+Browser ChatGPT is currently the primary continuous second brain / research and execution surface. Owner hands-on remains the authority for feel, naturalness, readability and product value.
