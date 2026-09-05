@@ -2,11 +2,11 @@
 
 Date: 2026-09-05
 
-Use this file for a fresh Browser ChatGPT / technical co-orchestrator takeover after the Rep2 C0/C1 closure.
+Use this file for a fresh Browser ChatGPT / technical co-orchestrator takeover after Rep3 Stage P.
 
 This is a startup mandate, not a substitute for live verification.
 
-## 1. Re-ground live before planning
+## 1. Re-ground live before acting
 
 Repository:
 
@@ -14,267 +14,249 @@ Repository:
 
 At takeover:
 
-- verify live `main` HEAD;
-- verify the canonical spine below exists on live `main`;
-- check whether any newer research/docs branch post-dates this file and materially changes the frontier;
-- preserve exact experiment refs as evidence rather than assuming the default branch contains their implementation.
+1. verify live `main` HEAD;
+2. read the canonical spine below in order;
+3. verify the active Rep3 branch and exact head;
+4. verify whether any newer run/commit materially changes the frontier;
+5. do not assume experimental implementation is on `main`.
 
 Live source/runtime and reproducible evidence override this handoff for technical facts. Current Owner judgement governs feel, readability, intent and product value.
 
-Do not restart completed donor archaeology or C1 merely because their evidence is available.
+Do not restart completed donor archaeology, C1, post-C1 reselection or Rep3 Stage P unless new evidence actually contradicts them.
 
-## 2. Read the canonical spine in this order
+## 2. Canonical reading order
+
+Read first from live `main`:
 
 1. `README.md`
 2. `docs/NEXTGEN_JV_PROJECT_SOUL.md`
 3. `docs/NEXTGEN_JV_CURRENT_STATE.md`
 4. `docs/NEXTGEN_JV_FRESH_TAKEOVER.md` (this file)
 5. `evidence/rep2/REP2_RESEARCH_CLOSURE_INDEX_2026-09-05.md`
-6. `evidence/r1/R1_OWNER_CLOSURE_2026-09-04.md`
-7. `evidence/v0/V0_OWNER_CLOSURE_2026-09-03.md`
-8. `evidence/e1/E1_CLOSURE_2026-08-31.md`
 
-Open experiment-local contracts, implementation code and detailed receipts only when the active question requires that provenance.
+Then read the active Rep3 contract from the experiment branch:
 
-## 3. Current research state
+`experiment/rep3-geometry-derived-hinge-line/evidence/rep3/REP3_GEOMETRY_DERIVED_HINGE_LINE_CONTRACT_2026-09-05.md`
+
+Open older detailed receipts/source only when the active question requires their provenance.
+
+## 3. Expected live refs at handoff
+
+Canonical `main` before this takeover-doc canonicalization:
+
+`9df1833c26955e8b0a3d2017ea14c154891adbd6`
+
+Active Rep3 branch:
+
+`experiment/rep3-geometry-derived-hinge-line`
+
+Expected Rep3 head:
+
+`122ff50822dd0e3dade9f9ec2ec108c3e6e7185d`
+
+If either differs, inspect the delta and classify whether it changes runtime/evidence/frontier or only documentation/provenance.
+
+Important inherited C1 refs:
+
+- accepted C1 implementation: `8c7cb1515577f0c885e576266ad10997e69b26e7`
+- C1 closure branch/head: `codex/nextgen-jv-live-frontier@d83308dd36559c7357c4ebfb62ccbaed444f4001`
+
+Do not merge those implementations into `main` merely for convenience.
+
+## 4. Closed research state
 
 ### E1
 
-CLOSED; central sufficiency hypothesis unresolved.
-
-Portable evidence includes bounded value in authored edit → causal PLAY → exact BUILD recovery and preserving already placed intent, but no general builder grammar was established.
+CLOSED. Useful bounded evidence about BUILD/PLAY/recovery and preserved intent; no general builder grammar established.
 
 ### V0
 
-CLOSED with technical steering-consequence PASS and Owner readability PASS for research-carrier reuse only.
-
-No vehicle/product/architecture PASS.
+CLOSED with technical steering-consequence PASS and Owner readability PASS for bounded research-carrier reuse only.
 
 ### R1
 
-CLOSED with bounded positive Owner-backed causal-construction evidence.
+CLOSED with bounded positive Owner-backed evidence that direct spatial steering geometry can change real driving consequence and support repeated BUILD → DRIVE → BUILD.
 
-The Owner directly changed independent spatial steering pickup geometry, perceived changed driving behavior and repeatedly returned BUILD → DRIVE → BUILD.
+Retained warning: privileged automation reachability does not prove human discoverability.
 
-R1 also exposed a discoverability failure: automated reachability using privileged projected coordinates did not prove that a human could see/acquire the same target.
+### Rep2
 
-Do not polish R1 into the builder.
+Donor forensics, Stage A, C0a/C0b/C0c and C1 are closed bounded evidence.
 
-### Rep2 donor forensics / Stage A / C0 / C1
-
-The JV_CORE donor-forensics phase is closed at the decision-relevant level.
-
-It established both useful donor capital and strong negative evidence that historical visual mechanisms could diverge from actual physical authority.
-
-Stage A established a bounded direct suspension-link geometry path, but did not author hinge-axis orientation or establish general suspension construction.
-
-C0a established that fixed physical spring/damper properties plus different installation geometry can change real force leverage/body response.
-
-C0b showed that one simple external-force implementation could reuse stale force across Box3D internal substeps and materially pump energy.
-
-C0c qualified a bounded solver-native mapping from authored linear `k/c/restLength + eyes` into the native Box3D distance spring using axial effective mass. Pure damping and large-travel remapping remain open.
-
-C1 is **CLOSED — BOUNDED TECHNICAL PASS**.
-
-Accepted implementation:
-
-`codex/nextgen-jv-live-frontier@8c7cb1515577f0c885e576266ad10997e69b26e7`
-
-Closure branch:
-
-`codex/nextgen-jv-live-frontier@d83308dd36559c7357c4ebfb62ccbaed444f4001`
-
-C1 established one bounded authority chain:
-
-`authority record → native Box3D spring → live body eyes → exact real Asset_Dumper donor → independent Three.js scene-graph readback`
-
-Owner checkpoint was not run. No product/vehicle/architecture PASS was claimed.
-
-## 4. Durable rule strengthened by C1
-
-Protect this unless later evidence contradicts it:
+C1 established a single-authority mechanical/visual correspondence chain and strengthened this durable constraint:
 
 > **One presented mechanical relation has one authority truth. Physics and visible representation are downstream projections of that same relation.**
 
-Do not misread this as `render mesh == solver geometry`.
+No C1 Owner/product/vehicle/architecture PASS exists.
 
-Cosmetic detail and fixed asset-local visual offsets may remain visual-only. What is rejected is a second live visual mechanical story that claims to explain behavior actually caused by a different hidden relation.
+## 5. Post-C1 representative-problem selection is complete
 
-This refines the Project Soul's existing mechanical-causality principle.
+Do **not** redo the selection by default.
 
-## 5. Historical donor posture after the forensic closure
+Selected problem:
 
-Do not resume broad JV_CORE archaeology.
+**Rep3 — Geometry-Derived Hinge Line**
 
-Useful recovered donor capital includes:
+Central unknown:
 
-- exact real Blockbench/glTF component assets;
-- the separate `Asset_Dumper.gltf` donor;
-- a bounded rigid-end + extensible-middle visual adaptation pattern;
-- specific source/physics/visual mismatch lessons.
+Can two recognizable physical mount/bearing points be sufficient authoring authority for a real hinge relation:
 
-Historical rig/socket/runtime authority remains rejected as a foundation.
+`two physical mounts → derived hinge line → native revolute relation → live arm/wheel-endpoint motion`
 
-Only reopen donor source when a newly selected product problem asks a concrete question that the preserved evidence cannot answer.
+without a separately authored hidden solver axis?
 
-## 6. Current frontier — fresh representative-problem selection
+Why this beat alternatives:
 
-The next implementation is **not selected yet**.
+- a drivable compliant carrier currently has too large a causal/presentation blast radius;
+- another point-to-point adaptive component risks repeating C1;
+- Cardan has a real visual donor but no recovered causal transmission path, so it would force transmission + phase/orientation + adaptation invention simultaneously;
+- Stage A exposed exactly this bounded missing semantic: authored pivot/endpoint geometry with identity-oriented revolute frames.
 
-Do not continue the C1 branch into a vehicle carrier merely because that is the nearest code path.
+Rep3 tests geometry-first viability without choosing final geometry-first / axis-first / hybrid architecture.
 
-Freshly compare candidate problems by:
+## 6. Rep3 pre-verdict contract
 
-- information gain;
-- actual JV product representativeness;
-- whether they test a materially new construction class;
-- mechanical causal consequence;
-- adaptation / orientation / intent semantics exposed;
-- Owner readability and hands-on testability;
-- real-asset usefulness;
-- implementation cost and causal blast radius;
-- presentation confounds;
-- prototype gravity.
+Contract path on active branch:
 
-Current candidates include:
+`evidence/rep3/REP3_GEOMETRY_DERIVED_HINGE_LINE_CONTRACT_2026-09-05.md`
 
-### Minimal drivable C1-class carrier
+Contract commit:
 
-Question:
+`989b50e8843daa015d669e0a02b8907afccbd7a2`
 
-Can direct coilover installation geometry with fixed physical component properties produce an Owner-readable consequence in a vehicle/driving loop without hiding the cause?
+Respect its three-stage boundary:
 
-Strength:
+- **Stage P:** pinned substrate feasibility;
+- **Stage A:** actual geometry-derived native authority;
+- **Stage B:** minimal Owner-facing BUILD/PLAY test.
 
-Very close to `build → run → observe → improve → drive`.
+Natural STOP is the first honest Stage B Owner verdict.
 
-Risk:
+No full wishbone, coilover integration, tire/contact model, drivable vehicle or generic builder during Rep3.
 
-Carrier/handling/contact/presentation work can create a large blast radius and make it hard to know whether a failure belongs to construction semantics or to the primitive vehicle.
+## 7. Stage P — already passed
 
-### Geometry-derived hinge / axis authoring
+Stage P asked only whether pinned `box3d.js@0.0.2` can represent and independently read back a materially non-default 3D revolute axis and constrain real motion around it.
 
-Question:
+Accepted run:
 
-Should the Owner build the physical geometry that implies a pivot/axis/DOF, rather than configure an abstract solver axis directly?
+- workflow: `Rep3 Hinge Line Stage P`
+- run: `33956208177`
+- exact head: `122ff50822dd0e3dade9f9ec2ec108c3e6e7185d`
+- job: `101279905241`
+- conclusion: `success`
+- source tests: **72/72 PASS**
+- production build: PASS
+- artifact: `9966443775`
+- artifact digest: `sha256:14008e9bd18b225844ac8cb9bef2824359ed0a700d538b967b90d8267e882dc8`
 
-Strength:
+Key machine evidence:
 
-Small apparatus can test a fundamental construction-vs-configuration semantic that Stage A did not cover.
+- baseline world-Z axis readback alignment error: `0`;
+- tilted `normalize(0,1,1)` native axis A alignment error: `4.44e-16`;
+- tilted native axis B alignment error: `2.18e-10`;
+- tilted native pivot separation: `9.06e-6 m`;
+- tilted max axial-coordinate drift: `2.02e-5 m`;
+- tilted max radial-distance drift: `6.91e-6 m`;
+- tilted max angular-velocity off-axis: `4.15e-4`;
+- final endpoint separation between normal and tilted axis runs: `0.1943048064 m`.
 
-Risk:
+Stage P claim boundary:
 
-A toy hinge can become too abstract if it is not tied to a representative mechanical assembly.
+**CLOSED — bounded substrate feasibility PASS only.**
 
-### Another adaptive real component
+Do not promote it to Rep3 Stage A, Owner, product, vehicle or architecture PASS.
 
-Question:
+## 8. Current frontier — execute Rep3 Stage A
 
-Can a materially different real component expose new orientation/adaptation/intent semantics while preserving causal authority?
+Do not spend time re-proving arbitrary-axis substrate support unless live evidence changes.
 
-Strength:
+Build the smallest actual authority path from the frozen contract.
 
-Broadens evidence beyond a telescoping damper.
+Normal authored spatial authority should contain:
 
-Risk:
+- `mountAWorld`;
+- `mountBWorld`;
+- fixed apparatus/body data needed for execution;
+- **no separately authored hinge-axis field**.
 
-Avoid merely repeating point-to-point stretching with a different mesh.
+Derived relation:
 
-### Driveline / Cardan candidate
+- `pivot = midpoint(mountA, mountB)`;
+- `axisLine = line(mountA, mountB)`;
+- native revolute local-frame Z axes derive from the same line.
 
-Question:
+Required machine gates:
 
-Can real authored spatial/orientation relationships define a causal transmission path and faithful adaptive visual component?
+### A1 — native authority correspondence
 
-Strength:
+Read back the actual native joint. Verify intended bodies, midpoint-derived pivot and axis collinear with `mountB - mountA`.
 
-Potentially introduces orientation, phase and transmission semantics.
+### A2 — different mount direction → different real motion
 
-Risk:
+Same midpoint, same arm/start/body/load; materially different line direction must produce materially different endpoint path/motion plane.
 
-Do not select it unless source/donor feasibility shows genuine mechanical information gain. A visual shaft stretched between two points is not enough.
+### A3 — line-preserving spacing metamorphism
 
-The selected problem may also be something else if it separates a more important unknown more cheaply.
+Same midpoint and direction, different mount spacing should remain kinematically equivalent in this ideal rigid-hinge apparatus. Do not generalize that to real bearing stiffness/structure.
 
-## 7. Selection standard
+### A4 — endpoint-order metamorphism
 
-The next problem should earn implementation only when its contract can state:
+Swap `mountA`/`mountB`. Free unlimited hinge trajectory should remain equivalent; angle/frame sign is not product semantics here.
 
-- the central unknown;
-- what competing interpretations it separates;
-- why existing E1/V0/R1/C0/C1 evidence does not already answer it;
-- the smallest apparatus that can answer it honestly;
-- the required source/numerical/rendered/Owner evidence;
-- explicit confounds to falsify;
-- natural PASS/FAIL/STOP boundary;
-- explicit non-scope.
+### A5 — singularity handling
 
-Do not design final architecture around the selected apparatus.
+Coincident, near-coincident and non-finite mount geometry rejects explicitly. No fallback/default hidden axis.
 
-## 8. Product invariants to protect
+The full quaternion roll/gauge used to complete solver frames is internal representation in this experiment. Do not expose it as builder semantics or pretend Rep3 resolves zero-angle/limits/motors/bushing anisotropy.
 
-Keep the durable loop visible:
+## 9. Only after Stage A passes: Stage B
 
-`build → run → observe → improve → get in and drive`
+Stage B should be the smallest readable interactive apparatus:
 
-Prefer:
+- recognizable support/chassis-like fixture;
+- two large visible physical mount/bearing handles;
+- rigid arm + visible wheel/spindle endpoint;
+- direct 3D translation of mounts using a normal spatial affordance;
+- no separate editable axis gizmo in the normal path;
+- short BUILD → PLAY → BUILD round trip;
+- camera/readability sufficient to understand the motion plane.
 
-- a good vehicle before an elegant isolated builder;
-- good mechanics and good feel;
-- direct spatial construction over disguised parameter configuration when the mechanism itself is the subject;
-- a real causal path from authored mechanics to behavior;
-- faithful visible projection of presented mechanical causality;
-- permissive execution of strange constructions where program integrity permits;
-- adaptive real components before placeholder systems gain product authority;
-- Owner-readable consequence for perception/feel claims;
-- research that changes what we know rather than ceremony.
+Remove machine and presentation confounds before spending Owner attention.
 
-## 9. Prototype-gravity boundaries
+Owner questions are perceptual/product questions: can the two mounts be understood as defining the hinge, can the Owner intentionally alter motion by moving them, and does it feel like building/repositioning a mechanism rather than configuring a solver parameter?
 
-Do not silently promote:
+A negative Owner result is useful evidence. Do not expand scope merely to manufacture a PASS.
 
-- E1 PointRef/AxisRef/relation grammar;
-- V0 carrier/contact/oracle/camera implementation;
-- R1 pickup `{x,z}` UI and neutral auto-fit;
-- Stage A or C0 bench topology;
-- C1 authority record, adapter, evidence UI or exact native-mapping apparatus;
-- Three.js / current Box3D / current Web packaging;
-- historical JV_CORE rig/data structures;
-- `Asset_Dumper.gltf` semantics beyond the bounded donor/adaptation evidence.
+## 10. Product/research invariants
 
-Reusable technique is not architecture authority.
+Protect:
 
-## 10. Current execution routing
+- `build → run → observe → improve → get in and drive`;
+- real mechanical causal ownership;
+- one live authority truth for a presented mechanism;
+- direct spatial construction where mechanically appropriate;
+- permissive diagnosis over paternalistic blocking when integrity permits;
+- real component semantics rather than hidden outcome-preserving retuning;
+- real donors before placeholder gravity where donors are relevant;
+- Owner hands-on authority for feel/naturalness/readability/value;
+- evidence-scaled validation rather than ritual.
 
-Browser ChatGPT is the active primary JV research and execution environment.
+Do not promote experiment substrate, Three.js, `box3d.js`, current data records or UI into architecture by reuse inertia.
 
-As of 2026-09-05 the Owner is reserving local Codex/Work for separate experiments with the newly available AI. Therefore:
+## 11. Execution routing
+
+Browser ChatGPT is currently the primary JV execution/research surface.
+
+The Owner is temporarily reserving Codex/Work for separate experiments with newly available AI. Therefore:
 
 - do not make JV progress depend on Codex;
-- do not hand routine implementation/research to Codex by default;
-- use Browser ChatGPT, GitHub, web research and available browser/runtime evidence directly;
-- if a necessary task hits a genuine local filesystem/desktop/binary capability boundary, request only the smallest Owner action needed to unblock it.
+- do not hand routine JV implementation/research to Codex by default;
+- use Browser ChatGPT + GitHub/web/runtime tools directly;
+- ask for the smallest Owner/manual/local action only at a genuine capability boundary.
 
-This routing is temporary and can change later. It has no product-architecture meaning.
+## 12. Immediate takeover instruction
 
-## 11. Validation posture
+After live verification and reading the contract, **continue from Rep3 Stage A**. Do not reply with a passive summary or ask the Owner what to do next if the verified state matches this handoff.
 
-Match evidence to the claim:
-
-- source inspection establishes source structure/authority;
-- numerical tests establish bounded mathematical/dynamic properties;
-- real browser/rendered evidence establishes actual visual/runtime behavior;
-- telemetry does not substitute for visual readability;
-- Owner hands-on does not substitute for technical diagnosis, but remains authority for feel, naturalness, intent and product value.
-
-Before requesting Owner attention, remove obvious machine/presentation confounds when practical.
-
-A green CI run is reproducible execution, not automatically a research PASS.
-
-## 12. Natural next move
-
-First verify that this canonicalization is live and internally consistent.
-
-Then perform **fresh representative-problem selection**. Do not implement until one bounded problem clearly beats the alternatives on information gain versus cost/confounds.
-
-After selection, create a fresh named research branch from the appropriate verified base and write the smallest pre-verdict contract needed to keep the experiment honest.
+Choose the smallest Stage-A implementation/validation slice that can materially test A1–A5 without designing final architecture. Preserve exact evidence and stop before Owner-facing Stage B until the machine gate is honestly clean.
