@@ -40,10 +40,6 @@ export interface S0ArmAuthority {
   readonly outboardWorld: Readonly<b3Vec3>;
 }
 
-/**
- * S0 authored geometry only. There are deliberately no solver-local frames,
- * joint axes, or upright-local anchors in the authority record.
- */
 export interface S0TwoArmAuthority {
   readonly upper: S0ArmAuthority;
   readonly lower: S0ArmAuthority;
@@ -121,47 +117,18 @@ export interface S0TwoArmResult {
   readonly lowerHingeAxisBAlignmentError: number;
 }
 
-function finiteVec3(value: Readonly<b3Vec3>): boolean {
-  return Number.isFinite(value.x) && Number.isFinite(value.y) && Number.isFinite(value.z);
-}
+const clone = (v: Readonly<b3Vec3>) => vec3(v.x, v.y, v.z);
+const add = (a: Readonly<b3Vec3>, b: Readonly<b3Vec3>) => vec3(a.x + b.x, a.y + b.y, a.z + b.z);
+const sub = (a: Readonly<b3Vec3>, b: Readonly<b3Vec3>) => vec3(a.x - b.x, a.y - b.y, a.z - b.z);
+const mul = (v: Readonly<b3Vec3>, s: number) => vec3(v.x * s, v.y * s, v.z * s);
+const mag = (v: Readonly<b3Vec3>) => Math.hypot(v.x, v.y, v.z);
+const dist = (a: Readonly<b3Vec3>, b: Readonly<b3Vec3>) => mag(sub(a, b));
+const dot = (a: Readonly<b3Vec3>, b: Readonly<b3Vec3>) => a.x * b.x + a.y * b.y + a.z * b.z;
+const norm = (v: Readonly<b3Vec3>) => mul(v, 1 / mag(v));
+const finite = (v: Readonly<b3Vec3>) => Number.isFinite(v.x) && Number.isFinite(v.y) && Number.isFinite(v.z);
+const axisError = (a: Readonly<b3Vec3>, b: Readonly<b3Vec3>) => 1 - Math.abs(dot(norm(a), norm(b)));
 
-function cloneVec3(value: Readonly<b3Vec3>): b3Vec3 {
-  return vec3(value.x, value.y, value.z);
-}
-
-function add(a: Readonly<b3Vec3>, b: Readonly<b3Vec3>): b3Vec3 {
-  return vec3(a.x + b.x, a.y + b.y, a.z + b.z);
-}
-
-function subtract(a: Readonly<b3Vec3>, b: Readonly<b3Vec3>): b3Vec3 {
-  return vec3(a.x - b.x, a.y - b.y, a.z - b.z);
-}
-
-function scale(value: Readonly<b3Vec3>, scalar: number): b3Vec3 {
-  return vec3(value.x * scalar, value.y * scalar, value.z * scalar);
-}
-
-function dot(a: Readonly<b3Vec3>, b: Readonly<b3Vec3>): number {
-  return a.x * b.x + a.y * b.y + a.z * b.z;
-}
-
-function magnitude(value: Readonly<b3Vec3>): number {
-  return Math.hypot(value.x, value.y, value.z);
-}
-
-function distance(a: Readonly<b3Vec3>, b: Readonly<b3Vec3>): number {
-  return magnitude(subtract(a, b));
-}
-
-function normalize(value: Readonly<b3Vec3>): b3Vec3 {
-  return scale(value, 1 / magnitude(value));
-}
-
-function axisAlignmentError(a: Readonly<b3Vec3>, b: Readonly<b3Vec3>): number {
-  return 1 - Math.abs(dot(normalize(a), normalize(b)));
-}
-
-function diagonalMassData(mass: number, center: b3Vec3, inertia: number) {
+function massData(mass: number, center: b3Vec3, inertia: number) {
   return {
     mass,
     center,
@@ -173,42 +140,28 @@ function diagonalMassData(mass: number, center: b3Vec3, inertia: number) {
   };
 }
 
-function frameWorldAxis(
-  b3: Box3DModule,
-  bodyId: b3BodyId,
-  frameQ: b3Quat,
-): b3Vec3 {
-  const axisInBody = rotateVector(frameQ, vec3(0, 0, 1));
-  return normalize(rotateVector(b3.b3Body_GetRotation(bodyId), axisInBody));
+function frameWorldAxis(b3: Box3DModule, bodyId: b3BodyId, q: b3Quat): b3Vec3 {
+  return norm(rotateVector(b3.b3Body_GetRotation(bodyId), rotateVector(q, vec3(0, 0, 1))));
 }
 
 function deriveArm(authority: S0ArmAuthority, label: string): S0DerivedArmRelation {
-  for (const [name, value] of [
-    ["inboardAWorld", authority.inboardAWorld],
-    ["inboardBWorld", authority.inboardBWorld],
-    ["outboardWorld", authority.outboardWorld],
-  ] as const) {
-    if (!finiteVec3(value)) {
-      throw new RangeError(`S0 ${label}.${name} must be finite.`);
-    }
+  if (!finite(authority.inboardAWorld) || !finite(authority.inboardBWorld) || !finite(authority.outboardWorld)) {
+    throw new RangeError(`S0 ${label} hardpoints must be finite.`);
   }
-
-  const hingeDelta = subtract(authority.inboardBWorld, authority.inboardAWorld);
-  const hingeSpan = magnitude(hingeDelta);
-  if (!Number.isFinite(hingeSpan) || hingeSpan <= MIN_HINGE_SPAN) {
+  const hingeDelta = sub(authority.inboardBWorld, authority.inboardAWorld);
+  const hingeSpan = mag(hingeDelta);
+  if (hingeSpan <= MIN_HINGE_SPAN) {
     throw new RangeError(`S0 ${label} hinge must span more than ${MIN_HINGE_SPAN} m.`);
   }
-
-  const pivotWorld = scale(add(authority.inboardAWorld, authority.inboardBWorld), 0.5);
-  const outboardLocal = subtract(authority.outboardWorld, pivotWorld);
-  const armReach = magnitude(outboardLocal);
-  if (!Number.isFinite(armReach) || armReach <= MIN_ARM_REACH) {
+  const pivotWorld = mul(add(authority.inboardAWorld, authority.inboardBWorld), 0.5);
+  const outboardLocal = sub(authority.outboardWorld, pivotWorld);
+  const armReach = mag(outboardLocal);
+  if (armReach <= MIN_ARM_REACH) {
     throw new RangeError(`S0 ${label} arm reach must exceed ${MIN_ARM_REACH} m.`);
   }
-
   return Object.freeze({
     pivotWorld,
-    axisWorld: scale(hingeDelta, 1 / hingeSpan),
+    axisWorld: mul(hingeDelta, 1 / hingeSpan),
     hingeSpan,
     outboardLocal,
     armReach,
@@ -218,22 +171,16 @@ function deriveArm(authority: S0ArmAuthority, label: string): S0DerivedArmRelati
 export function deriveS0TwoArmRelation(authority: S0TwoArmAuthority): S0TwoArmDerivedRelation {
   const upper = deriveArm(authority.upper, "upper");
   const lower = deriveArm(authority.lower, "lower");
-  const uprightOriginWorld = scale(
-    add(authority.upper.outboardWorld, authority.lower.outboardWorld),
-    0.5,
-  );
-  const uprightUpperLocal = subtract(authority.upper.outboardWorld, uprightOriginWorld);
-  const uprightLowerLocal = subtract(authority.lower.outboardWorld, uprightOriginWorld);
-  if (distance(authority.upper.outboardWorld, authority.lower.outboardWorld) <= MIN_ARM_REACH) {
+  if (dist(authority.upper.outboardWorld, authority.lower.outboardWorld) <= MIN_ARM_REACH) {
     throw new RangeError("S0 upper/lower outboard hardpoints must be distinct.");
   }
-
+  const uprightOriginWorld = mul(add(authority.upper.outboardWorld, authority.lower.outboardWorld), 0.5);
   return Object.freeze({
     upper,
     lower,
     uprightOriginWorld,
-    uprightUpperLocal,
-    uprightLowerLocal,
+    uprightUpperLocal: sub(authority.upper.outboardWorld, uprightOriginWorld),
+    uprightLowerLocal: sub(authority.lower.outboardWorld, uprightOriginWorld),
   });
 }
 
@@ -254,26 +201,22 @@ class S0TwoArmWorld {
 
   static async create(authority: S0TwoArmAuthority): Promise<S0TwoArmWorld> {
     const derived = deriveS0TwoArmRelation(authority);
-    const ownedAuthority = Object.freeze({
+    const owned = Object.freeze({
       upper: Object.freeze({
-        inboardAWorld: cloneVec3(authority.upper.inboardAWorld),
-        inboardBWorld: cloneVec3(authority.upper.inboardBWorld),
-        outboardWorld: cloneVec3(authority.upper.outboardWorld),
+        inboardAWorld: clone(authority.upper.inboardAWorld),
+        inboardBWorld: clone(authority.upper.inboardBWorld),
+        outboardWorld: clone(authority.upper.outboardWorld),
       }),
       lower: Object.freeze({
-        inboardAWorld: cloneVec3(authority.lower.inboardAWorld),
-        inboardBWorld: cloneVec3(authority.lower.inboardBWorld),
-        outboardWorld: cloneVec3(authority.lower.outboardWorld),
+        inboardAWorld: clone(authority.lower.inboardAWorld),
+        inboardBWorld: clone(authority.lower.inboardBWorld),
+        outboardWorld: clone(authority.lower.outboardWorld),
       }),
     });
-    return new S0TwoArmWorld(await Box3DFactory(), ownedAuthority, derived);
+    return new S0TwoArmWorld(await Box3DFactory(), owned, derived);
   }
 
-  private constructor(
-    b3: Box3DModule,
-    authority: S0TwoArmAuthority,
-    derived: S0TwoArmDerivedRelation,
-  ) {
+  private constructor(b3: Box3DModule, authority: S0TwoArmAuthority, derived: S0TwoArmDerivedRelation) {
     this.#b3 = b3;
     this.#authority = authority;
     this.#derived = derived;
@@ -286,153 +229,94 @@ class S0TwoArmWorld {
     supportDef.position = vec3();
     this.#supportId = b3.b3CreateBody(this.#worldId, supportDef);
 
-    this.#upperArmId = this.#createArmBody(derived.upper);
-    this.#lowerArmId = this.#createArmBody(derived.lower);
-
-    const uprightDef = b3.b3DefaultBodyDef();
-    uprightDef.type = b3.b3BodyType.b3_dynamicBody;
-    uprightDef.position = cloneVec3(derived.uprightOriginWorld);
-    uprightDef.enableSleep = false;
-    this.#uprightId = b3.b3CreateBody(this.#worldId, uprightDef);
-    const uprightShapeDef = b3.b3DefaultShapeDef();
-    uprightShapeDef.density = 1;
-    b3.b3CreateBoxShape(
-      this.#uprightId,
-      uprightShapeDef,
-      SOLVER_EXTENT_HALF,
-      SOLVER_EXTENT_HALF,
-      SOLVER_EXTENT_HALF,
-    );
-    b3.b3Body_SetMassData(
-      this.#uprightId,
-      diagonalMassData(UPRIGHT_MASS, vec3(), UPRIGHT_INERTIA),
-    );
-    b3.b3Body_SetTransform(
-      this.#uprightId,
-      b3.b3Body_GetPosition(this.#uprightId),
-      b3.b3Body_GetRotation(this.#uprightId),
-    );
-
+    this.#upperArmId = this.#createArm(derived.upper);
+    this.#lowerArmId = this.#createArm(derived.lower);
+    this.#uprightId = this.#createUpright(derived.uprightOriginWorld);
     this.#upperHingeId = this.#createHinge(this.#upperArmId, derived.upper);
     this.#lowerHingeId = this.#createHinge(this.#lowerArmId, derived.lower);
-    this.#upperBallId = this.#createBall(
-      this.#upperArmId,
-      derived.upper.outboardLocal,
-      derived.uprightUpperLocal,
-    );
-    this.#lowerBallId = this.#createBall(
-      this.#lowerArmId,
-      derived.lower.outboardLocal,
-      derived.uprightLowerLocal,
-    );
+    this.#upperBallId = this.#createBall(this.#upperArmId, derived.upper.outboardLocal, derived.uprightUpperLocal);
+    this.#lowerBallId = this.#createBall(this.#lowerArmId, derived.lower.outboardLocal, derived.uprightLowerLocal);
   }
 
-  #createArmBody(relation: S0DerivedArmRelation): b3BodyId {
+  #createDynamicBody(position: Readonly<b3Vec3>, mass: number, center: b3Vec3, inertia: number): b3BodyId {
     const def = this.#b3.b3DefaultBodyDef();
     def.type = this.#b3.b3BodyType.b3_dynamicBody;
-    def.position = cloneVec3(relation.pivotWorld);
+    def.position = clone(position);
     def.enableSleep = false;
-    const bodyId = this.#b3.b3CreateBody(this.#worldId, def);
+    const id = this.#b3.b3CreateBody(this.#worldId, def);
     const shapeDef = this.#b3.b3DefaultShapeDef();
     shapeDef.density = 1;
-    this.#b3.b3CreateBoxShape(
-      bodyId,
-      shapeDef,
-      SOLVER_EXTENT_HALF,
-      SOLVER_EXTENT_HALF,
-      SOLVER_EXTENT_HALF,
-    );
-    this.#b3.b3Body_SetMassData(
-      bodyId,
-      diagonalMassData(ARM_MASS, scale(relation.outboardLocal, 0.5), ARM_INERTIA),
-    );
-    this.#b3.b3Body_SetTransform(
-      bodyId,
-      this.#b3.b3Body_GetPosition(bodyId),
-      this.#b3.b3Body_GetRotation(bodyId),
-    );
-    return bodyId;
+    this.#b3.b3CreateBoxShape(id, shapeDef, SOLVER_EXTENT_HALF, SOLVER_EXTENT_HALF, SOLVER_EXTENT_HALF);
+    this.#b3.b3Body_SetMassData(id, massData(mass, center, inertia));
+    this.#b3.b3Body_SetTransform(id, this.#b3.b3Body_GetPosition(id), this.#b3.b3Body_GetRotation(id));
+    return id;
+  }
+
+  #createArm(relation: S0DerivedArmRelation): b3BodyId {
+    return this.#createDynamicBody(relation.pivotWorld, ARM_MASS, mul(relation.outboardLocal, 0.5), ARM_INERTIA);
+  }
+
+  #createUpright(position: Readonly<b3Vec3>): b3BodyId {
+    return this.#createDynamicBody(position, UPRIGHT_MASS, vec3(), UPRIGHT_INERTIA);
   }
 
   #createHinge(bodyId: b3BodyId, relation: S0DerivedArmRelation): b3JointId {
-    const frameQ = quaternionFromLocalZToAxis(relation.axisWorld);
+    const q = quaternionFromLocalZToAxis(relation.axisWorld);
     const def = this.#b3.b3DefaultRevoluteJointDef();
     def.base.bodyIdA = this.#supportId;
     def.base.bodyIdB = bodyId;
-    def.base.localFrameA = { p: cloneVec3(relation.pivotWorld), q: frameQ };
-    def.base.localFrameB = { p: vec3(), q: frameQ };
+    def.base.localFrameA = { p: clone(relation.pivotWorld), q };
+    def.base.localFrameB = { p: vec3(), q };
     def.base.collideConnected = false;
     return this.#b3.b3CreateRevoluteJoint(this.#worldId, def);
   }
 
-  #createBall(
-    armBodyId: b3BodyId,
-    armLocalAnchor: Readonly<b3Vec3>,
-    uprightLocalAnchor: Readonly<b3Vec3>,
-  ): b3JointId {
+  #createBall(armBodyId: b3BodyId, armLocal: Readonly<b3Vec3>, uprightLocal: Readonly<b3Vec3>): b3JointId {
     const def = this.#b3.b3DefaultSphericalJointDef();
     def.base.bodyIdA = armBodyId;
     def.base.bodyIdB = this.#uprightId;
-    def.base.localFrameA = { p: cloneVec3(armLocalAnchor), q: identityQuat() };
-    def.base.localFrameB = { p: cloneVec3(uprightLocalAnchor), q: identityQuat() };
+    def.base.localFrameA = { p: clone(armLocal), q: identityQuat() };
+    def.base.localFrameB = { p: clone(uprightLocal), q: identityQuat() };
     def.base.collideConnected = false;
     return this.#b3.b3CreateSphericalJoint(this.#worldId, def);
   }
 
   snapshot(): S0TwoArmSnapshot {
     this.#assertActive();
-    const upperHingeA = this.#b3.b3Joint_GetLocalFrameA(this.#upperHingeId);
-    const upperHingeB = this.#b3.b3Joint_GetLocalFrameB(this.#upperHingeId);
-    const lowerHingeA = this.#b3.b3Joint_GetLocalFrameA(this.#lowerHingeId);
-    const lowerHingeB = this.#b3.b3Joint_GetLocalFrameB(this.#lowerHingeId);
-    const upperBallA = this.#b3.b3Joint_GetLocalFrameA(this.#upperBallId);
-    const upperBallB = this.#b3.b3Joint_GetLocalFrameB(this.#upperBallId);
-    const lowerBallA = this.#b3.b3Joint_GetLocalFrameA(this.#lowerBallId);
-    const lowerBallB = this.#b3.b3Joint_GetLocalFrameB(this.#lowerBallId);
+    const uhA = this.#b3.b3Joint_GetLocalFrameA(this.#upperHingeId);
+    const uhB = this.#b3.b3Joint_GetLocalFrameB(this.#upperHingeId);
+    const lhA = this.#b3.b3Joint_GetLocalFrameA(this.#lowerHingeId);
+    const lhB = this.#b3.b3Joint_GetLocalFrameB(this.#lowerHingeId);
+    const ubA = this.#b3.b3Joint_GetLocalFrameA(this.#upperBallId);
+    const ubB = this.#b3.b3Joint_GetLocalFrameB(this.#upperBallId);
+    const lbA = this.#b3.b3Joint_GetLocalFrameA(this.#lowerBallId);
+    const lbB = this.#b3.b3Joint_GetLocalFrameB(this.#lowerBallId);
 
     return Object.freeze({
-      uprightOriginWorld: cloneVec3(this.#b3.b3Body_GetPosition(this.#uprightId)),
-      upperArmOutboardWorld: cloneVec3(
-        this.#b3.b3Body_GetWorldPoint(this.#upperArmId, upperBallA.p),
-      ),
-      lowerArmOutboardWorld: cloneVec3(
-        this.#b3.b3Body_GetWorldPoint(this.#lowerArmId, lowerBallA.p),
-      ),
-      uprightUpperAnchorWorld: cloneVec3(
-        this.#b3.b3Body_GetWorldPoint(this.#uprightId, upperBallB.p),
-      ),
-      uprightLowerAnchorWorld: cloneVec3(
-        this.#b3.b3Body_GetWorldPoint(this.#uprightId, lowerBallB.p),
-      ),
-      upperHingePivotAWorld: cloneVec3(
-        this.#b3.b3Body_GetWorldPoint(this.#supportId, upperHingeA.p),
-      ),
-      upperHingePivotBWorld: cloneVec3(
-        this.#b3.b3Body_GetWorldPoint(this.#upperArmId, upperHingeB.p),
-      ),
-      lowerHingePivotAWorld: cloneVec3(
-        this.#b3.b3Body_GetWorldPoint(this.#supportId, lowerHingeA.p),
-      ),
-      lowerHingePivotBWorld: cloneVec3(
-        this.#b3.b3Body_GetWorldPoint(this.#lowerArmId, lowerHingeB.p),
-      ),
-      upperHingeAxisAWorld: frameWorldAxis(this.#b3, this.#supportId, upperHingeA.q),
-      upperHingeAxisBWorld: frameWorldAxis(this.#b3, this.#upperArmId, upperHingeB.q),
-      lowerHingeAxisAWorld: frameWorldAxis(this.#b3, this.#supportId, lowerHingeA.q),
-      lowerHingeAxisBWorld: frameWorldAxis(this.#b3, this.#lowerArmId, lowerHingeB.q),
-      uprightLinearVelocity: cloneVec3(this.#b3.b3Body_GetLinearVelocity(this.#uprightId)),
-      uprightAngularVelocity: cloneVec3(this.#b3.b3Body_GetAngularVelocity(this.#uprightId)),
+      uprightOriginWorld: clone(this.#b3.b3Body_GetPosition(this.#uprightId)),
+      upperArmOutboardWorld: clone(this.#b3.b3Body_GetWorldPoint(this.#upperArmId, ubA.p)),
+      lowerArmOutboardWorld: clone(this.#b3.b3Body_GetWorldPoint(this.#lowerArmId, lbA.p)),
+      uprightUpperAnchorWorld: clone(this.#b3.b3Body_GetWorldPoint(this.#uprightId, ubB.p)),
+      uprightLowerAnchorWorld: clone(this.#b3.b3Body_GetWorldPoint(this.#uprightId, lbB.p)),
+      upperHingePivotAWorld: clone(this.#b3.b3Body_GetWorldPoint(this.#supportId, uhA.p)),
+      upperHingePivotBWorld: clone(this.#b3.b3Body_GetWorldPoint(this.#upperArmId, uhB.p)),
+      lowerHingePivotAWorld: clone(this.#b3.b3Body_GetWorldPoint(this.#supportId, lhA.p)),
+      lowerHingePivotBWorld: clone(this.#b3.b3Body_GetWorldPoint(this.#lowerArmId, lhB.p)),
+      upperHingeAxisAWorld: frameWorldAxis(this.#b3, this.#supportId, uhA.q),
+      upperHingeAxisBWorld: frameWorldAxis(this.#b3, this.#upperArmId, uhB.q),
+      lowerHingeAxisAWorld: frameWorldAxis(this.#b3, this.#supportId, lhA.q),
+      lowerHingeAxisBWorld: frameWorldAxis(this.#b3, this.#lowerArmId, lhB.q),
+      uprightLinearVelocity: clone(this.#b3.b3Body_GetLinearVelocity(this.#uprightId)),
+      uprightAngularVelocity: clone(this.#b3.b3Body_GetAngularVelocity(this.#uprightId)),
     });
   }
 
   run(steps = DEFAULT_STEPS): S0TwoArmResult {
     this.#assertActive();
-    if (!Number.isInteger(steps) || steps <= 0) {
-      throw new RangeError("S0 step count must be a positive integer.");
-    }
+    if (!Number.isInteger(steps) || steps <= 0) throw new RangeError("S0 step count must be a positive integer.");
 
     const initial = this.snapshot();
-    const uprightPath: b3Vec3[] = [cloneVec3(initial.uprightOriginWorld)];
+    const uprightPath: b3Vec3[] = [clone(initial.uprightOriginWorld)];
     let maxUpperBallSeparation = 0;
     let maxLowerBallSeparation = 0;
     let maxUpperHingePivotSeparation = 0;
@@ -442,51 +326,20 @@ class S0TwoArmWorld {
     let maxUprightAngularSpeed = 0;
     let maxUprightDisplacement = 0;
 
-    this.#b3.b3Body_ApplyLinearImpulseToCenter(
-      this.#uprightId,
-      cloneVec3(INITIAL_UPRIGHT_IMPULSE),
-      true,
-    );
+    this.#b3.b3Body_ApplyLinearImpulseToCenter(this.#uprightId, clone(INITIAL_UPRIGHT_IMPULSE), true);
 
-    for (let step = 0; step < steps; step += 1) {
+    for (let i = 0; i < steps; i += 1) {
       this.#b3.b3World_Step(this.#worldId, STEP_DT, SUBSTEPS);
-      const snapshot = this.snapshot();
-      uprightPath.push(cloneVec3(snapshot.uprightOriginWorld));
-
-      maxUpperBallSeparation = Math.max(
-        maxUpperBallSeparation,
-        distance(snapshot.upperArmOutboardWorld, snapshot.uprightUpperAnchorWorld),
-      );
-      maxLowerBallSeparation = Math.max(
-        maxLowerBallSeparation,
-        distance(snapshot.lowerArmOutboardWorld, snapshot.uprightLowerAnchorWorld),
-      );
-      maxUpperHingePivotSeparation = Math.max(
-        maxUpperHingePivotSeparation,
-        distance(snapshot.upperHingePivotAWorld, snapshot.upperHingePivotBWorld),
-      );
-      maxLowerHingePivotSeparation = Math.max(
-        maxLowerHingePivotSeparation,
-        distance(snapshot.lowerHingePivotAWorld, snapshot.lowerHingePivotBWorld),
-      );
-      maxPlanarDrift = Math.max(
-        maxPlanarDrift,
-        Math.abs(snapshot.uprightOriginWorld.z),
-        Math.abs(snapshot.upperArmOutboardWorld.z),
-        Math.abs(snapshot.lowerArmOutboardWorld.z),
-      );
-      maxUprightLinearSpeed = Math.max(
-        maxUprightLinearSpeed,
-        magnitude(snapshot.uprightLinearVelocity),
-      );
-      maxUprightAngularSpeed = Math.max(
-        maxUprightAngularSpeed,
-        magnitude(snapshot.uprightAngularVelocity),
-      );
-      maxUprightDisplacement = Math.max(
-        maxUprightDisplacement,
-        distance(initial.uprightOriginWorld, snapshot.uprightOriginWorld),
-      );
+      const s = this.snapshot();
+      uprightPath.push(clone(s.uprightOriginWorld));
+      maxUpperBallSeparation = Math.max(maxUpperBallSeparation, dist(s.upperArmOutboardWorld, s.uprightUpperAnchorWorld));
+      maxLowerBallSeparation = Math.max(maxLowerBallSeparation, dist(s.lowerArmOutboardWorld, s.uprightLowerAnchorWorld));
+      maxUpperHingePivotSeparation = Math.max(maxUpperHingePivotSeparation, dist(s.upperHingePivotAWorld, s.upperHingePivotBWorld));
+      maxLowerHingePivotSeparation = Math.max(maxLowerHingePivotSeparation, dist(s.lowerHingePivotAWorld, s.lowerHingePivotBWorld));
+      maxPlanarDrift = Math.max(maxPlanarDrift, Math.abs(s.uprightOriginWorld.z), Math.abs(s.upperArmOutboardWorld.z), Math.abs(s.lowerArmOutboardWorld.z));
+      maxUprightLinearSpeed = Math.max(maxUprightLinearSpeed, mag(s.uprightLinearVelocity));
+      maxUprightAngularSpeed = Math.max(maxUprightAngularSpeed, mag(s.uprightAngularVelocity));
+      maxUprightDisplacement = Math.max(maxUprightDisplacement, dist(initial.uprightOriginWorld, s.uprightOriginWorld));
     }
 
     const final = this.snapshot();
@@ -494,12 +347,7 @@ class S0TwoArmWorld {
       apparatus: S0_TWO_ARM_APPARATUS,
       authority: this.#authority,
       derived: this.#derived,
-      expectedBodies: Object.freeze({
-        support: this.#supportId,
-        upperArm: this.#upperArmId,
-        lowerArm: this.#lowerArmId,
-        upright: this.#uprightId,
-      }),
+      expectedBodies: Object.freeze({ support: this.#supportId, upperArm: this.#upperArmId, lowerArm: this.#lowerArmId, upright: this.#uprightId }),
       nativeJointBodies: Object.freeze({
         upperHingeA: this.#b3.b3Joint_GetBodyA(this.#upperHingeId),
         upperHingeB: this.#b3.b3Joint_GetBodyB(this.#upperHingeId),
@@ -522,22 +370,10 @@ class S0TwoArmWorld {
       maxUprightLinearSpeed,
       maxUprightAngularSpeed,
       maxUprightDisplacement,
-      upperHingeAxisAAlignmentError: axisAlignmentError(
-        final.upperHingeAxisAWorld,
-        derived.upper.axisWorld,
-      ),
-      upperHingeAxisBAlignmentError: axisAlignmentError(
-        final.upperHingeAxisBWorld,
-        derived.upper.axisWorld,
-      ),
-      lowerHingeAxisAAlignmentError: axisAlignmentError(
-        final.lowerHingeAxisAWorld,
-        derived.lower.axisWorld,
-      ),
-      lowerHingeAxisBAlignmentError: axisAlignmentError(
-        final.lowerHingeAxisBWorld,
-        derived.lower.axisWorld,
-      ),
+      upperHingeAxisAAlignmentError: axisError(final.upperHingeAxisAWorld, this.#derived.upper.axisWorld),
+      upperHingeAxisBAlignmentError: axisError(final.upperHingeAxisBWorld, this.#derived.upper.axisWorld),
+      lowerHingeAxisAAlignmentError: axisError(final.lowerHingeAxisAWorld, this.#derived.lower.axisWorld),
+      lowerHingeAxisBAlignmentError: axisError(final.lowerHingeAxisBWorld, this.#derived.lower.axisWorld),
     });
   }
 
@@ -548,16 +384,11 @@ class S0TwoArmWorld {
   }
 
   #assertActive(): void {
-    if (this.#disposed) {
-      throw new Error("S0 two-arm world is disposed.");
-    }
+    if (this.#disposed) throw new Error("S0 two-arm world is disposed.");
   }
 }
 
-export async function runS0TwoArmProbe(
-  authority: S0TwoArmAuthority,
-  steps = DEFAULT_STEPS,
-): Promise<S0TwoArmResult> {
+export async function runS0TwoArmProbe(authority: S0TwoArmAuthority, steps = DEFAULT_STEPS): Promise<S0TwoArmResult> {
   const world = await S0TwoArmWorld.create(authority);
   try {
     return world.run(steps);
