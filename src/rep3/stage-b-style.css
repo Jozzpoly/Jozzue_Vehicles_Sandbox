@@ -1,0 +1,338 @@
+:root {
+  color-scheme: dark;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #090c11;
+  color: #edf2f8;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  width: 100%;
+  min-width: 100%;
+  height: 100%;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 16% -10%, rgba(72, 106, 151, 0.18), transparent 34rem),
+    #090c11;
+}
+
+button,
+output {
+  font: inherit;
+}
+
+button {
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 0.68rem;
+  background: rgba(255, 255, 255, 0.055);
+  color: #e7edf5;
+  padding: 0.7rem 0.9rem;
+  cursor: pointer;
+  transition:
+    background 120ms ease,
+    border-color 120ms ease,
+    transform 120ms ease;
+}
+
+button:hover:not(:disabled) {
+  border-color: rgba(166, 203, 255, 0.48);
+  background: rgba(120, 166, 225, 0.13);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+button.active {
+  border-color: rgba(120, 200, 255, 0.78);
+  background: rgba(64, 148, 205, 0.22);
+  box-shadow: inset 0 0 0 1px rgba(140, 219, 255, 0.1);
+}
+
+button:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
+.rep3-shell {
+  height: 100vh;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem 0.72rem;
+}
+
+.rep3-header {
+  min-height: 5.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.4rem;
+  padding: 0.2rem 0.18rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.2rem;
+  color: #7f99b7;
+  font-size: 0.7rem;
+  font-weight: 760;
+  letter-spacing: 0.14em;
+}
+
+.rep3-header h1 {
+  margin: 0;
+  font-size: clamp(1.35rem, 2vw, 2rem);
+  line-height: 1.05;
+  letter-spacing: -0.028em;
+}
+
+.subtitle {
+  margin: 0.34rem 0 0;
+  color: #98a9bb;
+  font-size: 0.88rem;
+}
+
+.mode-controls {
+  display: flex;
+  gap: 0.48rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.rep3-stage {
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.105);
+  border-radius: 1rem;
+  background: #0b0e13;
+  box-shadow:
+    0 1.2rem 3.8rem rgba(0, 0, 0, 0.28),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.018);
+}
+
+.rep3-stage canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 28rem;
+  outline: none;
+  touch-action: none;
+  cursor: grab;
+}
+
+.rep3-stage canvas:active {
+  cursor: grabbing;
+}
+
+.rep3-stage canvas.dragging-gizmo {
+  cursor: move;
+}
+
+.truth-card {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: min(23rem, calc(100% - 2rem));
+  padding: 1rem 1rem 0.94rem;
+  border: 1px solid rgba(216, 230, 248, 0.13);
+  border-radius: 0.9rem;
+  background: rgba(9, 13, 19, 0.86);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.26);
+  pointer-events: none;
+}
+
+.truth-label {
+  margin: 0 0 0.42rem;
+  color: #7f99b7;
+  font-size: 0.67rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+}
+
+.truth-card strong {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.98rem;
+}
+
+.truth-card > p:not(.truth-label):not(.status):not(.selection) {
+  margin: 0;
+  color: #a9b7c6;
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.mount-readout {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0.9rem 0 0.65rem;
+}
+
+.mount-readout > div,
+.derived-readout {
+  display: grid;
+  gap: 0.14rem;
+  padding: 0.55rem 0.62rem;
+  border: 1px solid rgba(255, 255, 255, 0.075);
+  border-radius: 0.55rem;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.mount-readout span,
+.derived-readout span {
+  color: #768ba2;
+  font-size: 0.61rem;
+  font-weight: 760;
+  letter-spacing: 0.11em;
+}
+
+.mount-readout output,
+.derived-readout output {
+  color: #e9eef5;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.72rem;
+}
+
+.derived-readout {
+  margin-bottom: 0.72rem;
+}
+
+.legend {
+  display: grid;
+  gap: 0.22rem;
+  padding-top: 0.15rem;
+}
+
+.legend p {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+  color: #8e9dae;
+  font-size: 0.68rem;
+}
+
+.dot {
+  width: 0.52rem;
+  height: 0.52rem;
+  display: inline-block;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: #79899a;
+}
+
+.dot.bearing {
+  background: #ffc45d;
+  box-shadow: 0 0 0.55rem rgba(255, 188, 82, 0.38);
+}
+
+.dot.line {
+  background: #b6c3d0;
+}
+
+.dot.arm {
+  background: #83c9ff;
+}
+
+.dot.trail {
+  background: #77e0ff;
+}
+
+.selection {
+  margin: 0.85rem 0 0;
+  padding-top: 0.7rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  color: #bbc8d5;
+  font-size: 0.72rem;
+  line-height: 1.4;
+}
+
+.status {
+  margin: 0.66rem 0 0;
+  padding: 0.55rem 0.62rem;
+  border-radius: 0.5rem;
+  background: rgba(85, 174, 227, 0.11);
+  color: #a9dcff;
+  font-size: 0.7rem;
+  font-weight: 650;
+}
+
+.status[data-state="working"] {
+  background: rgba(227, 176, 85, 0.1);
+  color: #ffd491;
+}
+
+.status[data-state="diagnosed"] {
+  background: rgba(220, 87, 87, 0.12);
+  color: #ffb1b1;
+}
+
+.viewport-help {
+  position: absolute;
+  left: 1rem;
+  bottom: 1rem;
+  display: flex;
+  gap: 0.38rem;
+  flex-wrap: wrap;
+  max-width: calc(100% - 26rem);
+  pointer-events: none;
+}
+
+.viewport-help span {
+  padding: 0.38rem 0.52rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0.45rem;
+  background: rgba(8, 12, 18, 0.72);
+  color: #8293a6;
+  font-size: 0.64rem;
+  backdrop-filter: blur(10px);
+}
+
+.rep3-shell footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0 0.25rem;
+  color: #647488;
+  font-size: 0.66rem;
+}
+
+@media (max-width: 860px) {
+  .rep3-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .mode-controls {
+    justify-content: flex-start;
+  }
+
+  .truth-card {
+    width: min(21rem, calc(100% - 1rem));
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+
+  .viewport-help {
+    left: 0.5rem;
+    bottom: 0.5rem;
+    max-width: calc(100% - 1rem);
+  }
+
+  .rep3-shell footer {
+    display: none;
+  }
+}
