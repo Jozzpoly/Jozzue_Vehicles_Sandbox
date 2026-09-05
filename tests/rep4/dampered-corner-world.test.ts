@@ -11,6 +11,9 @@ import {
 const READBACK_TOLERANCE = 1e-5;
 const BALL_SEPARATION_MAX = 5e-3;
 const TIE_LENGTH_ERROR_MAX = 5e-4;
+const NEAR_EQUAL_NEUTRAL_LENGTH_DELTA_MAX = 0.01;
+const GEOMETRY_RESPONSE_SEPARATION_MIN = 0.02;
+const DAMPER_REMOVAL_RESPONSE_SEPARATION_MIN = 0.05;
 
 function baselineAuthority(): Rep4DamperedCornerAuthority {
   return Object.freeze({
@@ -118,6 +121,52 @@ test("Rep4 A4 geometry-only variants keep physical k/c/restLength exact while de
   assert.notEqual(baselineDerived.axialMass, innerDerived.axialMass);
   assert.notEqual(baselineDerived.hertz, innerDerived.hertz);
   assert.notEqual(baselineDerived.dampingRatio, innerDerived.dampingRatio);
+});
+
+test("Rep4 A4 near-equal neutral damper lengths still separate real suspension response through installation leverage", async () => {
+  const baselineAuthorityValue = baselineAuthority();
+  const innerAuthorityValue = innerDamperAuthority();
+  const baselineDerived = deriveRep4DamperRelation(baselineAuthorityValue);
+  const innerDerived = deriveRep4DamperRelation(innerAuthorityValue);
+  const [baseline, inner] = await Promise.all([
+    runRep4DamperedCornerProbe(baselineAuthorityValue, "DAMPER", 120),
+    runRep4DamperedCornerProbe(innerAuthorityValue, "DAMPER", 120),
+  ]);
+
+  assertDamperIntegrity(baseline);
+  assertDamperIntegrity(inner);
+  const neutralLengthDelta = Math.abs(
+    baselineDerived.initialDamperLength - innerDerived.initialDamperLength,
+  );
+  const responseSeparation = Math.abs(
+    baseline.maxUprightDisplacement - inner.maxUprightDisplacement,
+  );
+  assert.ok(
+    neutralLengthDelta < NEAR_EQUAL_NEUTRAL_LENGTH_DELTA_MAX,
+    `damper A/B neutral-length delta ${neutralLengthDelta} m is too large to isolate installation leverage cleanly`,
+  );
+  assert.ok(
+    responseSeparation > GEOMETRY_RESPONSE_SEPARATION_MIN,
+    `damper installation geometry separated max upright travel by only ${responseSeparation} m`,
+  );
+});
+
+test("Rep4 A4 removing the real damper relation materially restores unconstrained suspension travel", async () => {
+  const authority = baselineAuthority();
+  const [dampered, free] = await Promise.all([
+    runRep4DamperedCornerProbe(authority, "DAMPER", 120),
+    runRep4DamperedCornerProbe(authority, "FREE", 120),
+  ]);
+
+  assertDamperIntegrity(dampered);
+  assert.equal(free.damperNativeBodies, null);
+  const responseSeparation = Math.abs(
+    dampered.maxUprightDisplacement - free.maxUprightDisplacement,
+  );
+  assert.ok(
+    responseSeparation > DAMPER_REMOVAL_RESPONSE_SEPARATION_MIN,
+    `removing the native damper changed max upright travel by only ${responseSeparation} m`,
+  );
 });
 
 test("Rep4 A4 FREE control removes the spring relation rather than substituting hidden forces", async () => {
