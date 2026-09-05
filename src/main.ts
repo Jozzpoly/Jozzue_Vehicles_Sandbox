@@ -12,6 +12,9 @@ if (params.has("e1")) {
 } else if (params.has("rep3")) {
   document.title = "JV Rep3 Geometry-Derived Hinge";
   await import("./rep3/stage-b-app.ts");
+} else if (params.has("rep4b3")) {
+  document.title = "JV Rep4 B3 Build Play Build";
+  await import("./rep4/stage-b3-app.ts");
 } else if (params.has("rep4b2")) {
   document.title = "JV Rep4 B2 Direct Construction";
   await import("./rep4/stage-b2-app.ts");
