@@ -1,0 +1,32 @@
+name: Construction Grammar Spikes V0
+
+on:
+  push:
+    branches:
+      - experiment/construction-grammar-spikes-v0
+
+jobs:
+  interaction-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Production build only
+        run: npm run build
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run real Chromium interaction smoke
+        run: npx playwright test --config=playwright.grammar-spikes-v0.config.ts
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: construction-grammar-spikes-v0
+          path: |
+            artifacts/grammar-v0-*.png
+            test-results/grammar-v0
+          if-no-files-found: warn
