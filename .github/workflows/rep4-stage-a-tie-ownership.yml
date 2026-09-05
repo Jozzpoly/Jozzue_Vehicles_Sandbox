@@ -1,4 +1,4 @@
-name: Rep4 Stage A Tie Ownership
+name: Rep4 Stage A Causal Composition
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - experiment/rep4-multi-relation-corner
 
 jobs:
-  tie-ownership:
+  causal-composition:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -20,17 +20,22 @@ jobs:
         id: tests
         continue-on-error: true
         run: npm run test
-      - name: Emit Rep4 A3 diagnostics
+      - name: Emit Rep4 A3 tie diagnostics
         if: always()
         run: node scripts/rep4-tie-diagnostics.mjs artifacts/rep4-tie-diagnostics.json
+      - name: Emit Rep4 A4 damper diagnostics
+        if: always()
+        run: node scripts/rep4-damper-diagnostics.mjs artifacts/rep4-damper-diagnostics.json
       - name: Production build regression
         if: always()
         run: npm run build
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: rep4-a3-tie-diagnostics
-          path: artifacts/rep4-tie-diagnostics.json
+          name: rep4-stage-a-diagnostics
+          path: |
+            artifacts/rep4-tie-diagnostics.json
+            artifacts/rep4-damper-diagnostics.json
           if-no-files-found: error
       - name: Preserve causal gate result
         if: steps.tests.outcome != 'success'
