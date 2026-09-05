@@ -271,6 +271,9 @@ function startPlay(): void {
   playbackStartedAt = performance.now();
   buildButton.classList.remove("active");
   playButton.classList.add("active");
+  // Publish PLAY synchronously rather than relying on the next animation frame.
+  // This keeps UI state and machine evidence aligned even when RAF is throttled.
+  renderProjection(projectRep4PlayFrame(authority, nativeResult.derived, nativeResult.trace[0]!));
 }
 
 buildButton.addEventListener("click", showBuild);
@@ -327,7 +330,9 @@ function animate(now: number): void {
       Math.floor(((now - playbackStartedAt) / 1000) * TRACE_HZ),
     );
     renderProjection(projectRep4PlayFrame(authority, nativeResult.derived, nativeResult.trace[frameIndex]!));
-    if (frameIndex >= nativeResult.trace.length - 1) phase = "BUILD";
+    if (frameIndex >= nativeResult.trace.length - 1) {
+      showBuild();
+    }
   }
   orbit.update();
   renderer.render(scene, camera);
