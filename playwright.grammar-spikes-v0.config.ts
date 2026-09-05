@@ -2,7 +2,7 @@ import { defineConfig } from "@playwright/test";
 
 export default defineConfig({
   testDir: "./tests/browser",
-  testMatch: "construction-grammar-spikes-v0.spec.ts",
+  testMatch: "construction-grammar-spikes-v0-v1.spec.ts",
   timeout: 45_000,
   expect: { timeout: 10_000 },
   fullyParallel: false,
