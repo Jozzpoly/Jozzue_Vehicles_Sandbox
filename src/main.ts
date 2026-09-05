@@ -12,6 +12,9 @@ if (params.has("e1")) {
 } else if (params.has("rep3")) {
   document.title = "JV Rep3 Geometry-Derived Hinge";
   await import("./rep3/stage-b-app.ts");
+} else if (params.has("rep4b1")) {
+  document.title = "JV Rep4 B1 Visual Correspondence Probe";
+  await import("./rep4/stage-b-correspondence-app.ts");
 } else {
   document.title = "JV R1 Direct Steering Pickup";
   await import("./r1/app.ts");
