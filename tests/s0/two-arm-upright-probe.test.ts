@@ -14,6 +14,7 @@ const AXIS_ALIGNMENT_ERROR_MAX = 1e-6;
 const PLANAR_DRIFT_MAX = 3e-3;
 const MATERIAL_MOTION_MIN = 1e-3;
 const MATERIAL_MUTATION_SEPARATION_MIN = 1e-3;
+const MATERIAL_SPATIAL_RESPONSE_MIN = 1e-3;
 const PATHOLOGICAL_LINEAR_SPEED_MAX = 20;
 const PATHOLOGICAL_ANGULAR_SPEED_MAX = 100;
 
@@ -38,6 +39,19 @@ function mutatedUpperInboardAuthority(): S0TwoArmAuthority {
     upper: Object.freeze({
       inboardAWorld: vec3(0.08, 0.52, -0.3),
       inboardBWorld: vec3(0.08, 0.52, 0.3),
+      outboardWorld: baseline.upper.outboardWorld,
+    }),
+    lower: baseline.lower,
+  });
+}
+
+function tiltedUpperAxisAuthority(): S0TwoArmAuthority {
+  const baseline = baselineAuthority();
+  return Object.freeze({
+    upper: Object.freeze({
+      // Same midpoint as baseline, but a materially tilted authored bearing line.
+      inboardAWorld: vec3(-0.06, 0.42, -0.3),
+      inboardBWorld: vec3(0.06, 0.42, 0.3),
       outboardWorld: baseline.upper.outboardWorld,
     }),
     lower: baseline.lower,
@@ -157,6 +171,25 @@ test("S0 authored upper hardpoint mutation materially changes the real upright p
   assert.ok(
     separation > MATERIAL_MUTATION_SEPARATION_MIN,
     `hardpoint mutation separated upright paths by only ${separation}`,
+  );
+});
+
+test("S0 nonparallel authored hinge geometry produces a real 3D-coupled path while the closed chain stays bounded", async () => {
+  const [baseline, tilted] = await Promise.all([
+    runS0TwoArmProbe(baselineAuthority()),
+    runS0TwoArmProbe(tiltedUpperAxisAuthority()),
+  ]);
+
+  assertClosedChainIntegrity(baseline);
+  assertClosedChainIntegrity(tilted);
+  assert.ok(
+    tilted.maxPlanarDrift > MATERIAL_SPATIAL_RESPONSE_MIN,
+    `tilted authored hinge produced only ${tilted.maxPlanarDrift} m out-of-plane response`,
+  );
+  const separation = maxPathSeparation(baseline.uprightPath, tilted.uprightPath);
+  assert.ok(
+    separation > MATERIAL_MUTATION_SEPARATION_MIN,
+    `tilted hinge separated upright paths by only ${separation}`,
   );
 });
 
