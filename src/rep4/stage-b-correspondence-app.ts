@@ -3,14 +3,15 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import {
   applyC1DamperBetween,
-  bindC1DamperDonor,
   type C1DamperBinding,
 } from "../rep2/c1-damper-adapter.js";
 import {
+  REP4_DAMPER_COMPONENT,
   runRep4DamperedCornerProbe,
   type Rep4DamperedCornerAuthority,
   type Rep4DamperedCornerResult,
 } from "./dampered-corner-world.js";
+import { bindRep4DamperDonorAtPhysicalRestLength } from "./stage-b-damper-visual.js";
 import {
   projectRep4BuildFrame,
   projectRep4PlayFrame,
@@ -65,7 +66,7 @@ root.innerHTML = `
     <div class="row"><span>tie length</span><output data-testid="b1-tie">—</output></div>
     <div class="row"><span>damper length</span><output data-testid="b1-damper">—</output></div>
     <div class="row"><span>ball gaps</span><output data-testid="b1-gaps">—</output></div>
-    <p class="legend">Bright spheres are authored BUILD hardpoints. Solid A-arm/upright/tie geometry is projected only from current authority/native observer state. The real Rep2 Asset_Dumper donor is projected with the already-qualified C1 endpoint adapter.</p>
+    <p class="legend">Bright spheres are authored BUILD hardpoints. Solid A-arm/upright/tie geometry is projected only from current authority/native observer state. The real Rep2 Asset_Dumper donor is uniformly scaled to the physical component rest length, then projected with the already-qualified C1 endpoint adapter.</p>
   </aside>
 </main>`;
 
@@ -97,6 +98,15 @@ const authority: Rep4DamperedCornerAuthority = Object.freeze({
   damperChassisEyeWorld: Object.freeze({ x: 0.18, y: 0.13, z: 0 }),
   damperLowerEyeWorld: Object.freeze({ x: 0.418, y: -0.31, z: 0 }),
 });
+
+const buildProjection = projectRep4BuildFrame(authority);
+const buildTieLength = rep4StageBSegmentLength(buildProjection.tie);
+const buildDamperLength = rep4StageBSegmentLength(buildProjection.damper);
+const buildWheelCenter = new THREE.Vector3(
+  buildProjection.wheelCenter.x,
+  buildProjection.wheelCenter.y,
+  buildProjection.wheelCenter.z,
+);
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x090d12);
@@ -188,11 +198,20 @@ function setSegment(mesh: THREE.Object3D, value: Rep4StageBSegment): void {
   mesh.scale.set(1, length, 1);
 }
 
+function pointDistanceFromBuildWheel(point: Readonly<{ x: number; y: number; z: number }>): number {
+  return buildWheelCenter.distanceTo(new THREE.Vector3(point.x, point.y, point.z));
+}
+
 let damperBinding: C1DamperBinding | null = null;
 let nativeResult: Rep4DamperedCornerResult | null = null;
+let donorScaleFactor = 0;
 let frameIndex = 0;
 let phase: "BUILD" | "PLAY" = "BUILD";
 let playbackStartedAt = 0;
+let playbackCompleted = false;
+let maxRenderedWheelDisplacement = 0;
+let maxRenderedDamperLengthDelta = 0;
+let maxRenderedTieLengthDelta = 0;
 
 interface Rep4B1Evidence {
   status: "loading" | "ready" | "error";
@@ -205,6 +224,12 @@ interface Rep4B1Evidence {
   damperVisibleLength: number;
   upperBallGap: number;
   lowerBallGap: number;
+  donorRestGap: number;
+  donorScaleFactor: number;
+  playbackCompleted: boolean;
+  maxRenderedWheelDisplacement: number;
+  maxRenderedDamperLengthDelta: number;
+  maxRenderedTieLengthDelta: number;
   error?: string;
 }
 
@@ -224,12 +249,19 @@ function publish(frame: Rep4StageBProjectionFrame): void {
     damperVisibleLength: rep4StageBSegmentLength(frame.damper),
     upperBallGap: frame.upperBallConstraintGap,
     lowerBallGap: frame.lowerBallConstraintGap,
+    donorRestGap: damperBinding?.bind.restGap ?? 0,
+    donorScaleFactor,
+    playbackCompleted,
+    maxRenderedWheelDisplacement,
+    maxRenderedDamperLengthDelta,
+    maxRenderedTieLengthDelta,
   };
   window.__REP4_B1__ = evidence;
   root.dataset.phase = phase;
   root.dataset.donorReady = String(evidence.donorReady);
   root.dataset.traceReady = String(evidence.traceReady);
   root.dataset.frameIndex = String(frameIndex);
+  root.dataset.playbackCompleted = String(playbackCompleted);
 }
 
 function renderProjection(frame: Rep4StageBProjectionFrame): void {
@@ -249,6 +281,21 @@ function renderProjection(frame: Rep4StageBProjectionFrame): void {
     setSegment(fallbackDamperMesh, frame.damper);
   }
 
+  if (frame.phase === "PLAY") {
+    maxRenderedWheelDisplacement = Math.max(
+      maxRenderedWheelDisplacement,
+      pointDistanceFromBuildWheel(frame.wheelCenter),
+    );
+    maxRenderedDamperLengthDelta = Math.max(
+      maxRenderedDamperLengthDelta,
+      Math.abs(rep4StageBSegmentLength(frame.damper) - buildDamperLength),
+    );
+    maxRenderedTieLengthDelta = Math.max(
+      maxRenderedTieLengthDelta,
+      Math.abs(rep4StageBSegmentLength(frame.tie) - buildTieLength),
+    );
+  }
+
   phaseOutput.textContent = phase;
   tieOutput.textContent = `${rep4StageBSegmentLength(frame.tie).toFixed(6)} m`;
   damperOutput.textContent = `${rep4StageBSegmentLength(frame.damper).toFixed(6)} m`;
@@ -261,7 +308,7 @@ function showBuild(): void {
   frameIndex = 0;
   buildButton.classList.add("active");
   playButton.classList.remove("active");
-  renderProjection(projectRep4BuildFrame(authority));
+  renderProjection(buildProjection);
 }
 
 function startPlay(): void {
@@ -269,6 +316,10 @@ function startPlay(): void {
   phase = "PLAY";
   frameIndex = 0;
   playbackStartedAt = performance.now();
+  playbackCompleted = false;
+  maxRenderedWheelDisplacement = 0;
+  maxRenderedDamperLengthDelta = 0;
+  maxRenderedTieLengthDelta = 0;
   buildButton.classList.remove("active");
   playButton.classList.add("active");
   renderProjection(projectRep4PlayFrame(authority, nativeResult.derived, nativeResult.trace[0]!));
@@ -284,10 +335,15 @@ async function prepare(): Promise<void> {
       new GLTFLoader().loadAsync(DONOR_URL),
     ]);
     nativeResult = result;
-    damperBinding = bindC1DamperDonor(gltf.scene);
+    const scaledDonor = bindRep4DamperDonorAtPhysicalRestLength(
+      gltf.scene,
+      REP4_DAMPER_COMPONENT.restLength,
+    );
+    damperBinding = scaledDonor.binding;
+    donorScaleFactor = scaledDonor.scaleFactor;
     scene.add(gltf.scene);
     traceOutput.textContent = `${result.trace.length} native snapshots · ${TRACE_HZ} Hz`;
-    donorOutput.textContent = "READY · Rep2 Asset_Dumper + qualified C1 adapter";
+    donorOutput.textContent = `READY · Rep2 Asset_Dumper + C1 adapter · ${scaledDonor.scaleFactor.toFixed(3)}× visual scale`;
     donorOutput.className = "status-ready";
     playButton.disabled = false;
     showBuild();
@@ -307,6 +363,12 @@ async function prepare(): Promise<void> {
       damperVisibleLength: 0,
       upperBallGap: 0,
       lowerBallGap: 0,
+      donorRestGap: 0,
+      donorScaleFactor: 0,
+      playbackCompleted,
+      maxRenderedWheelDisplacement,
+      maxRenderedDamperLengthDelta,
+      maxRenderedTieLengthDelta,
       error: message,
     };
   }
@@ -332,6 +394,7 @@ function animate(now: number): void {
     );
     renderProjection(projectRep4PlayFrame(authority, nativeResult.derived, nativeResult.trace[frameIndex]!));
     if (frameIndex >= nativeResult.trace.length - 1) {
+      playbackCompleted = true;
       showBuild();
     }
   }
