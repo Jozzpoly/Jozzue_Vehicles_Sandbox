@@ -14,7 +14,7 @@ if (params.has("e1")) {
   await import("./rep3/stage-b-app.ts");
 } else if (params.has("grammar")) {
   document.title = "JV Construction Grammar Spikes V0";
-  await import("./grammar/spikes-app.ts");
+  await import("./grammar/spikes-app-v1.ts");
 } else if (params.has("rep4b3")) {
   document.title = "JV Rep4 B3 Build Play Build";
   await import("./rep4/stage-b3-app.ts");
