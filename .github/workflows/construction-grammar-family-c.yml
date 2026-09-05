@@ -1,0 +1,32 @@
+name: Construction Grammar Family C
+
+on:
+  push:
+    branches:
+      - experiment/construction-grammar-family-c-component-in-hand
+
+jobs:
+  interaction-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Production build only
+        run: npm run build
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run Family C real Chromium smoke
+        run: npx playwright test --config=playwright.grammar-family-c.config.ts
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: construction-grammar-family-c
+          path: |
+            artifacts/grammar-family-c-*.png
+            test-results/grammar-family-c
+          if-no-files-found: warn
