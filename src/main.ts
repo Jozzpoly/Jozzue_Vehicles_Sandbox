@@ -14,6 +14,7 @@ if (params.has("e1")) {
   await import("./rep3/stage-b-app.ts");
 } else if (params.has("grammarC")) {
   document.title = "JV Construction Grammar Family C";
+  // @ts-ignore -- Family C V3 is intentionally a disposable JS-only interaction spike.
   await import("./grammar/component-in-hand-app-v3.js");
 } else if (params.has("grammar")) {
   document.title = "JV Construction Grammar Spikes V0";
