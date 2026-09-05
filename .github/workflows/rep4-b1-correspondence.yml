@@ -1,0 +1,32 @@
+name: Rep4 B1 Visual Correspondence
+
+on:
+  push:
+    branches:
+      - experiment/rep4-multi-relation-corner
+
+jobs:
+  rendered-correspondence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Run source tests and production build
+        run: npm run check
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run real Chromium Rep4 B1 correspondence preflight
+        run: npx playwright test --config=playwright.rep4-b1.config.ts
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rep4-b1-rendered-correspondence
+          path: |
+            artifacts/rep4-b1-*.png
+            test-results/rep4-b1
+          if-no-files-found: warn
