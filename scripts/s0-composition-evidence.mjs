@@ -41,6 +41,18 @@ function mutatedAuthority() {
   };
 }
 
+function tiltedUpperAxisAuthority() {
+  const baseline = baselineAuthority();
+  return {
+    upper: {
+      inboardAWorld: vec3(-0.06, 0.42, -0.3),
+      inboardBWorld: vec3(0.06, 0.42, 0.3),
+      outboardWorld: baseline.upper.outboardWorld,
+    },
+    lower: baseline.lower,
+  };
+}
+
 function distance(a, b) {
   return Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z);
 }
@@ -92,33 +104,54 @@ function summarize(result) {
   };
 }
 
-const [baseline, mutated] = await Promise.all([
+const [baseline, mutated, tilted] = await Promise.all([
   runS0TwoArmProbe(baselineAuthority()),
   runS0TwoArmProbe(mutatedAuthority()),
+  runS0TwoArmProbe(tiltedUpperAxisAuthority()),
 ]);
 
 const evidence = Object.freeze({
-  schema: "jv-s0-two-arm-upright-composition-v1",
+  schema: "jv-s0-two-arm-upright-composition-v2",
   generatedAt: new Date().toISOString(),
   claimBoundary:
-    "Machine-only S0 selection evidence for two-arm/upright closed-chain feasibility on pinned box3d.js. No Owner, product, suspension-system or architecture PASS.",
+    "Machine-only S0 selection evidence for two-arm/upright closed-chain feasibility on pinned box3d.js. No Owner, product, complete-suspension, steering or architecture PASS.",
   apparatus: S0_TWO_ARM_APPARATUS,
   baseline: summarize(baseline),
   mutatedUpperInboard: summarize(mutated),
-  comparison: {
-    initialUprightSeparation: distance(
-      baseline.initial.uprightOriginWorld,
-      mutated.initial.uprightOriginWorld,
-    ),
-    finalUprightSeparation: distance(
-      baseline.final.uprightOriginWorld,
-      mutated.final.uprightOriginWorld,
-    ),
-    maxUprightPathSeparation: maxPathSeparation(
-      baseline.uprightPath,
-      mutated.uprightPath,
-    ),
+  tiltedUpperBearingLine: summarize(tilted),
+  comparisons: {
+    translatedUpperInboard: {
+      initialUprightSeparation: distance(
+        baseline.initial.uprightOriginWorld,
+        mutated.initial.uprightOriginWorld,
+      ),
+      finalUprightSeparation: distance(
+        baseline.final.uprightOriginWorld,
+        mutated.final.uprightOriginWorld,
+      ),
+      maxUprightPathSeparation: maxPathSeparation(
+        baseline.uprightPath,
+        mutated.uprightPath,
+      ),
+    },
+    tiltedUpperBearingLine: {
+      initialUprightSeparation: distance(
+        baseline.initial.uprightOriginWorld,
+        tilted.initial.uprightOriginWorld,
+      ),
+      finalUprightSeparation: distance(
+        baseline.final.uprightOriginWorld,
+        tilted.final.uprightOriginWorld,
+      ),
+      maxUprightPathSeparation: maxPathSeparation(
+        baseline.uprightPath,
+        tilted.uprightPath,
+      ),
+      maxOutOfPlaneResponse: tilted.maxPlanarDrift,
+    },
   },
+  knownBoundary:
+    "Two revolute inboard arms plus two spherical outboard joints leave a second upright rotational/steering DOF unless a later representative mechanism adds a real tie/steering relation. S0 does not hide or solve that DOF.",
 });
 
 mkdirSync(dirname(outputPath), { recursive: true });
