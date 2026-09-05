@@ -29,6 +29,9 @@ jobs:
       - name: Emit Rep4 A5 coupled diagnostics
         if: always()
         run: node scripts/rep4-coupled-diagnostics.mjs artifacts/rep4-coupled-diagnostics.json
+      - name: Emit Rep4 post-PASS robustness neighborhood
+        if: always()
+        run: node scripts/rep4-stage-a-robustness.mjs artifacts/rep4-stage-a-robustness.json
       - name: Production build regression
         if: always()
         run: npm run build
@@ -40,6 +43,7 @@ jobs:
             artifacts/rep4-tie-diagnostics.json
             artifacts/rep4-damper-diagnostics.json
             artifacts/rep4-coupled-diagnostics.json
+            artifacts/rep4-stage-a-robustness.json
           if-no-files-found: error
       - name: Preserve causal gate result
         if: steps.tests.outcome != 'success'
