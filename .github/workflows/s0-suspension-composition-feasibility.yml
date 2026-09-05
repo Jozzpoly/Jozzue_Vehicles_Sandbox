@@ -18,5 +18,13 @@ jobs:
       - run: npm ci
       - name: Compile and run inherited + S0 tests
         run: npm run test
+      - name: Emit exact S0 two-arm/upright composition evidence
+        run: node scripts/s0-composition-evidence.mjs artifacts/s0-two-arm-upright-composition.json
       - name: Production build regression
         run: npm run build
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s0-two-arm-upright-composition-evidence
+          path: artifacts/s0-two-arm-upright-composition.json
+          if-no-files-found: warn
