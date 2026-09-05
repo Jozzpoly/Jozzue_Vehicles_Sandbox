@@ -271,8 +271,6 @@ function startPlay(): void {
   playbackStartedAt = performance.now();
   buildButton.classList.remove("active");
   playButton.classList.add("active");
-  // Publish PLAY synchronously rather than relying on the next animation frame.
-  // This keeps UI state and machine evidence aligned even when RAF is throttled.
   renderProjection(projectRep4PlayFrame(authority, nativeResult.derived, nativeResult.trace[0]!));
 }
 
@@ -325,9 +323,12 @@ function resize(): void {
 function animate(now: number): void {
   resize();
   if (phase === "PLAY" && nativeResult !== null) {
-    frameIndex = Math.min(
-      nativeResult.trace.length - 1,
-      Math.floor(((now - playbackStartedAt) / 1000) * TRACE_HZ),
+    frameIndex = Math.max(
+      0,
+      Math.min(
+        nativeResult.trace.length - 1,
+        Math.floor(((now - playbackStartedAt) / 1000) * TRACE_HZ),
+      ),
     );
     renderProjection(projectRep4PlayFrame(authority, nativeResult.derived, nativeResult.trace[frameIndex]!));
     if (frameIndex >= nativeResult.trace.length - 1) {
