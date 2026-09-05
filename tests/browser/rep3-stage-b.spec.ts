@@ -10,7 +10,7 @@ function numberDataset(value: string | undefined, label: string): number {
 }
 
 async function rootData(page: Page) {
-  return page.locator("#app > .rep3-shell").evaluate((element) => ({ ...element.dataset }));
+  return page.locator("#app").evaluate((element) => ({ ...element.dataset }));
 }
 
 function pointDistance(
@@ -36,7 +36,7 @@ test("Rep3 Stage B exposes visible physical bearings, direct 3D translation, cau
   });
 
   await page.goto("/?rep3");
-  const root = page.locator("#app > .rep3-shell");
+  const root = page.locator("#app");
   const canvas = page.getByTestId("rep3-viewport");
   await expect(root).toHaveAttribute("data-mode", "BUILD");
   await expect(page.getByTestId("runtime-status")).toContainText("READY");
