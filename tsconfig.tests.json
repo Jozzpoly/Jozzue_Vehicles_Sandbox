@@ -26,10 +26,12 @@
     "src/v0/driving-evidence.ts",
     "src/rep2/suspension-link-world.ts",
     "src/rep3/**/*.ts",
+    "src/s0/**/*.ts",
     "tests/e1/**/*.ts",
     "tests/v0/**/*.ts",
     "tests/r1/**/*.ts",
     "tests/rep2/**/*.ts",
-    "tests/rep3/**/*.ts"
+    "tests/rep3/**/*.ts",
+    "tests/s0/**/*.ts"
   ]
 }
