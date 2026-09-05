@@ -9,7 +9,7 @@ import {
 
 document.title = "JV Rep3 Geometry-Derived Hinge";
 
-const root = document.querySelector<HTMLDivElement>("#app");
+const root = document.querySelector<HTMLDivElement>("#app") as HTMLDivElement;
 if (root === null) throw new Error("Rep3 Stage B app root is missing.");
 
 root.innerHTML = `
