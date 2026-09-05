@@ -1,0 +1,22 @@
+name: S0 Suspension Composition Feasibility
+
+on:
+  push:
+    branches:
+      - experiment/s0-suspension-composition-feasibility
+
+jobs:
+  two-arm-upright:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Compile and run inherited + S0 tests
+        run: npm run test
+      - name: Production build regression
+        run: npm run build
