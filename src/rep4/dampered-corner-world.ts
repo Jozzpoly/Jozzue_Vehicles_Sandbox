@@ -103,6 +103,7 @@ export interface Rep4DamperedCornerResult {
   readonly damperNativeDampingRatio: number | null;
   readonly initial: Rep4DamperedCornerSnapshot;
   readonly final: Rep4DamperedCornerSnapshot;
+  readonly trace: readonly Rep4DamperedCornerSnapshot[];
   readonly maxUpperBallSeparation: number;
   readonly maxLowerBallSeparation: number;
   readonly maxTieLengthError: number;
@@ -469,6 +470,7 @@ class Rep4DamperedCornerWorld {
       throw new RangeError("Rep4 dampered-corner step count must be positive.");
     }
     const initial = this.snapshot();
+    const trace: Rep4DamperedCornerSnapshot[] = [initial];
     this.#b3.b3Body_ApplyLinearImpulseToCenter(
       this.#uprightId,
       clone(TRAVEL_IMPULSE),
@@ -491,6 +493,7 @@ class Rep4DamperedCornerWorld {
     for (let index = 0; index < steps; index += 1) {
       this.#b3.b3World_Step(this.#worldId, STEP_DT, SUBSTEPS);
       const state = this.snapshot();
+      trace.push(state);
       maxUpperBallSeparation = Math.max(
         maxUpperBallSeparation,
         dist(state.upperArmOutboardWorld, state.uprightUpperAnchorWorld),
@@ -529,7 +532,7 @@ class Rep4DamperedCornerWorld {
       }
     }
 
-    const final = this.snapshot();
+    const final = trace[trace.length - 1]!;
     const damperFrameA = this.#damperId === null
       ? null
       : this.#b3.b3Joint_GetLocalFrameA(this.#damperId);
@@ -568,6 +571,7 @@ class Rep4DamperedCornerWorld {
         : this.#b3.b3DistanceJoint_GetSpringDampingRatio(this.#damperId),
       initial,
       final,
+      trace: Object.freeze(trace.slice()),
       maxUpperBallSeparation,
       maxLowerBallSeparation,
       maxTieLengthError,
