@@ -34,7 +34,7 @@ function maxPathSeparation(
   assert.equal(a.length, b.length);
   let maximum = 0;
   for (let index = 0; index < a.length; index += 1) {
-    maximum = Math.max(maximum, distance(a[index], b[index]));
+    maximum = Math.max(maximum, distance(a[index]!, b[index]!));
   }
   return maximum;
 }
