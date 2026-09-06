@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - experiment/construction-grammar-family-c-component-in-hand
+      - experiment/construction-grammar-family-c-spatial-compass-v0
 
 jobs:
   interaction-smoke:
