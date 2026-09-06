@@ -49,6 +49,23 @@ async function takeDamper(page: Page): Promise<void> {
   await page.mouse.move(rackDamper.x - 150, rackDamper.y - 170, { steps: 6 });
   await page.mouse.up();
 }
+async function emptyCanvasTarget(page: Page): Promise<{ x: number; y: number }> {
+  const box = await page.getByTestId("family-c-canvas").boundingBox();
+  if (!box) throw new Error("Family C canvas has no bounding box");
+  const socketPrefixes = ["cUpper", "cMid", "cLower", "hUpper", "hMid", "hLower"];
+  const sockets = await Promise.all(socketPrefixes.map((prefix) => point(page, prefix)));
+  const candidates = [
+    { x: box.x + box.width * 0.88, y: box.y + box.height * 0.78 },
+    { x: box.x + box.width * 0.86, y: box.y + box.height * 0.20 },
+    { x: box.x + box.width * 0.68, y: box.y + box.height * 0.84 },
+    { x: box.x + box.width * 0.91, y: box.y + box.height * 0.52 },
+  ];
+  return candidates.reduce((best, candidate) => {
+    const clearance = Math.min(...sockets.map((socket) => Math.hypot(candidate.x - socket.x, candidate.y - socket.y)));
+    const bestClearance = Math.min(...sockets.map((socket) => Math.hypot(best.x - socket.x, best.y - socket.y)));
+    return clearance > bestClearance ? candidate : best;
+  });
+}
 
 test("Family C Spatial Compass preserves component-as-object topology operations", async ({ page }) => {
   const errors = watchErrors(page);
@@ -79,7 +96,12 @@ test("Family C Spatial Compass preserves component-as-object topology operations
   await expect.poll(async () => (await firstPart(page)).bSocket).toBe("h-upper");
 
   a = await point(page, "selectedA");
-  await drag(page, a, { x: a.x + 240, y: a.y + 150 });
+  const emptyTarget = await emptyCanvasTarget(page);
+  await page.mouse.move(a.x, a.y);
+  await page.mouse.down();
+  await page.mouse.move(emptyTarget.x, emptyTarget.y, { steps: 6 });
+  await expect(root).toHaveAttribute("data-preview-socket", "none");
+  await page.mouse.up();
   await expect.poll(async () => (await firstPart(page)).aSocket).toBeNull();
   await page.screenshot({ path: "artifacts/grammar-family-c-02-detached-eye.png", fullPage: true });
 
