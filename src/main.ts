@@ -13,9 +13,9 @@ if (params.has("e1")) {
   document.title = "JV Rep3 Geometry-Derived Hinge";
   await import("./rep3/stage-b-app.ts");
 } else if (params.has("grammarC")) {
-  document.title = "JV Construction Grammar Family C";
-  // @ts-ignore -- Family C V3 is intentionally a disposable JS-only interaction spike.
-  await import("./grammar/component-in-hand-app-v3.js");
+  document.title = "JV Construction Grammar Family C · Spatial Compass";
+  // @ts-ignore -- Family C V4 remains an intentionally disposable JS-only interaction spike.
+  await import("./grammar/component-in-hand-app-v4.js");
 } else if (params.has("grammar")) {
   document.title = "JV Construction Grammar Spikes V0";
   await import("./grammar/spikes-app-v1.ts");
